@@ -25,6 +25,13 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     trading_symbol: str = "BTCUSDT"
     
+    # Configurações de Risk Management
+    max_risk_per_trade: float = 0.03  # Máximo 3% de risco por trade
+    max_drawdown: float = 0.15  # Máximo 15% de drawdown
+    max_exposure: float = 0.10  # Máximo 10% de exposição total
+    max_daily_trades: int = 5  # Máximo 5 trades por dia
+    base_risk_percentage: float = 0.02  # 2% base de risco
+    
     # Top 10 criptomoedas por market cap (pares USDT)
     top_crypto_pairs: list = [
         "BTCUSDT",   # Bitcoin

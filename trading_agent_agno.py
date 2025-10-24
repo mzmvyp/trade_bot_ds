@@ -21,7 +21,10 @@ from agno_tools import (
     analyze_market_sentiment,
     get_deepseek_analysis,
     validate_risk_and_position,
-    execute_paper_trade
+    execute_paper_trade,
+    analyze_multiple_timeframes,
+    analyze_order_flow,
+    backtest_strategy
 )
 
 class AgnoTradingAgent:
@@ -41,24 +44,34 @@ class AgnoTradingAgent:
         # Obter API key
         api_key = os.getenv("DEEPSEEK_API_KEY")
         if not api_key:
-            raise ValueError("DEEPSEEK_API_KEY não encontrada. Configure no arquivo .env")
+            print("⚠️ DEEPSEEK_API_KEY não encontrada. Executando em modo de demonstração.")
+            api_key = "demo_key"  # Chave demo para testes
         
         # Aplicar decorator @tool nas ferramentas
         from agno.tools import tool
         
         # Configurar o Agent AGNO com otimizações de velocidade
-        self.agent = Agent(
-            model=DeepSeek(id="deepseek-chat", api_key=api_key, temperature=0.3, max_tokens=1000),
-            tools=[
-                tool(get_market_data),
-                tool(analyze_technical_indicators),
-                tool(analyze_market_sentiment),
-                tool(get_deepseek_analysis),
-                tool(validate_risk_and_position),
-                tool(execute_paper_trade)
-            ],
-            instructions=self._get_instructions()
-        )
+        if api_key != "demo_key":
+            # Modo real com DeepSeek
+            self.agent = Agent(
+                model=DeepSeek(id="deepseek-chat", api_key=api_key, temperature=0.3, max_tokens=1000),
+                tools=[
+                    tool(get_market_data),
+                    tool(analyze_technical_indicators),
+                    tool(analyze_market_sentiment),
+                    tool(get_deepseek_analysis),
+                    tool(validate_risk_and_position),
+                    tool(execute_paper_trade),
+                    tool(analyze_multiple_timeframes),
+                    tool(analyze_order_flow),
+                    tool(backtest_strategy)
+                ],
+                instructions=self._get_instructions()
+            )
+        else:
+            # Modo demo - análise local sem DeepSeek
+            self.agent = None
+            self.demo_mode = True
         
         # Criar pastas necessárias
         Path("signals").mkdir(exist_ok=True)
@@ -68,19 +81,36 @@ class AgnoTradingAgent:
     def _get_instructions(self) -> str:
         """Retorna as instruções para o agent"""
         return """
-        Você é um trader profissional. Analise os dados e decida APENAS:
+        Você é um trader profissional especializado em análise técnica e gestão de risco.
         
-        - BUY: Se há oportunidade de compra (mesmo que pequena)
-        - SELL: Se há oportunidade de venda (mesmo que pequena)
+        PROCESSO DE ANÁLISE:
+        1. Colete dados de mercado usando get_market_data()
+        2. Analise indicadores técnicos com analyze_technical_indicators()
+        3. Capture sentimento com analyze_market_sentiment()
+        4. Analise multi-timeframe com analyze_multiple_timeframes()
+        5. Analise order flow com analyze_order_flow()
+        6. Processe análise DeepSeek com get_deepseek_analysis()
+        7. Valide risco com validate_risk_and_position()
+        8. Execute paper trade se apropriado com execute_paper_trade()
+        9. Para backtesting, use backtest_strategy() com datas específicas
         
-        NÃO USE HOLD ou NÃO OPERAR. Seja sempre decisivo.
+        REGRAS DE TRADING:
+        - SEMPRE forneça um sinal: BUY ou SELL (seja decisivo)
+        - NÃO use HOLD ou NÃO OPERAR
+        - Para BUY/SELL, defina OBRIGATORIAMENTE:
+          * Entrada: preço específico
+          * Stop Loss: preço específico
+          * Take Profit 1: preço específico
+          * Take Profit 2: preço específico
+          * Confiança: 1-10
         
-        Para BUY/SELL:
-        - Defina entrada, stop loss e take profits
-        - Confiança deve ser 5-10 para executar
-        - Seja direto e objetivo
+        GESTÃO DE RISCO:
+        - Confiança mínima 5 para executar
+        - Respeite circuit breakers automáticos
+        - Analise estrutura de mercado (suporte/resistência)
+        - Considere múltiplos timeframes
         
-        SEMPRE dê um sinal: BUY ou SELL.
+        Seja detalhado na análise mas objetivo na decisão.
         """
     
     async def analyze(self, symbol: str = "BTCUSDT") -> Dict[str, Any]:
@@ -117,11 +147,15 @@ class AgnoTradingAgent:
         """
         
         try:
-            # Executar agent - ELE VAI ORQUESTRAR TUDO!
-            response = self.agent.run(prompt)
-            
-            # Processar resposta
-            signal = self._process_agent_response(response, symbol)
+            if hasattr(self, 'demo_mode') and self.demo_mode:
+                # Modo demo - análise local
+                signal = self._demo_analysis(symbol)
+            else:
+                # Executar agent - ELE VAI ORQUESTRAR TUDO!
+                response = self.agent.run(prompt)
+                
+                # Processar resposta
+                signal = self._process_agent_response(response, symbol)
             
             # Salvar sinal
             self._save_signal(signal)
@@ -326,6 +360,75 @@ class AgnoTradingAgent:
         if signal.get('stop_loss'):
             print(f"🛑 Stop Loss: ${signal['stop_loss']:,.2f}")
         print("="*60)
+    
+    def _demo_analysis(self, symbol: str) -> Dict[str, Any]:
+        """Análise demo local sem DeepSeek"""
+        print(f"🔍 Executando análise demo local para {symbol}...")
+        
+        try:
+            # Coletar dados
+            market_data = get_market_data(symbol)
+            technical_indicators = analyze_technical_indicators(symbol)
+            sentiment = analyze_market_sentiment(symbol)
+            
+            print(f"📊 Dados coletados:")
+            print(f"   Preço: ${market_data.get('current_price', 0):,.2f}")
+            print(f"   Variação 24h: {market_data.get('price_change_24h', 0):.2f}%")
+            print(f"   RSI: {technical_indicators.get('indicators', {}).get('rsi', 50):.2f}")
+            print(f"   Tendência: {technical_indicators.get('trend', 'neutral')}")
+            print(f"   Sentimento: {sentiment.get('sentiment', 'neutral')}")
+            
+            # Análise simples baseada em regras
+            current_price = market_data.get('current_price', 0)
+            price_change = market_data.get('price_change_24h', 0)
+            rsi = technical_indicators.get('indicators', {}).get('rsi', 50)
+            trend = technical_indicators.get('trend', 'neutral')
+            
+            # Lógica de decisão simples
+            if rsi < 30 and trend == 'bearish' and price_change < -2:
+                signal_type = "BUY"
+                confidence = 7
+                entry_price = current_price * 0.995  # Entrada 0.5% abaixo
+                stop_loss = current_price * 0.97     # Stop 3% abaixo
+                take_profit_1 = current_price * 1.02 # TP1 2% acima
+                take_profit_2 = current_price * 1.05 # TP2 5% acima
+            elif rsi > 70 and trend == 'bullish' and price_change > 2:
+                signal_type = "SELL"
+                confidence = 7
+                entry_price = current_price * 1.005  # Entrada 0.5% acima
+                stop_loss = current_price * 1.03     # Stop 3% acima
+                take_profit_1 = current_price * 0.98 # TP1 2% abaixo
+                take_profit_2 = current_price * 0.95 # TP2 5% abaixo
+            else:
+                signal_type = "BUY"  # Default para demo
+                confidence = 5
+                entry_price = current_price
+                stop_loss = current_price * 0.97
+                take_profit_1 = current_price * 1.02
+                take_profit_2 = current_price * 1.05
+            
+            signal = {
+                "symbol": symbol,
+                "signal": signal_type,
+                "confidence": confidence,
+                "entry_price": entry_price,
+                "stop_loss": stop_loss,
+                "take_profit_1": take_profit_1,
+                "take_profit_2": take_profit_2,
+                "timestamp": datetime.now().isoformat(),
+                "demo_mode": True,
+                "analysis": {
+                    "market_data": market_data,
+                    "technical_indicators": technical_indicators,
+                    "sentiment": sentiment
+                }
+            }
+            
+            print(f"🎯 Sinal gerado: {signal_type} com confiança {confidence}/10")
+            return signal
+            
+        except Exception as e:
+            return self._create_error_signal(symbol, f"Erro na análise demo: {str(e)}")
     
     def _create_error_signal(self, symbol: str, error: str) -> Dict[str, Any]:
         """Cria sinal de erro"""
