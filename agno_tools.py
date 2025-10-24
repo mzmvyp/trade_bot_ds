@@ -37,8 +37,8 @@ def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
         oi_response = requests.get(f"{base_url}/fapi/v1/openInterest", params={'symbol': symbol}, timeout=timeout)
         open_interest = oi_response.json()
         
-        # Processar apenas os últimos 10 klines para indicadores (muito reduzido)
-        recent_klines = klines[-10:] if len(klines) > 10 else klines
+        # Processar apenas os últimos 5 klines para indicadores (mínimo)
+        recent_klines = klines[-5:] if len(klines) > 5 else klines
         
         return {
             "symbol": symbol,
@@ -76,8 +76,8 @@ def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any]:
                 "symbol": symbol
             }
         
-        # Otimizar: usar apenas os últimos 10 klines para análise mais rápida
-        klines = klines[-10:] if len(klines) > 10 else klines
+        # Otimizar: usar apenas os últimos 5 klines para análise mais rápida
+        klines = klines[-5:] if len(klines) > 5 else klines
         
         # Converter klines para DataFrame
         df = pd.DataFrame(klines, columns=[
@@ -402,38 +402,33 @@ def execute_paper_trade(
     position_size: float
 ) -> Dict[str, Any]:
     """
-    Executa um paper trade (simulado) para teste.
+    Executa um paper trade usando o sistema completo de paper trading.
     """
     try:
-        from pathlib import Path
+        from paper_trading import paper_trading
         
-        Path("paper_trades").mkdir(exist_ok=True)
+        # Executar trade usando o sistema completo
+        result = paper_trading.execute_trade(signal, position_size)
         
-        trade = {
-            "trade_id": datetime.now().strftime('%Y%m%d_%H%M%S'),
-            "timestamp": datetime.now().isoformat(),
-            "symbol": signal.get('symbol', 'BTCUSDT'),
-            "signal": signal.get('signal'),
-            "entry_price": signal.get('entry_price'),
-            "position_size": position_size,
-            "stop_loss": signal.get('stop_loss'),
-            "take_profit_1": signal.get('take_profit_1'),
-            "take_profit_2": signal.get('take_profit_2'),
-            "confidence": signal.get('confidence'),
-            "reasoning": signal.get('reasoning'),
-            "status": "OPEN"
-        }
-        
-        filename = f"paper_trades/trade_{trade['trade_id']}.json"
-        with open(filename, 'w') as f:
-            json.dump(trade, f, indent=2)
-        
-        return {
-            "success": True,
-            "trade_id": trade['trade_id'],
-            "message": f"Paper trade executed: {signal.get('signal')} {position_size:.4f} units at {signal.get('entry_price')}",
-            "file": filename
-        }
+        if result["success"]:
+            # Obter resumo do portfólio
+            portfolio_summary = paper_trading.get_portfolio_summary()
+            
+            return {
+                "success": True,
+                "trade_id": result["trade_id"],
+                "message": result["message"],
+                "file": result["file"],
+                "portfolio_summary": {
+                    "current_balance": f"${portfolio_summary['current_balance']:.2f}",
+                    "total_return": f"{portfolio_summary['total_return_percent']:.2f}%",
+                    "open_positions": portfolio_summary['open_positions_count'],
+                    "total_trades": portfolio_summary['total_trades']
+                }
+            }
+        else:
+            return result
+            
     except Exception as e:
         return {
             "success": False,

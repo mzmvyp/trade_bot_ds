@@ -68,28 +68,19 @@ class AgnoTradingAgent:
     def _get_instructions(self) -> str:
         """Retorna as instruções para o agent"""
         return """
-        Você é um trader profissional com acesso a dados reais de mercado.
+        Você é um trader profissional. Analise os dados e decida APENAS:
         
-        PROCESSO:
-        1. get_market_data() - dados atuais
-        2. analyze_technical_indicators() - indicadores técnicos
-        3. analyze_market_sentiment() - sentimento de mercado
-        4. get_deepseek_analysis() - análise final
-        5. validate_risk_and_position() - validação
+        - BUY: Se há oportunidade de compra (mesmo que pequena)
+        - SELL: Se há oportunidade de venda (mesmo que pequena)
         
-        SUA MISSÃO:
-        Analise TODOS os dados fornecidos e decida:
-        - BUY: Se os dados indicam oportunidade de compra
-        - SELL: Se os dados indicam oportunidade de venda  
-        - HOLD: Se os dados são inconclusivos ou negativos
+        NÃO USE HOLD ou NÃO OPERAR. Seja sempre decisivo.
         
-        IMPORTANTE:
-        - VOCÊ decide o sinal baseado nos dados reais
-        - Confiança deve refletir sua certeza (1-10)
-        - Para BUY/SELL: defina entrada, stop loss e take profits
-        - Para HOLD: não defina níveis (aguardar)
+        Para BUY/SELL:
+        - Defina entrada, stop loss e take profits
+        - Confiança deve ser 5-10 para executar
+        - Seja direto e objetivo
         
-        Seja decisivo e baseie-se nos dados fornecidos.
+        SEMPRE dê um sinal: BUY ou SELL.
         """
     
     async def analyze(self, symbol: str = "BTCUSDT") -> Dict[str, Any]:
@@ -157,22 +148,21 @@ class AgnoTradingAgent:
         # Tentar extrair sinal estruturado
         response_text = str(response)
         
-        # Identificar tipo de sinal - corrigir lógica
-        if "**SINAL**: **HOLD**" in response_text or "SINAL: HOLD" in response_text or "SINAL FINAL: **HOLD**" in response_text:
-            signal["signal"] = "HOLD"
-        elif "**SINAL**: **BUY**" in response_text or "SINAL: BUY" in response_text or "SINAL FINAL: **BUY**" in response_text:
+        # Identificar tipo de sinal - APENAS BUY/SELL
+        if "BUY" in response_text.upper():
             signal["signal"] = "BUY"
-        elif "**SINAL**: **SELL**" in response_text or "SINAL: SELL" in response_text or "SINAL FINAL: **SELL**" in response_text:
+        elif "SELL" in response_text.upper():
             signal["signal"] = "SELL"
         else:
-            signal["signal"] = "HOLD"  # Default seguro
+            # Se não conseguiu identificar, não executar
+            signal["signal"] = "NO_SIGNAL"
         
         # Extrair números usando regex
         import re
         
-        # Para HOLD, não deve ter entrada, stop ou targets
-        if signal["signal"] == "HOLD":
-            # HOLD = aguardar, não executar
+        # Para NO_SIGNAL, não deve ter entrada, stop ou targets
+        if signal["signal"] == "NO_SIGNAL":
+            # NO_SIGNAL = não executar
             signal["entry_price"] = None
             signal["stop_loss"] = None
             signal["take_profit_1"] = None
