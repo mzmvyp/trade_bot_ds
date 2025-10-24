@@ -6,10 +6,7 @@ import json
 from datetime import datetime
 from typing import Dict, Any, Optional
 
-from agno.agent import Agent
-from agno.models.openai import OpenAIChat
-from agno.tools.duckduckgo import DuckDuckGoTools
-from agno.agent import Memory
+# Removido Agno - usando integração direta
 
 from binance_client import BinanceClient
 from technical_analysis import EnhancedTechnicalAnalyzer
@@ -41,29 +38,7 @@ class EnhancedTradingAgent:
         
         self.risk_manager.set_portfolio(self.portfolio)
         
-        # Agent Agno
-        self.agent = Agent(
-            model=OpenAIChat(
-                id="gpt-4",
-                api_key="dummy-key"  # Não será usado para análise direta
-            ),
-            tools=[DuckDuckGoTools()],
-            instructions="""
-            Você é um especialista em trading de criptomoedas.
-            Sua função é coletar dados do mercado e usar as ferramentas disponíveis
-            para analisar os dados e gerar sinais de trading.
-            
-            Processo:
-            1. Colete dados do mercado (preço, volume, etc.)
-            2. Colete sinais técnicos avançados
-            3. Colete dados de sentimento
-            4. Use análise de risco
-            5. Retorne o sinal de trading
-            """,
-            markdown=True,
-        )
-        
-        self.memory = Memory()
+        # Sistema simplificado sem Agno
     
     async def run_single_analysis(self, symbol: str = None) -> Dict[str, Any]:
         """
@@ -177,7 +152,11 @@ class EnhancedTradingAgent:
                 return self._generate_basic_technical_signals()
             
             # Calcular indicadores avançados
-            df = self.technical_analyzer.calculate_advanced_indicators(df)
+            try:
+                df = self.technical_analyzer.calculate_advanced_indicators(df)
+            except Exception as e:
+                log_error(e, {"symbol": symbol, "action": "technical_indicators"})
+                return self._generate_basic_technical_signals()
             
             # Gerar sinais
             signals = self.technical_analyzer.generate_technical_signals(df)
@@ -272,8 +251,16 @@ class EnhancedTradingAgent:
         
         return deepseek_analysis
     
-    def _generate_fallback_signal(self, symbol: str, market_data: Dict) -> Dict[str, Any]:
+    def _generate_fallback_signal(self, symbol: str, market_data: Dict = None) -> Dict[str, Any]:
         """Gera sinal de fallback quando DeepSeek falha"""
+        
+        # Verificar se market_data existe
+        if not market_data:
+            market_data = {
+                'current_price': 0,
+                'price_change_24h': 0,
+                'volume_24h': 0
+            }
         
         current_price = market_data.get('current_price', 0)
         price_change = market_data.get('price_change_24h', 0)

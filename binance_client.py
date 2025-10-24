@@ -94,20 +94,42 @@ class BinanceClient:
         async with self.session.get(url, params=params) as response:
             return await response.json()
     
-    async def get_historical_klines(self, symbol: str, interval: str, start_time: datetime, end_time: datetime) -> List:
+    async def get_historical_klines(self, symbol: str, interval: str, start_time: datetime, end_time: datetime) -> pd.DataFrame:
         """
-        Obtém dados históricos de klines
+        Obtém dados históricos completos de klines
         """
-        url = f"{self.base_url}/fapi/v1/klines"
-        params = {
-            'symbol': symbol,
-            'interval': interval,
-            'startTime': int(start_time.timestamp() * 1000),
-            'endTime': int(end_time.timestamp() * 1000),
-            'limit': 1000
-        }
+        all_klines = []
+        current_start = int(start_time.timestamp() * 1000)
+        end_timestamp = int(end_time.timestamp() * 1000)
         
-        async with self.session.get(url, params=params) as response:
-            data = await response.json()
+        while current_start < end_timestamp:
+            url = f"{self.base_url}/fapi/v1/klines"
+            params = {
+                'symbol': symbol,
+                'interval': interval,
+                'startTime': current_start,
+                'limit': 1000
+            }
             
-        return data
+            async with self.session.get(url, params=params) as response:
+                batch = await response.json()
+                if not batch:
+                    break
+                all_klines.extend(batch)
+                current_start = int(batch[-1][0]) + 1
+        
+        # Converter para DataFrame
+        df = pd.DataFrame(all_klines, columns=[
+            'timestamp', 'open', 'high', 'low', 'close', 'volume',
+            'close_time', 'quote_volume', 'trades', 'taker_buy_base_volume',
+            'taker_buy_quote_volume', 'ignore'
+        ])
+        
+        # Converter tipos
+        for col in ['open', 'high', 'low', 'close', 'volume']:
+            df[col] = pd.to_numeric(df[col])
+        
+        df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+        df.set_index('timestamp', inplace=True)
+        
+        return df

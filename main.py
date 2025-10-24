@@ -4,6 +4,8 @@ Sistema de Trading de Criptomoedas - Versão Corrigida
 import asyncio
 import argparse
 import sys
+import os
+from pathlib import Path
 from datetime import datetime
 from trading_agent import EnhancedTradingAgent
 
@@ -30,6 +32,10 @@ async def main():
         print("🔝 Analisando top 10 criptomoedas por market cap")
     
     print("-" * 50)
+    
+    # Criar pastas necessárias
+    Path("signals").mkdir(exist_ok=True)
+    Path("logs").mkdir(exist_ok=True)
     
     # Criar instância do agent
     trading_agent = EnhancedTradingAgent()
