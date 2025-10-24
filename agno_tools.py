@@ -465,14 +465,20 @@ def analyze_twitter_sentiment(symbol: str) -> tuple:
     Se as bibliotecas não estiverem disponíveis, usa dados de mercado.
     """
     try:
-        # Tentar análise real do Twitter se disponível
-        if TWITTER_AVAILABLE:
+        # Verificar se realmente pode usar Twitter
+        if TWITTER_AVAILABLE and os.getenv("TWITTER_BEARER_TOKEN"):
+            print(f"🐦 Usando análise REAL do Twitter para {symbol}")
             return _analyze_real_twitter_sentiment(symbol)
         else:
+            if not TWITTER_AVAILABLE:
+                print(f"⚠️ Bibliotecas Twitter não disponíveis. Usando análise baseada em dados de mercado para {symbol}")
+            else:
+                print(f"⚠️ Token Twitter não configurado. Usando análise baseada em dados de mercado para {symbol}")
             return _analyze_market_based_sentiment(symbol)
             
-    except Exception:
-        return ("neutral", 0.5)
+    except Exception as e:
+        print(f"⚠️ Erro na análise de sentimento para {symbol}: {e}")
+        return _analyze_market_based_sentiment(symbol)
 
 def _analyze_real_twitter_sentiment(symbol: str) -> tuple:
     """
@@ -524,7 +530,7 @@ def _analyze_real_twitter_sentiment(symbol: str) -> tuple:
 
 def _analyze_market_based_sentiment(symbol: str) -> tuple:
     """
-    Análise de sentimento baseada em dados reais de mercado (fallback).
+    Análise de sentimento baseada em dados reais de mercado (FALLBACK - não é Twitter real).
     """
     try:
         # Obter dados reais de mercado
