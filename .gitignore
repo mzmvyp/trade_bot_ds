@@ -19,11 +19,12 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
-# Virtual Environment
-venv/
+# Environment variables
+.env
+.venv
 env/
+venv/
 ENV/
 env.bak/
 venv.bak/
@@ -35,35 +36,20 @@ venv.bak/
 *.swo
 *~
 
+# Logs
+logs/*.log
+logs/*.json
+
+# Signals (keep structure, ignore content)
+signals/*.json
+
+# Paper trades (keep structure, ignore content)
+paper_trades/*.json
+
 # OS
 .DS_Store
 Thumbs.db
 
-# Environment variables
-.env
-.env.local
-.env.production
-.env.*
-
-# Logs
-*.log
-logs/
-
-# Signals folder (contains generated JSON files)
-signals/
-!signals/.gitignore
-
 # Temporary files
 *.tmp
 *.temp
-temp/
-tmp/
-
-# Test files
-test_*.py
-*_test.py
-tests/
-
-# Documentation build
-docs/_build/
-site/

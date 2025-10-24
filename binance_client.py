@@ -94,9 +94,19 @@ class BinanceClient:
         async with self.session.get(url, params=params) as response:
             return await response.json()
     
-    async def get_historical_klines(self, symbol: str, interval: str, start_time: datetime, end_time: datetime) -> pd.DataFrame:
+    async def get_historical_klines(self, symbol: str, interval: str, 
+                                  start_time: datetime, end_time: datetime) -> pd.DataFrame:
         """
-        Obtém dados históricos completos de klines
+        Obtém dados históricos de klines para backtesting
+        
+        Args:
+            symbol: Símbolo do par
+            interval: Intervalo dos candles
+            start_time: Data inicial
+            end_time: Data final
+            
+        Returns:
+            DataFrame com dados históricos
         """
         all_klines = []
         current_start = int(start_time.timestamp() * 1000)
@@ -108,15 +118,24 @@ class BinanceClient:
                 'symbol': symbol,
                 'interval': interval,
                 'startTime': current_start,
+                'endTime': min(current_start + 100 * 60 * 60 * 1000, end_timestamp),
                 'limit': 1000
             }
             
-            async with self.session.get(url, params=params) as response:
-                batch = await response.json()
-                if not batch:
-                    break
-                all_klines.extend(batch)
-                current_start = int(batch[-1][0]) + 1
+            try:
+                async with self.session.get(url, params=params) as response:
+                    batch = await response.json()
+                    if not batch:
+                        break
+                    all_klines.extend(batch)
+                    # Próximo batch começa após o último timestamp
+                    current_start = int(batch[-1][0]) + 1
+            except Exception as e:
+                print(f"Erro obtendo dados históricos: {e}")
+                break
+        
+        if not all_klines:
+            return pd.DataFrame()
         
         # Converter para DataFrame
         df = pd.DataFrame(all_klines, columns=[
@@ -131,5 +150,8 @@ class BinanceClient:
         
         df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
         df.set_index('timestamp', inplace=True)
+        
+        # Filtrar por período exato
+        df = df[df.index <= end_time]
         
         return df

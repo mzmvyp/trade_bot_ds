@@ -1,0 +1,5 @@
+# Ignorar todos os arquivos JSON de sinais
+*.json
+
+# Manter apenas este arquivo
+!.gitignore

@@ -19,7 +19,6 @@ class Settings(BaseSettings):
     twitter_access_token_secret: Optional[str] = None
     
     # Configurações do DeepSeek
-    deepseek_api_key: str = Field(default_factory=lambda: os.getenv("DEEPSEEK_API_KEY", ""))
     deepseek_base_url: str = "https://api.deepseek.com/v1"
     
     # Configurações do sistema
@@ -40,14 +39,10 @@ class Settings(BaseSettings):
         "LINKUSDT"   # Chainlink
     ]
     
-    @validator("deepseek_api_key")
-    def validate_deepseek_api_key(cls, v):
-        if not v:
-            raise ValueError("DEEPSEEK_API_KEY não configurada. Configure no arquivo .env")
-        return v
     
     class Config:
         env_file = ".env"
         case_sensitive = False
+        extra = "ignore"  # Ignorar campos extras
 
 settings = Settings()
