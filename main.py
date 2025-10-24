@@ -5,7 +5,7 @@ import asyncio
 import argparse
 import sys
 from datetime import datetime
-from trading_agent import TradingAgentFixed
+from trading_agent import EnhancedTradingAgent
 
 async def main():
     """
@@ -32,7 +32,7 @@ async def main():
     print("-" * 50)
     
     # Criar instância do agent
-    trading_agent = TradingAgentFixed()
+    trading_agent = EnhancedTradingAgent()
     
     try:
         if args.mode == 'single':

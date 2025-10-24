@@ -4,6 +4,7 @@ Configurações do sistema de trading
 import os
 from typing import Optional
 from pydantic_settings import BaseSettings
+from pydantic import Field, validator
 
 class Settings(BaseSettings):
     # Configurações da API Binance (pública - não precisa de chaves)
@@ -18,7 +19,7 @@ class Settings(BaseSettings):
     twitter_access_token_secret: Optional[str] = None
     
     # Configurações do DeepSeek
-    deepseek_api_key: str = "sk-05da405f34ff423ea4e7f5a2b5631adb"
+    deepseek_api_key: str = Field(default_factory=lambda: os.getenv("DEEPSEEK_API_KEY", ""))
     deepseek_base_url: str = "https://api.deepseek.com/v1"
     
     # Configurações do sistema
@@ -38,6 +39,12 @@ class Settings(BaseSettings):
         "DOTUSDT",   # Polkadot
         "LINKUSDT"   # Chainlink
     ]
+    
+    @validator("deepseek_api_key")
+    def validate_deepseek_api_key(cls, v):
+        if not v:
+            raise ValueError("DEEPSEEK_API_KEY não configurada. Configure no arquivo .env")
+        return v
     
     class Config:
         env_file = ".env"

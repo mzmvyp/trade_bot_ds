@@ -93,3 +93,21 @@ class BinanceClient:
         
         async with self.session.get(url, params=params) as response:
             return await response.json()
+    
+    async def get_historical_klines(self, symbol: str, interval: str, start_time: datetime, end_time: datetime) -> List:
+        """
+        Obtém dados históricos de klines
+        """
+        url = f"{self.base_url}/fapi/v1/klines"
+        params = {
+            'symbol': symbol,
+            'interval': interval,
+            'startTime': int(start_time.timestamp() * 1000),
+            'endTime': int(end_time.timestamp() * 1000),
+            'limit': 1000
+        }
+        
+        async with self.session.get(url, params=params) as response:
+            data = await response.json()
+            
+        return data

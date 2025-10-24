@@ -203,3 +203,83 @@ class SentimentAnalyzer:
         ]
         
         return trending_queries
+    
+    async def analyze_sentiment(self, symbol: str) -> Dict:
+        """
+        Analisa sentimento para um símbolo específico
+        """
+        try:
+            # Buscar tweets relacionados ao símbolo
+            query = f"{symbol} OR {symbol.replace('USDT', '')} crypto"
+            tweets = await self.search_tweets(query, max_results=50)
+            
+            if not tweets:
+                return self._generate_fallback_sentiment()
+            
+            # Analisar sentimento dos tweets
+            sentiment_scores = []
+            for tweet in tweets:
+                text = tweet.get('text', '')
+                score = self._analyze_text_sentiment(text)
+                sentiment_scores.append(score)
+            
+            # Calcular sentimento geral
+            if sentiment_scores:
+                avg_score = sum(sentiment_scores) / len(sentiment_scores)
+                
+                if avg_score > 0.1:
+                    overall_sentiment = 'positive'
+                elif avg_score < -0.1:
+                    overall_sentiment = 'negative'
+                else:
+                    overall_sentiment = 'neutral'
+            else:
+                overall_sentiment = 'neutral'
+                avg_score = 0.0
+            
+            return {
+                'overall_sentiment': overall_sentiment,
+                'score': avg_score,
+                'sources': {
+                    'twitter': {
+                        'tweets_analyzed': len(tweets),
+                        'avg_score': avg_score
+                    }
+                },
+                'timestamp': datetime.now().isoformat()
+            }
+            
+        except Exception as e:
+            print(f"Erro na análise de sentimento: {e}")
+            return self._generate_fallback_sentiment()
+    
+    def _analyze_text_sentiment(self, text: str) -> float:
+        """
+        Análise simples de sentimento baseada em palavras-chave
+        """
+        positive_words = ['bull', 'bullish', 'moon', 'pump', 'buy', 'long', 'up', 'rise', 'gain', 'profit']
+        negative_words = ['bear', 'bearish', 'dump', 'sell', 'short', 'down', 'fall', 'loss', 'crash', 'drop']
+        
+        text_lower = text.lower()
+        
+        positive_count = sum(1 for word in positive_words if word in text_lower)
+        negative_count = sum(1 for word in negative_words if word in text_lower)
+        
+        if positive_count + negative_count == 0:
+            return 0.0
+        
+        return (positive_count - negative_count) / (positive_count + negative_count)
+    
+    def _generate_fallback_sentiment(self) -> Dict:
+        """Gera sentimento de fallback quando não há dados"""
+        return {
+            'overall_sentiment': 'neutral',
+            'score': 0.0,
+            'sources': {
+                'twitter': {
+                    'tweets_analyzed': 0,
+                    'avg_score': 0.0
+                }
+            },
+            'timestamp': datetime.now().isoformat()
+        }

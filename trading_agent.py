@@ -1,194 +1,354 @@
 """
-Agent principal do sistema de trading - Versão Corrigida
+Agent de trading aprimorado com todas as melhorias
 """
 import asyncio
 import json
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, Any, Optional
+
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.tools.duckduckgo import DuckDuckGoTools
+from agno.agent import Memory
 
 from binance_client import BinanceClient
-from technical_analysis import TechnicalAnalyzer
+from technical_analysis import EnhancedTechnicalAnalyzer
 from sentiment_analysis import SentimentAnalyzer
-from deepseek_tool import deepseek_tool
+from deepseek_tool import EnhancedDeepSeekTool
+from risk_management import RiskManagementSystem, Portfolio
+from logger import log_signal, log_error, log_market_data, log_api_call
 from config import settings
 
-class TradingAgentFixed:
+class EnhancedTradingAgent:
+    """Agent de trading aprimorado com todas as melhorias"""
+    
     def __init__(self):
+        # Clientes e analisadores
         self.binance_client = BinanceClient()
-        self.technical_analyzer = TechnicalAnalyzer()
+        self.technical_analyzer = EnhancedTechnicalAnalyzer()
         self.sentiment_analyzer = SentimentAnalyzer()
+        self.deepseek_tool = EnhancedDeepSeekTool()
+        self.risk_manager = RiskManagementSystem()
         
-    async def get_market_data(self, symbol: str = "BTCUSDT") -> Dict:
-        """
-        Obtém dados do mercado da Binance
-        """
-        async with self.binance_client as client:
-            # Obter dados de diferentes timeframes
-            data_1h = await client.get_klines(symbol, "1h", 200)
-            data_4h = await client.get_klines(symbol, "4h", 200)
-            data_1d = await client.get_klines(symbol, "1d", 200)
+        # Portfolio inicial
+        self.portfolio = Portfolio(
+            balance=10000.0,  # Capital inicial
+            positions=[],
+            daily_pnl=0.0,
+            total_pnl=0.0,
+            last_reset=datetime.now()
+        )
+        
+        self.risk_manager.set_portfolio(self.portfolio)
+        
+        # Agent Agno
+        self.agent = Agent(
+            model=OpenAIChat(
+                id="gpt-4",
+                api_key="dummy-key"  # Não será usado para análise direta
+            ),
+            tools=[DuckDuckGoTools()],
+            instructions="""
+            Você é um especialista em trading de criptomoedas.
+            Sua função é coletar dados do mercado e usar as ferramentas disponíveis
+            para analisar os dados e gerar sinais de trading.
             
-            # Obter dados adicionais
-            ticker_24h = await client.get_ticker_24hr(symbol)
-            orderbook = await client.get_orderbook(symbol)
-            funding_rate = await client.get_funding_rate(symbol)
-            open_interest = await client.get_open_interest(symbol)
+            Processo:
+            1. Colete dados do mercado (preço, volume, etc.)
+            2. Colete sinais técnicos avançados
+            3. Colete dados de sentimento
+            4. Use análise de risco
+            5. Retorne o sinal de trading
+            """,
+            markdown=True,
+        )
+        
+        self.memory = Memory()
+    
+    async def run_single_analysis(self, symbol: str = None) -> Dict[str, Any]:
+        """
+        Executa análise única para um símbolo
+        
+        Args:
+            symbol: Símbolo para análise (padrão: BTCUSDT)
             
-            return {
-                'data_1h': data_1h,
-                'data_4h': data_4h,
-                'data_1d': data_1d,
-                'ticker_24h': ticker_24h,
-                'orderbook': orderbook,
-                'funding_rate': funding_rate,
-                'open_interest': open_interest
-            }
-    
-    async def analyze_technical_signals(self, market_data: Dict) -> Dict:
+        Returns:
+            Dicionário com sinal de trading
         """
-        Analisa sinais técnicos
-        """
-        signals = {}
+        if not symbol:
+            symbol = settings.trading_symbol
         
-        for timeframe, data in [('1h', market_data['data_1h']), 
-                               ('4h', market_data['data_4h']), 
-                               ('1d', market_data['data_1d'])]:
-            if not data.empty:
-                data_with_indicators = self.technical_analyzer.calculate_indicators(data)
-                signal = self.technical_analyzer.generate_trading_signal(data_with_indicators)
-                signals[timeframe] = signal
-        
-        return signals
-    
-    async def analyze_sentiment(self) -> Dict:
-        """
-        Analisa sentimento do mercado
-        """
-        async with self.sentiment_analyzer as analyzer:
-            sentiment_data = await analyzer.analyze_bitcoin_sentiment()
-            return sentiment_data
-    
-    async def generate_trading_signal(self, symbol: str = "BTCUSDT") -> Dict:
-        """
-        Gera sinal de trading completo usando DeepSeek
-        """
-        print(f"🔍 Analisando mercado para {symbol}...")
-        
-        # Obter dados do mercado
-        market_data = await self.get_market_data(symbol)
-        
-        # Analisar sinais técnicos
-        technical_signals = await self.analyze_technical_signals(market_data)
-        
-        # Analisar sentimento
-        sentiment_data = await self.analyze_sentiment()
-        
-        # Preparar dados para o DeepSeek
-        analysis_data = {
-            'market_data': {
-                'current_price': market_data['ticker_24h']['lastPrice'],
-                'price_change_24h': market_data['ticker_24h']['priceChangePercent'],
-                'volume_24h': market_data['ticker_24h']['volume'],
-                'funding_rate': market_data['funding_rate']['lastFundingRate'],
-                'open_interest': market_data['open_interest']['openInterest']
-            },
-            'technical_signals': technical_signals,
-            'sentiment_data': sentiment_data,
-            'timestamp': datetime.now().isoformat()
-        }
-        
-        # Usar DeepSeek para análise
         try:
-            print("🧠 Usando DeepSeek para análise...")
-            deepseek_response = await deepseek_tool.analyze_trading_data(
-                analysis_data['market_data'],
-                technical_signals,
-                sentiment_data
+            print(f"🔍 Analisando mercado para {symbol}...")
+            
+            # 1. Coletar dados de mercado
+            market_data = await self._collect_market_data(symbol)
+            log_market_data(symbol, market_data)
+            
+            # 2. Análise técnica avançada
+            technical_signals = await self._analyze_technical(symbol, market_data)
+            
+            # 3. Análise de sentimento
+            sentiment_data = await self._analyze_sentiment(symbol)
+            
+            # 4. Análise com DeepSeek
+            deepseek_analysis = await self._analyze_with_deepseek(
+                market_data, technical_signals, sentiment_data
             )
             
-            if deepseek_response:
-                # Tentar extrair JSON da resposta do DeepSeek
-                import re
-                json_match = re.search(r'\{.*\}', deepseek_response, re.DOTALL)
-                if json_match:
-                    signal_data = json.loads(json_match.group())
-                    signal_data['raw_data'] = analysis_data
-                    signal_data['timestamp'] = datetime.now().isoformat()
-                    return signal_data
-                else:
-                    print("⚠️  Resposta do DeepSeek não contém JSON válido")
-            else:
-                print("⚠️  DeepSeek não retornou resposta")
+            # 5. Validação de risco
+            risk_validation = self._validate_risk(deepseek_analysis, symbol)
+            
+            # 6. Gerar sinal final
+            final_signal = self._generate_final_signal(
+                deepseek_analysis, risk_validation, market_data
+            )
+            
+            # 7. Log do sinal
+            log_signal(final_signal)
+            
+            return final_signal
+            
         except Exception as e:
-            print(f"⚠️  Erro no DeepSeek: {e}")
-        
-        # Fallback para análise básica
-        print("🔄 Usando análise básica como fallback...")
-        signal_data = self._generate_basic_analysis(analysis_data)
-        signal_data['raw_data'] = analysis_data
-        signal_data['timestamp'] = datetime.now().isoformat()
-        
-        return signal_data
+            log_error(e, {"symbol": symbol, "action": "single_analysis"})
+            
+            # Fallback para análise básica
+            return self._generate_fallback_signal(symbol, market_data)
     
-    def _generate_basic_analysis(self, analysis_data: Dict) -> Dict:
-        """
-        Gera análise básica como fallback
-        """
-        current_price = float(analysis_data['market_data']['current_price'])
-        price_change = float(analysis_data['market_data']['price_change_24h'])
+    async def _collect_market_data(self, symbol: str) -> Dict[str, Any]:
+        """Coleta dados de mercado"""
+        try:
+            async with self.binance_client:
+                # Dados básicos
+                ticker = await self.binance_client.get_ticker_24hr(symbol)
+                
+                # Dados de candlestick
+                klines = await self.binance_client.get_klines(symbol, "1h", limit=100)
+                
+                # Dados de funding
+                funding_rate = await self.binance_client.get_funding_rate(symbol)
+                
+                # Dados de open interest
+                open_interest = await self.binance_client.get_open_interest(symbol)
+                
+                return {
+                    'symbol': symbol,
+                    'current_price': float(ticker['lastPrice']),
+                    'price_change_24h': float(ticker['priceChangePercent']),
+                    'volume_24h': float(ticker['volume']),
+                    'funding_rate': float(funding_rate.get('fundingRate', 0)),
+                    'open_interest': float(open_interest.get('openInterest', 0)),
+                    'klines': klines,
+                    'timestamp': datetime.now().isoformat()
+                }
+                
+        except Exception as e:
+            log_error(e, {"symbol": symbol, "action": "collect_market_data"})
+            return {
+                'symbol': symbol,
+                'current_price': 0,
+                'price_change_24h': 0,
+                'volume_24h': 0,
+                'funding_rate': 0,
+                'open_interest': 0,
+                'klines': [],
+                'timestamp': datetime.now().isoformat()
+            }
+    
+    async def _analyze_technical(self, symbol: str, market_data: Dict) -> Dict[str, Any]:
+        """Análise técnica avançada"""
+        try:
+            klines = market_data.get('klines', [])
+            if not klines:
+                return self._generate_basic_technical_signals()
+            
+            # Converter para DataFrame
+            import pandas as pd
+            df = pd.DataFrame(klines)
+            df.columns = ['timestamp', 'open', 'high', 'low', 'close', 'volume', 'close_time',
+                         'quote_volume', 'trades', 'taker_buy_base', 'taker_buy_quote', 'ignore']
+            
+            # Converter tipos
+            for col in ['open', 'high', 'low', 'close', 'volume']:
+                df[col] = pd.to_numeric(df[col])
+            
+            # Verificar se temos dados suficientes
+            if len(df) < 50:
+                return self._generate_basic_technical_signals()
+            
+            # Calcular indicadores avançados
+            df = self.technical_analyzer.calculate_advanced_indicators(df)
+            
+            # Gerar sinais
+            signals = self.technical_analyzer.generate_technical_signals(df)
+            
+            return signals
+            
+        except Exception as e:
+            log_error(e, {"symbol": symbol, "action": "technical_analysis"})
+            return self._generate_basic_technical_signals()
+    
+    async def _analyze_sentiment(self, symbol: str) -> Dict[str, Any]:
+        """Análise de sentimento"""
+        try:
+            # Usar analisador de sentimento existente
+            sentiment_data = await self.sentiment_analyzer.analyze_sentiment(symbol)
+            return sentiment_data
+            
+        except Exception as e:
+            log_error(e, {"symbol": symbol, "action": "sentiment_analysis"})
+            return {
+                'overall_sentiment': 'neutral',
+                'score': 0.5,
+                'sources': {},
+                'timestamp': datetime.now().isoformat()
+            }
+    
+    async def _analyze_with_deepseek(self, market_data: Dict, technical_signals: Dict, sentiment_data: Dict) -> Dict[str, Any]:
+        """Análise com DeepSeek aprimorada"""
+        try:
+            print("🧠 Usando DeepSeek para análise...")
+            
+            # Preparar dados para DeepSeek
+            analysis_data = {
+                'market_data': market_data,
+                'technical_signals': technical_signals,
+                'sentiment_data': sentiment_data
+            }
+            
+            # Chamar DeepSeek aprimorado
+            result = await self.deepseek_tool.analyze_with_structured_output(analysis_data)
+            
+            print("✅ DeepSeek retornou análise")
+            return result
+            
+        except Exception as e:
+            log_error(e, {"action": "deepseek_analysis"})
+            print("⚠️  DeepSeek não retornou resposta")
+            return None
+    
+    def _validate_risk(self, signal: Dict[str, Any], symbol: str) -> Dict[str, Any]:
+        """Validação de risco"""
+        if not signal:
+            return {'can_execute': False, 'reason': 'Nenhum sinal disponível'}
         
-        # Análise simples baseada na variação de preço
+        try:
+            # Validar com sistema de risco
+            risk_validation = self.risk_manager.validate_trade_risk(signal, symbol)
+            return risk_validation
+            
+        except Exception as e:
+            log_error(e, {"action": "risk_validation"})
+            return {'can_execute': False, 'reason': 'Erro na validação de risco'}
+    
+    def _generate_final_signal(self, deepseek_analysis: Dict, risk_validation: Dict, market_data: Dict) -> Dict[str, Any]:
+        """Gera sinal final"""
+        
+        if not deepseek_analysis:
+            return self._generate_fallback_signal(market_data.get('symbol', 'BTCUSDT'), market_data)
+        
+        # Aplicar validações de risco
+        if not risk_validation.get('can_execute', False):
+            # Ajustar sinal baseado em validação de risco
+            if risk_validation.get('confidence_ok') == False:
+                deepseek_analysis['confidence'] = max(1, deepseek_analysis.get('confidence', 5) - 2)
+            
+            if risk_validation.get('warnings'):
+                deepseek_analysis['warnings'] = deepseek_analysis.get('warnings', []) + risk_validation['warnings']
+        
+        # Calcular position size
+        if deepseek_analysis.get('signal') in ['BUY', 'SELL']:
+            position_size = self.risk_manager.calculate_position_size(
+                entry_price=deepseek_analysis.get('entry_price', market_data.get('current_price', 0)),
+                stop_loss=deepseek_analysis.get('stop_loss', 0),
+                confidence=deepseek_analysis.get('confidence', 5)
+            )
+            deepseek_analysis['position_size'] = position_size
+        
+        # Adicionar metadados
+        deepseek_analysis['timestamp'] = datetime.now().isoformat()
+        deepseek_analysis['risk_validation'] = risk_validation
+        deepseek_analysis['market_data'] = market_data
+        
+        return deepseek_analysis
+    
+    def _generate_fallback_signal(self, symbol: str, market_data: Dict) -> Dict[str, Any]:
+        """Gera sinal de fallback quando DeepSeek falha"""
+        
+        current_price = market_data.get('current_price', 0)
+        price_change = market_data.get('price_change_24h', 0)
+        
+        # Análise básica baseada na variação de preço
         if price_change > 2:
-            signal_type = "BUY"
-            confidence = 7
+            signal_type = 'BUY'
+            confidence = 6
         elif price_change < -2:
-            signal_type = "SELL"
-            confidence = 7
+            signal_type = 'SELL'
+            confidence = 6
         else:
-            signal_type = "HOLD"
+            signal_type = 'HOLD'
             confidence = 5
         
-        # Calcular níveis básicos
-        atr = 1000  # ATR estimado
-        if signal_type == "BUY":
-            stop_loss = current_price - (atr * 2)
-            target1 = current_price + (atr * 2)
-            target2 = current_price + (atr * 4)
-        elif signal_type == "SELL":
-            stop_loss = current_price + (atr * 2)
-            target1 = current_price - (atr * 2)
-            target2 = current_price - (atr * 4)
-        else:
-            stop_loss = None
-            target1 = None
-            target2 = None
-        
         return {
-            "signal_type": signal_type,
-            "entry_price": current_price,
-            "stop_loss": stop_loss,
-            "target1": target1,
-            "target2": target2,
-            "confidence": confidence,
-            "justification": f"Análise básica baseada na variação de preço de 24h ({price_change}%). Recomendo análise mais detalhada para confirmação."
+            'signal': signal_type,
+            'confidence': confidence,
+            'entry_price': current_price,
+            'stop_loss': None,
+            'take_profit_1': None,
+            'take_profit_2': None,
+            'risk_reward_ratio': 0,
+            'reasoning': {
+                'technical': f"Análise básica baseada na variação de preço de 24h ({price_change:.2f}%)",
+                'sentiment': 'Dados de sentimento não disponíveis',
+                'market_structure': 'Análise limitada - usando fallback'
+            },
+            'warnings': ['Análise limitada - DeepSeek indisponível'],
+            'timeframe': 'curto prazo',
+            'timestamp': datetime.now().isoformat(),
+            'fallback': True
         }
     
-    async def run_single_analysis(self, symbol: str = "BTCUSDT"):
-        """
-        Executa uma única análise
-        """
-        signal = await self.generate_trading_signal(symbol)
-        
-        print(f"\n{'='*50}")
-        print(f"📈 ANÁLISE DE TRADING - {symbol}")
-        print(f"{'='*50}")
-        print(f"Tipo: {signal['signal_type']}")
-        print(f"Entrada: {signal['entry_price']}")
-        print(f"Stop Loss: {signal['stop_loss']}")
-        print(f"Alvo 1: {signal['target1']}")
-        print(f"Alvo 2: {signal['target2']}")
-        print(f"Confiança: {signal['confidence']}/10")
-        print(f"Justificativa: {signal['justification']}")
-        print(f"{'='*50}\n")
-        
-        return signal
+    def _generate_basic_technical_signals(self) -> Dict[str, Any]:
+        """Gera sinais técnicos básicos quando não há dados suficientes"""
+        return {
+            'trend': 'neutral',
+            'momentum': 'neutral',
+            'volatility': 'normal',
+            'volume': 'normal',
+            'structure': 'neutral',
+            'combined_signal': {
+                'signal': 'HOLD',
+                'confidence': 3,
+                'total_score': 0
+            }
+        }
+    
+    async def run_backtest(self, symbol: str, start_date: str, end_date: str) -> Dict[str, Any]:
+        """Executa backtest para um símbolo"""
+        try:
+            from backtesting_engine import BacktestingEngine
+            
+            engine = BacktestingEngine(initial_capital=self.portfolio.balance)
+            result = await engine.backtest_strategy(symbol, start_date, end_date)
+            
+            # Imprimir resumo
+            engine.print_backtest_summary(result)
+            
+            return {
+                'success': True,
+                'result': result,
+                'summary': {
+                    'total_trades': result.total_trades,
+                    'win_rate': result.win_rate,
+                    'total_return': result.total_return,
+                    'max_drawdown': result.max_drawdown,
+                    'sharpe_ratio': result.sharpe_ratio
+                }
+            }
+            
+        except Exception as e:
+            log_error(e, {"symbol": symbol, "action": "backtest"})
+            return {
+                'success': False,
+                'error': str(e)
+            }

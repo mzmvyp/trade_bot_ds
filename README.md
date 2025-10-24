@@ -78,17 +78,22 @@ O sistema analisa automaticamente as 10 principais criptomoedas por market cap:
 ```
 📁 agent_trade/
 ├── main.py                 # Sistema principal
-├── trading_agent.py       # Agent de trading
-├── binance_client.py      # Cliente da API Binance
-├── technical_analysis.py  # Análise técnica
-├── sentiment_analysis.py   # Análise de sentimento
-├── deepseek_tool.py       # Ferramenta DeepSeek
-├── agno_deepseek_tool.py  # Integração Agno + DeepSeek
-├── config.py              # Configurações
-├── requirements.txt       # Dependências
-└── signals/               # Pasta com sinais gerados
-    ├── signal_*.json      # Sinais individuais
-    └── top10_summary_*.json # Resumos top 10
+├── trading_agent.py        # Agent de trading aprimorado
+├── binance_client.py       # Cliente da API Binance
+├── technical_analysis.py     # Análise técnica avançada
+├── sentiment_analysis.py    # Análise de sentimento
+├── deepseek_tool.py         # Ferramenta DeepSeek aprimorada
+├── risk_management.py       # Sistema de gestão de risco
+├── backtesting_engine.py    # Motor de backtesting
+├── logger.py               # Sistema de logging
+├── config.py               # Configurações
+├── requirements.txt        # Dependências
+├── install.py             # Instalador
+├── signals/               # Pasta com sinais gerados
+│   ├── signal_*.json     # Sinais individuais
+│   └── top10_summary_*.json # Resumos top 10
+├── logs/                  # Pasta com logs do sistema
+└── README.md              # Documentação
 ```
 
 ## 🔧 Componentes
