@@ -25,7 +25,7 @@ def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
     """
     try:
         base_url = "https://fapi.binance.com"
-        timeout = 2  # Timeout muito reduzido para velocidade
+        timeout = 10  # Timeout aumentado para estabilidade
         
         # Ticker 24h
         ticker_response = requests.get(f"{base_url}/fapi/v1/ticker/24hr", params={'symbol': symbol}, timeout=timeout)
@@ -904,17 +904,17 @@ def execute_paper_trade(
     position_size: float
 ) -> Dict[str, Any]:
     """
-    Executa um paper trade usando o sistema completo de paper trading.
+    Executa um paper trade REAL usando o sistema completo de simulação.
     """
     try:
-        from paper_trading import paper_trading
+        from real_paper_trading import real_paper_trading
         
-        # Executar trade usando o sistema completo
-        result = paper_trading.execute_trade(signal, position_size)
+        # Executar trade usando o sistema REAL
+        result = real_paper_trading.execute_trade(signal, position_size)
         
         if result["success"]:
             # Obter resumo do portfólio
-            portfolio_summary = paper_trading.get_portfolio_summary()
+            portfolio_summary = real_paper_trading.get_portfolio_summary()
             
             return {
                 "success": True,
