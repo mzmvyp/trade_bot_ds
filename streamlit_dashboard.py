@@ -141,13 +141,14 @@ if portfolio_data:
         
         # Calcular estatísticas
         closed_trades = [t for t in trade_history if t.get("status") == "CLOSED"]
+        open_trades = [t for t in trade_history if t.get("status") == "OPEN"]
         winning_trades = len([t for t in closed_trades if t.get("pnl", 0) > 0])
         losing_trades = len([t for t in closed_trades if t.get("pnl", 0) < 0])
         win_rate = (winning_trades / len(closed_trades) * 100) if closed_trades else 0
         total_pnl = sum([t.get("pnl", 0) for t in closed_trades])
         
         # Métricas de performance
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3, col4, col5 = st.columns(5)
         
         with col1:
             st.metric("🎯 Win Rate", f"{win_rate:.1f}%")
@@ -160,6 +161,79 @@ if portfolio_data:
         
         with col4:
             st.metric("💰 P&L Total", f"${total_pnl:,.2f}")
+        
+        with col5:
+            st.metric("📊 Trades Abertos", len(open_trades))
+        
+        # Mostrar detalhes dos trades fechados
+        if closed_trades:
+            st.subheader("📋 Últimos Trades Fechados")
+            
+            closed_list = []
+            for trade in closed_trades[-10:]:  # Últimos 10 trades
+                entry_price = trade.get('entry_price', 0)
+                stop_loss = trade.get('stop_loss', 0)
+                take_profit_1 = trade.get('take_profit_1', 0)
+                take_profit_2 = trade.get('take_profit_2', 0)
+                position_size = trade.get('position_size', 0)
+                position_value = trade.get('position_value', 0)
+                
+                # Calcular diferenças percentuais
+                sl_diff = ((stop_loss - entry_price) / entry_price * 100) if entry_price > 0 else 0
+                tp1_diff = ((take_profit_1 - entry_price) / entry_price * 100) if entry_price > 0 else 0
+                tp2_diff = ((take_profit_2 - entry_price) / entry_price * 100) if entry_price > 0 else 0
+                
+                closed_list.append({
+                    "Data": trade.get("timestamp", "N/A")[:16],
+                    "Símbolo": trade.get("symbol", "N/A"),
+                    "Tipo": trade.get("signal", "N/A"),
+                    "Entrada": f"${entry_price:,.2f}",
+                    "Tamanho": f"{position_size:.6f}",
+                    "Valor": f"${position_value:,.2f}",
+                    "Stop Loss": f"${stop_loss:,.2f} ({sl_diff:+.1f}%)",
+                    "Take Profit 1": f"${take_profit_1:,.2f} ({tp1_diff:+.1f}%)",
+                    "Take Profit 2": f"${take_profit_2:,.2f} ({tp2_diff:+.1f}%)",
+                    "Saída": f"${trade.get('close_price', 0):,.2f}" if trade.get('close_price') else "N/A",
+                    "P&L": f"${trade.get('pnl', 0):,.2f}",
+                    "Motivo": trade.get('close_reason', 'N/A')
+                })
+            
+            df_closed = pd.DataFrame(closed_list)
+            st.dataframe(df_closed, use_container_width=True, hide_index=True)
+        
+        # Mostrar posições abertas no overview também
+        if open_trades:
+            st.subheader("🔄 Posições Abertas Atualmente")
+            
+            open_list = []
+            for trade in open_trades:
+                entry_price = trade.get('entry_price', 0)
+                stop_loss = trade.get('stop_loss', 0)
+                take_profit_1 = trade.get('take_profit_1', 0)
+                take_profit_2 = trade.get('take_profit_2', 0)
+                position_size = trade.get('position_size', 0)
+                position_value = trade.get('position_value', 0)
+                
+                # Calcular diferenças percentuais
+                sl_diff = ((stop_loss - entry_price) / entry_price * 100) if entry_price > 0 else 0
+                tp1_diff = ((take_profit_1 - entry_price) / entry_price * 100) if entry_price > 0 else 0
+                tp2_diff = ((take_profit_2 - entry_price) / entry_price * 100) if entry_price > 0 else 0
+                
+                open_list.append({
+                    "Data": trade.get("timestamp", "N/A")[:16],
+                    "Símbolo": trade.get("symbol", "N/A"),
+                    "Tipo": trade.get("signal", "N/A"),
+                    "Entrada": f"${entry_price:,.2f}",
+                    "Tamanho": f"{position_size:.6f}",
+                    "Valor": f"${position_value:,.2f}",
+                    "Stop Loss": f"${stop_loss:,.2f} ({sl_diff:+.1f}%)",
+                    "Take Profit 1": f"${take_profit_1:,.2f} ({tp1_diff:+.1f}%)",
+                    "Take Profit 2": f"${take_profit_2:,.2f} ({tp2_diff:+.1f}%)",
+                    "Confiança": f"{trade.get('confidence', 0)}/10"
+                })
+            
+            df_open = pd.DataFrame(open_list)
+            st.dataframe(df_open, use_container_width=True, hide_index=True)
         
         # Gráfico de performance
         if len(trade_history) > 0:
