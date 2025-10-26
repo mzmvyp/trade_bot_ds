@@ -10,6 +10,7 @@ import plotly.express as px
 from datetime import datetime
 import os
 from pathlib import Path
+import requests
 
 # Configurar página
 st.set_page_config(
@@ -47,6 +48,24 @@ def load_trade_history():
         st.error(f"Erro ao carregar histórico: {e}")
     return []
 
+# Função para obter preços atuais dos principais pares
+@st.cache_data(ttl=10)
+def get_market_prices():
+    """Obtém preços atuais dos principais pares de criptomoedas"""
+    symbols = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "MATICUSDT"]
+    prices = {}
+    
+    try:
+        for symbol in symbols:
+            response = requests.get(f"https://fapi.binance.com/fapi/v1/ticker/price", params={'symbol': symbol}, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                prices[symbol] = float(data['price'])
+    except Exception as e:
+        st.warning(f"Erro ao obter preços: {e}")
+    
+    return prices
+
 # Carregar dados
 portfolio_data = load_portfolio_data()
 trade_history = load_trade_history()
@@ -56,9 +75,7 @@ with st.sidebar:
     st.header("⚙️ Controles")
     
     # Auto-refresh
-    auto_refresh = st.checkbox("🔄 Auto-refresh (5s)", value=True)
-    if auto_refresh:
-        st.rerun()
+    auto_refresh = st.checkbox("🔄 Auto-refresh (5s)", value=False)
     
     # Botão de refresh manual
     if st.button("🔄 Atualizar Agora"):
@@ -83,8 +100,8 @@ if portfolio_data:
     # KPIs principais
     col1, col2, col3, col4 = st.columns(4)
     
-    initial_balance = portfolio_data.get("initial_balance", 10000)
-    current_balance = portfolio_data.get("current_balance", 10000)
+    initial_balance = portfolio_data.get("initial_balance", 10000.0)
+    current_balance = portfolio_data.get("current_balance", 10000.0)
     total_return = ((current_balance - initial_balance) / initial_balance * 100) if initial_balance > 0 else 0
     
     with col1:
@@ -117,7 +134,7 @@ if portfolio_data:
     st.markdown("---")
     
     # Tabs
-    tab1, tab2, tab3, tab4 = st.tabs(["📈 Overview", "💰 Posições Abertas", "📜 Histórico", "📉 Análise"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📈 Overview", "💰 Posições Abertas", "📜 Histórico", "📉 Análise", "💹 Preços de Mercado"])
     
     with tab1:
         st.header("📈 Visão Geral do Portfólio")
@@ -178,7 +195,7 @@ if portfolio_data:
             
             st.plotly_chart(fig, use_container_width=True)
     
-    with tab2:
+         with tab2:
         st.header("💰 Posições Abertas")
         
         positions = portfolio_data.get("positions", {})
@@ -187,15 +204,26 @@ if portfolio_data:
             # Preparar dados para tabela
             positions_list = []
             for symbol, position in positions.items():
+                entry_price = position.get('entry_price', 0)
+                position_size = position.get('position_size', 0)
+                stop_loss = position.get('stop_loss', 0)
+                take_profit_1 = position.get('take_profit_1', 0)
+                take_profit_2 = position.get('take_profit_2', 0)
+                
+                # Calcular diferenças percentuais
+                sl_diff = ((stop_loss - entry_price) / entry_price * 100) if entry_price > 0 else 0
+                tp1_diff = ((take_profit_1 - entry_price) / entry_price * 100) if entry_price > 0 else 0
+                tp2_diff = ((take_profit_2 - entry_price) / entry_price * 100) if entry_price > 0 else 0
+                
                 positions_list.append({
                     "Símbolo": symbol.replace("_SHORT", ""),
                     "Tipo": position.get("signal", "N/A"),
-                    "Entrada": f"${position.get('entry_price', 0):,.2f}",
-                    "Tamanho": f"{position.get('position_size', 0):.4f}",
-                    "Valor": f"${position.get('position_value', 0):,.2f}",
-                    "Stop Loss": f"${position.get('stop_loss', 0):,.2f}",
-                    "Take Profit 1": f"${position.get('take_profit_1', 0):,.2f}",
-                    "Take Profit 2": f"${position.get('take_profit_2', 0):,.2f}",
+                    "Preço Entrada": f"${entry_price:,.2f}",
+                    "Tamanho": f"{position_size:.6f}",
+                    "Valor Total": f"${position.get('position_value', 0):,.2f}",
+                    "Stop Loss": f"${stop_loss:,.2f} ({sl_diff:+.2f}%)",
+                    "Take Profit 1": f"${take_profit_1:,.2f} ({tp1_diff:+.2f}%)",
+                    "Take Profit 2": f"${take_profit_2:,.2f} ({tp2_diff:+.2f}%)",
                     "Confiança": f"{position.get('confidence', 0)}/10"
                 })
             
@@ -276,6 +304,45 @@ if portfolio_data:
             st.json(stats)
         else:
             st.info("ℹ️ Não há trades fechados para análise.")
+
+    with tab5:
+        st.header("💹 Preços de Mercado em Tempo Real")
+        
+        # Obter preços atuais
+        market_prices = get_market_prices()
+        
+        if market_prices:
+            # Criar DataFrame com preços
+            prices_data = []
+            for symbol, price in market_prices.items():
+                prices_data.append({
+                    "Par": symbol,
+                    "Preço Atual": f"${price:,.2f}" if price >= 1 else f"${price:.6f}",
+                    "Preço Numérico": price
+                })
+            
+            df_prices = pd.DataFrame(prices_data)
+            df_prices = df_prices.sort_values("Preço Numérico", ascending=False)
+            
+            # Mostrar tabela
+            st.dataframe(
+                df_prices[["Par", "Preço Atual"]], 
+                use_container_width=True, 
+                hide_index=True
+            )
+            
+            # Gráfico de barras
+            fig_prices = px.bar(
+                df_prices,
+                x="Par",
+                y="Preço Numérico",
+                title="Preços Atuais dos Principais Pares",
+                labels={"Preço Numérico": "Preço (USDT)", "Par": "Par de Negociação"}
+            )
+            fig_prices.update_layout(height=500)
+            st.plotly_chart(fig_prices, use_container_width=True)
+        else:
+            st.warning("⚠️ Não foi possível carregar preços de mercado.")
 
 else:
     st.warning("⚠️ Nenhum dado de portfólio encontrado. Execute alguns trades primeiro!")

@@ -1,6 +1,28 @@
 {
-  "current_balance": 10000.0,
+  "initial_balance": 10000.0,
+  "current_balance": 10192.0,
   "positions": {},
-  "trade_history": [],
-  "last_update": "2025-10-24T14:33:41.316114"
+  "trade_history": [
+    {
+      "trade_id": "20251024_181056",
+      "symbol": "BTCUSDT",
+      "signal": "BUY",
+      "entry_price": 110000.0,
+      "position_size": 0.02909090909090909,
+      "position_value": 3200.0,
+      "stop_loss": 104500.0,
+      "take_profit_1": 115500.0,
+      "take_profit_2": 121000.00000000001,
+      "confidence": 8,
+      "timestamp": "2025-10-24T18:10:56.977027",
+      "status": "CLOSED",
+      "max_profit_reached": 0.0,
+      "max_loss_reached": 0.0,
+      "close_price": 116600.0,
+      "pnl": 192.0,
+      "close_timestamp": "2025-10-24T18:10:56.978649",
+      "close_reason": "TAKE_PROFIT_SIMULATED"
+    }
+  ],
+  "last_update": "2025-10-24T18:10:56.978656"
 }
