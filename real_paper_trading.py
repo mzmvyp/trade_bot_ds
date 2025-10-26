@@ -219,28 +219,41 @@ class RealPaperTradingSystem:
                         position["max_loss_reached"] = pnl_amount
                     
                     # Verificar stop loss
-                    if position.get("stop_loss") and signal_type == "BUY" and current_price <= position["stop_loss"]:
-                        await self._close_position_auto(symbol, current_price, "STOP_LOSS")
-                        continue
-                    elif position.get("stop_loss") and signal_type == "SELL" and current_price >= position["stop_loss"]:
-                        await self._close_position_auto(symbol, current_price, "STOP_LOSS")
-                        continue
+                    if position.get("stop_loss"):
+                        sl = position["stop_loss"]
+                        if signal_type == "BUY" and current_price <= sl:
+                            print(f"🛑 Stop Loss atingido para {symbol}: ${current_price:.2f} (SL: ${sl:.2f})")
+                            await self._close_position_auto(symbol, current_price, "STOP_LOSS")
+                            continue
+                        elif signal_type == "SELL" and current_price >= sl:
+                            print(f"🛑 Stop Loss atingido para {symbol}: ${current_price:.2f} (SL: ${sl:.2f})")
+                            await self._close_position_auto(symbol, current_price, "STOP_LOSS")
+                            continue
                     
                     # Verificar take profit 1
-                    if position.get("take_profit_1") and signal_type == "BUY" and current_price >= position["take_profit_1"]:
-                        await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_1")
-                        continue
-                    elif position.get("take_profit_1") and signal_type == "SELL" and current_price <= position["take_profit_1"]:
-                        await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_1")
-                        continue
+                    if position.get("take_profit_1"):
+                        tp1 = position["take_profit_1"]
+                        if signal_type == "BUY" and current_price >= tp1:
+                            # Verificar se o preço REAL atingiu o take profit
+                            print(f"✅ Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
+                            await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_1")
+                            continue
+                        elif signal_type == "SELL" and current_price <= tp1:
+                            print(f"✅ Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
+                            await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_1")
+                            continue
                     
                     # Verificar take profit 2
-                    if position.get("take_profit_2") and signal_type == "BUY" and current_price >= position["take_profit_2"]:
-                        await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_2")
-                        continue
-                    elif position.get("take_profit_2") and signal_type == "SELL" and current_price <= position["take_profit_2"]:
-                        await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_2")
-                        continue
+                    if position.get("take_profit_2"):
+                        tp2 = position["take_profit_2"]
+                        if signal_type == "BUY" and current_price >= tp2:
+                            print(f"✅ Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f})")
+                            await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_2")
+                            continue
+                        elif signal_type == "SELL" and current_price <= tp2:
+                            print(f"✅ Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f})")
+                            await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_2")
+                            continue
                     
                     # Log de monitoramento
                     self._log_monitoring(symbol, current_price, pnl_percent, pnl_amount)
