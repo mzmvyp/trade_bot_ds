@@ -195,7 +195,7 @@ if portfolio_data:
             
             st.plotly_chart(fig, use_container_width=True)
     
-         with tab2:
+    with tab2:
         st.header("💰 Posições Abertas")
         
         positions = portfolio_data.get("positions", {})
