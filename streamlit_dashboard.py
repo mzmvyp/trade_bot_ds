@@ -74,6 +74,18 @@ trade_history = load_trade_history()
 with st.sidebar:
     st.header("⚙️ Controles")
     
+    # Botão para iniciar análise contínua
+    st.subheader("🚀 Sistema de Trading")
+    if st.button("▶️ Iniciar Análise Contínua", type="primary", use_container_width=True):
+        st.info("📡 Iniciando análise contínua...")
+        st.code("python main.py --symbol BTCUSDT --mode monitor --paper", language="bash")
+        st.warning("⚠️ Execute este comando no terminal para iniciar a análise contínua")
+    
+    if st.button("⏹️ Parar Análise", use_container_width=True):
+        st.info("⏹️ Comando para parar será executado")
+    
+    st.markdown("---")
+    
     # Auto-refresh
     auto_refresh = st.checkbox("🔄 Auto-refresh (5s)", value=False)
     
