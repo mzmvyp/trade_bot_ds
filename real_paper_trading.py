@@ -7,11 +7,17 @@ import json
 import os
 import asyncio
 import aiohttp
+import tempfile
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 from pathlib import Path
 import pandas as pd
 import numpy as np
+
+from logger import get_logger
+
+# Setup logger
+logger = get_logger(__name__)
 
 class RealPaperTradingSystem:
     def __init__(self, initial_balance: float = 10000.0):
@@ -43,11 +49,16 @@ class RealPaperTradingSystem:
                     self.current_balance = state.get("current_balance", self.initial_balance)
                     self.positions = state.get("positions", {})
                     self.trade_history = state.get("trade_history", [])
+                    logger.info(f"Estado carregado: {len(self.positions)} posições abertas, saldo ${self.current_balance:.2f}")
+        except (json.JSONDecodeError, KeyError) as e:
+            logger.error(f"Erro ao decodificar state.json: {e}")
+        except IOError as e:
+            logger.error(f"Erro ao ler arquivo de estado: {e}")
         except Exception as e:
-            print(f"⚠️ Erro ao carregar estado: {e}")
+            logger.exception(f"Erro inesperado ao carregar estado: {e}")
     
     def _save_state(self):
-        """Salva estado atual do sistema"""
+        """Salva estado atual do sistema usando escrita atômica"""
         try:
             state = {
                 "current_balance": self.current_balance,
@@ -55,23 +66,59 @@ class RealPaperTradingSystem:
                 "trade_history": self.trade_history,
                 "last_update": datetime.now().isoformat()
             }
-            with open("portfolio/state.json", "w") as f:
-                json.dump(state, f, indent=2)
+
+            # Atomic write to prevent corruption
+            state_file = Path("portfolio/state.json")
+            fd, temp_path = tempfile.mkstemp(
+                dir=state_file.parent,
+                prefix='.state_',
+                suffix='.json.tmp'
+            )
+
+            try:
+                with os.fdopen(fd, 'w') as f:
+                    json.dump(state, f, indent=2)
+
+                # Atomic rename
+                os.replace(temp_path, state_file)
+                logger.debug(f"Estado salvo atomicamente: {len(self.positions)} posições, saldo ${self.current_balance:.2f}")
+            except Exception:
+                # Cleanup temp file on error
+                if os.path.exists(temp_path):
+                    os.unlink(temp_path)
+                raise
+
+        except IOError as e:
+            logger.error(f"Erro de I/O ao salvar estado: {e}")
         except Exception as e:
-            print(f"⚠️ Erro ao salvar estado: {e}")
+            logger.exception(f"Erro inesperado ao salvar estado: {e}")
     
-    async def get_current_price(self, symbol: str) -> float:
+    async def get_current_price(self, symbol: str) -> Optional[float]:
         """Obtém preço atual do símbolo"""
         try:
             async with aiohttp.ClientSession() as session:
                 url = f"https://fapi.binance.com/fapi/v1/ticker/price"
                 params = {'symbol': symbol}
-                
-                async with session.get(url, params=params) as response:
+
+                async with session.get(url, params=params, timeout=aiohttp.ClientTimeout(total=10)) as response:
+                    if response.status != 200:
+                        logger.warning(f"API retornou status {response.status} para {symbol}")
+                        return None
+
                     data = await response.json()
                     return float(data['price'])
+
+        except aiohttp.ClientError as e:
+            logger.error(f"Erro de conexão ao obter preço de {symbol}: {e}")
+            return None
+        except asyncio.TimeoutError:
+            logger.error(f"Timeout ao obter preço de {symbol}")
+            return None
+        except (KeyError, ValueError) as e:
+            logger.error(f"Erro ao processar resposta para {symbol}: {e}")
+            return None
         except Exception as e:
-            print(f"❌ Erro ao obter preço de {symbol}: {e}")
+            logger.exception(f"Erro inesperado ao obter preço de {symbol}: {e}")
             return None
     
     def execute_trade(self, signal: Dict[str, Any], position_size: float = None) -> Dict[str, Any]:
@@ -176,11 +223,26 @@ class RealPaperTradingSystem:
             }
     
     def start_monitoring(self):
-        """Inicia monitoramento automático de posições"""
+        """Inicia monitoramento automático de posições (CORRIGIDO: race condition fix)"""
         if not self.is_monitoring:
             self.is_monitoring = True
-            self.monitor_task = asyncio.create_task(self._monitor_positions())
-            print("🔄 Monitoramento automático iniciado")
+
+            # FIX: Check for running event loop before creating task
+            try:
+                loop = asyncio.get_running_loop()
+                self.monitor_task = loop.create_task(self._monitor_positions())
+                logger.info("🔄 Monitoramento automático iniciado (async context)")
+            except RuntimeError:
+                # No event loop running - create one
+                logger.warning("Sem event loop ativo, criando nova thread de monitoramento")
+                import threading
+
+                def run_monitoring():
+                    asyncio.run(self._monitor_positions())
+
+                self.monitor_thread = threading.Thread(target=run_monitoring, daemon=True)
+                self.monitor_thread.start()
+                logger.info("🔄 Monitoramento automático iniciado (thread separada)")
     
     def stop_monitoring(self):
         """Para monitoramento automático"""
@@ -188,7 +250,7 @@ class RealPaperTradingSystem:
             self.is_monitoring = False
             if self.monitor_task:
                 self.monitor_task.cancel()
-            print("⏹️ Monitoramento automático parado")
+            logger.info("⏹️ Monitoramento automático parado")
     
     async def _monitor_positions(self):
         """Monitora posições abertas e executa stop loss/take profit"""
@@ -222,36 +284,36 @@ class RealPaperTradingSystem:
                     if position.get("stop_loss"):
                         sl = position["stop_loss"]
                         if signal_type == "BUY" and current_price <= sl:
-                            print(f"🛑 Stop Loss atingido para {symbol}: ${current_price:.2f} (SL: ${sl:.2f})")
+                            logger.warning(f"🛑 Stop Loss atingido para {symbol}: ${current_price:.2f} (SL: ${sl:.2f})")
                             await self._close_position_auto(symbol, current_price, "STOP_LOSS")
                             continue
                         elif signal_type == "SELL" and current_price >= sl:
-                            print(f"🛑 Stop Loss atingido para {symbol}: ${current_price:.2f} (SL: ${sl:.2f})")
+                            logger.warning(f"🛑 Stop Loss atingido para {symbol}: ${current_price:.2f} (SL: ${sl:.2f})")
                             await self._close_position_auto(symbol, current_price, "STOP_LOSS")
                             continue
-                    
+
                     # Verificar take profit 1
                     if position.get("take_profit_1"):
                         tp1 = position["take_profit_1"]
                         if signal_type == "BUY" and current_price >= tp1:
                             # Verificar se o preço REAL atingiu o take profit
-                            print(f"✅ Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
+                            logger.info(f"✅ Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
                             await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_1")
                             continue
                         elif signal_type == "SELL" and current_price <= tp1:
-                            print(f"✅ Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
+                            logger.info(f"✅ Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
                             await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_1")
                             continue
-                    
+
                     # Verificar take profit 2
                     if position.get("take_profit_2"):
                         tp2 = position["take_profit_2"]
                         if signal_type == "BUY" and current_price >= tp2:
-                            print(f"✅ Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f})")
+                            logger.info(f"✅ Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f})")
                             await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_2")
                             continue
                         elif signal_type == "SELL" and current_price <= tp2:
-                            print(f"✅ Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f})")
+                            logger.info(f"✅ Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f})")
                             await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_2")
                             continue
                     
@@ -260,9 +322,12 @@ class RealPaperTradingSystem:
                 
                 # Pausa entre verificações
                 await asyncio.sleep(5)  # Verifica a cada 5 segundos
-                
+
+            except asyncio.CancelledError:
+                logger.info("Monitoramento cancelado pelo usuário")
+                break
             except Exception as e:
-                print(f"❌ Erro no monitoramento: {e}")
+                logger.exception(f"❌ Erro no monitoramento: {e}")
                 await asyncio.sleep(10)
     
     async def _close_position_auto(self, symbol: str, current_price: float, reason: str):
@@ -295,16 +360,17 @@ class RealPaperTradingSystem:
             self._save_state()
             
             # Log de fechamento
-            print(f"🎯 {reason}: {symbol} fechado a ${current_price:.2f} | P&L: ${pnl:.2f}")
+            logger.info(f"🎯 {reason}: {symbol} fechado a ${current_price:.2f} | P&L: ${pnl:.2f}")
             self._log_trade_close(symbol, current_price, pnl, reason)
-            
+
+        except KeyError as e:
+            logger.error(f"Posição não encontrada: {symbol} - {e}")
         except Exception as e:
-            print(f"❌ Erro ao fechar posição {symbol}: {e}")
+            logger.exception(f"❌ Erro ao fechar posição {symbol}: {e}")
     
     def _log_monitoring(self, symbol: str, price: float, pnl_percent: float, pnl_amount: float):
         """Log de monitoramento"""
-        timestamp = datetime.now().strftime("%H:%M:%S")
-        print(f"[{timestamp}] 📊 {symbol}: ${price:.2f} | P&L: {pnl_percent:+.2f}% (${pnl_amount:+.2f})")
+        logger.debug(f"📊 {symbol}: ${price:.2f} | P&L: {pnl_percent:+.2f}% (${pnl_amount:+.2f})")
     
     def _log_trade_close(self, symbol: str, price: float, pnl: float, reason: str):
         """Log de fechamento de trade"""
@@ -330,8 +396,10 @@ class RealPaperTradingSystem:
             
             with open(log_file, "w") as f:
                 json.dump(logs, f, indent=2)
+        except (IOError, json.JSONDecodeError) as e:
+            logger.error(f"⚠️ Erro ao salvar log: {e}")
         except Exception as e:
-            print(f"⚠️ Erro ao salvar log: {e}")
+            logger.exception(f"Erro inesperado ao salvar log: {e}")
     
     def _save_trade(self, trade: Dict[str, Any]):
         """Salva trade individual"""
@@ -339,8 +407,11 @@ class RealPaperTradingSystem:
             filename = f"paper_trades/trade_{trade['trade_id']}.json"
             with open(filename, "w") as f:
                 json.dump(trade, f, indent=2)
+            logger.debug(f"Trade {trade['trade_id']} salvo em {filename}")
+        except (IOError, KeyError) as e:
+            logger.error(f"⚠️ Erro ao salvar trade: {e}")
         except Exception as e:
-            print(f"⚠️ Erro ao salvar trade: {e}")
+            logger.exception(f"Erro inesperado ao salvar trade: {e}")
     
     def get_portfolio_summary(self) -> Dict[str, Any]:
         """Retorna resumo do portfólio com dados REAIS"""
@@ -407,7 +478,7 @@ class RealPaperTradingSystem:
         self.positions = {}
         self.trade_history = []
         self._save_state()
-        print("🔄 Portfólio resetado para estado inicial")
+        logger.info("🔄 Portfólio resetado para estado inicial")
     
     def export_performance_report(self) -> str:
         """Exporta relatório de performance REAL"""
