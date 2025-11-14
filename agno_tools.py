@@ -1,5 +1,6 @@
 """
 Ferramentas AGNO com indicadores técnicos reais e análise de sentimento
+Updated with logging, constants, and improved error handling
 """
 import json
 import pandas as pd
@@ -10,47 +11,75 @@ import requests
 import talib
 import os
 
+from logger import get_logger
+from constants import *
+
+logger = get_logger(__name__)
+
 # Importações para análise real do Twitter (opcional)
 try:
     import tweepy
     from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
     TWITTER_AVAILABLE = True
+    logger.info("Twitter sentiment analysis available")
 except ImportError:
     TWITTER_AVAILABLE = False
-    print("⚠️ Tweepy e VADER não disponíveis. Análise de sentimento será baseada apenas em dados de mercado.")
+    logger.warning("Tweepy e VADER não disponíveis. Análise de sentimento será baseada apenas em dados de mercado.")
 
 def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
     """
-    Obtém dados de mercado da Binance para análise.
+    Obtém dados de mercado da Binance para análise (with improved logging & error handling).
     """
     try:
         base_url = "https://fapi.binance.com"
-        timeout = 10  # Timeout aumentado para estabilidade
-        
+        timeout = API_TIMEOUT
+
+        logger.debug(f"Fetching market data for {symbol}")
+
         # Ticker 24h
-        ticker_response = requests.get(f"{base_url}/fapi/v1/ticker/24hr", params={'symbol': symbol}, timeout=timeout)
+        ticker_response = requests.get(
+            f"{base_url}/fapi/v1/ticker/24hr",
+            params={'symbol': symbol},
+            timeout=timeout
+        )
+        ticker_response.raise_for_status()
         ticker = ticker_response.json()
-        
-        # Klines para indicadores técnicos (100 klines para indicadores confiáveis)
-        klines_response = requests.get(f"{base_url}/fapi/v1/klines", params={
-            'symbol': symbol,
-            'interval': '1h',
-            'limit': 100  # Aumentado para 100 para indicadores confiáveis (SMA50)
-        }, timeout=timeout)
+
+        # Klines para indicadores técnicos
+        klines_response = requests.get(
+            f"{base_url}/fapi/v1/klines",
+            params={
+                'symbol': symbol,
+                'interval': '1h',
+                'limit': DEFAULT_KLINES_LIMIT
+            },
+            timeout=timeout
+        )
+        klines_response.raise_for_status()
         klines = klines_response.json()
-        
+
         # Funding rate
-        funding_response = requests.get(f"{base_url}/fapi/v1/premiumIndex", params={'symbol': symbol}, timeout=timeout)
+        funding_response = requests.get(
+            f"{base_url}/fapi/v1/premiumIndex",
+            params={'symbol': symbol},
+            timeout=timeout
+        )
+        funding_response.raise_for_status()
         funding = funding_response.json()
-        
+
         # Open interest
-        oi_response = requests.get(f"{base_url}/fapi/v1/openInterest", params={'symbol': symbol}, timeout=timeout)
+        oi_response = requests.get(
+            f"{base_url}/fapi/v1/openInterest",
+            params={'symbol': symbol},
+            timeout=timeout
+        )
+        oi_response.raise_for_status()
         open_interest = oi_response.json()
-        
-        # Processar todos os klines para indicadores técnicos confiáveis
-        recent_klines = klines if len(klines) >= 20 else klines
-        
-        return {
+
+        # Processar klines
+        recent_klines = klines if len(klines) >= SMA_SHORT else klines
+
+        result = {
             "symbol": symbol,
             "current_price": float(ticker['lastPrice']),
             "price_change_24h": float(ticker['priceChangePercent']),
@@ -60,10 +89,36 @@ def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
             "funding_rate": float(funding.get('lastFundingRate', 0)),
             "open_interest": float(open_interest.get('openInterest', 0)),
             "klines_count": len(klines),
-            "recent_klines": recent_klines,  # Apenas 50 klines mais recentes
+            "recent_klines": recent_klines,
+            "timestamp": datetime.now().isoformat()
+        }
+
+        logger.info(f"Market data fetched for {symbol}: ${result['current_price']:.2f}")
+        return result
+
+    except requests.HTTPError as e:
+        logger.error(f"HTTP error fetching market data for {symbol}: {e}")
+        return {
+            "error": f"HTTP error: {str(e)}",
+            "symbol": symbol,
+            "timestamp": datetime.now().isoformat()
+        }
+    except requests.Timeout:
+        logger.error(f"Timeout fetching market data for {symbol}")
+        return {
+            "error": "Request timeout",
+            "symbol": symbol,
+            "timestamp": datetime.now().isoformat()
+        }
+    except (KeyError, ValueError) as e:
+        logger.error(f"Data parsing error for {symbol}: {e}")
+        return {
+            "error": f"Data parsing error: {str(e)}",
+            "symbol": symbol,
             "timestamp": datetime.now().isoformat()
         }
     except Exception as e:
+        logger.exception(f"Unexpected error fetching market data for {symbol}: {e}")
         return {
             "error": f"Erro ao obter dados de mercado: {str(e)}",
             "symbol": symbol,
@@ -817,27 +872,21 @@ def validate_risk_and_position(
             "risk_level": "high"
         }
 
-def backtest_strategy(symbol: str, start_date: str, end_date: str) -> Dict[str, Any]:
+async def backtest_strategy(symbol: str, start_date: str, end_date: str) -> Dict[str, Any]:
     """
-    Backtesting com dados históricos.
+    Backtesting com dados históricos (FIXED: now async to avoid nested event loops).
     """
     try:
         from datetime import datetime, timedelta
-        
+        from binance_client import BinanceClient
+
         # Converter strings para datetime
         start_dt = datetime.fromisoformat(start_date.replace('Z', '+00:00'))
         end_dt = datetime.fromisoformat(end_date.replace('Z', '+00:00'))
-        
-        # Obter dados históricos usando o binance_client
-        from binance_client import BinanceClient
-        import asyncio
-        
-        async def get_historical_data():
-            async with BinanceClient() as client:
-                return await client.get_historical_klines(symbol, '1h', start_dt, end_dt)
-        
-        # Executar async
-        historical_data = asyncio.run(get_historical_data())
+
+        # Obter dados históricos usando o binance_client (agora com await direto)
+        async with BinanceClient() as client:
+            historical_data = await client.get_historical_klines(symbol, '1h', start_dt, end_dt)
         
         if historical_data.empty:
             return {"error": "Nenhum dado histórico encontrado"}

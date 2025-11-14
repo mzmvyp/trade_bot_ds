@@ -1,5 +1,6 @@
 """
 Sistema de Trading com AGNO Agent
+Updated with logging and improved error handling
 """
 import asyncio
 import argparse
@@ -8,20 +9,26 @@ import json
 import os
 from pathlib import Path
 from trading_agent_agno import AgnoTradingAgent
+from logger import get_logger
+
+logger = get_logger(__name__)
 
 def get_active_positions():
     """Retorna símbolos com posições ativas"""
     active_symbols = []
-    
+
     try:
         if os.path.exists("portfolio/state.json"):
             with open("portfolio/state.json", "r") as f:
                 state = json.load(f)
                 positions = state.get("positions", {})
                 active_symbols = [pos["symbol"] for pos in positions.values() if pos.get("status") == "OPEN"]
+                logger.debug(f"Loaded {len(active_symbols)} active positions")
+    except (json.JSONDecodeError, IOError) as e:
+        logger.error(f"Erro ao carregar posições ativas: {e}")
     except Exception as e:
-        print(f"⚠️ Erro ao carregar posições ativas: {e}")
-    
+        logger.exception(f"Erro inesperado ao carregar posições ativas: {e}")
+
     return active_symbols
 
 async def main():
@@ -53,7 +60,7 @@ async def main():
     )
     
     args = parser.parse_args()
-    
+
     # Banner
     print("\n" + "="*60)
     print("🤖 SISTEMA DE TRADING COM AGNO AGENT")
@@ -62,7 +69,9 @@ async def main():
     print(f"🔄 Modo: {args.mode}")
     print(f"📝 Paper Trading: {'Sim' if args.paper else 'Não'}")
     print("="*60)
-    
+
+    logger.info(f"Starting trading system - Mode: {args.mode}, Symbol: {args.symbol}, Paper: {args.paper}")
+
     # Criar agent
     agent = AgnoTradingAgent(paper_trading=args.paper)
     
@@ -103,8 +112,9 @@ async def main():
                             try:
                                 await agent.analyze(symbol)
                             except Exception as e:
+                                logger.error(f"Erro ao analisar {symbol}: {e}")
                                 print(f"❌ Erro em {symbol}: {e}")
-                            
+
                             await asyncio.sleep(3)  # Pausa entre análises
                     
                     print(f"\n💤 Aguardando {args.interval}s...")
@@ -113,6 +123,7 @@ async def main():
                 except KeyboardInterrupt:
                     raise
                 except Exception as e:
+                    logger.exception(f"Erro no ciclo de monitoramento: {e}")
                     print(f"❌ Erro no ciclo de monitoramento: {e}")
                     await asyncio.sleep(30)
         
@@ -162,8 +173,10 @@ async def main():
                 await asyncio.sleep(5)  # Pausa entre análises
     
     except KeyboardInterrupt:
+        logger.info("Sistema interrompido pelo usuário")
         print("\n\n⏹️  Sistema interrompido pelo usuário")
     except Exception as e:
+        logger.exception(f"Erro fatal: {e}")
         print(f"\n❌ Erro fatal: {e}")
         sys.exit(1)
 
