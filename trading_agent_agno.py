@@ -9,6 +9,7 @@ from datetime import datetime
 import json
 from pathlib import Path
 import os
+import re
 from dotenv import load_dotenv
 
 # Carregar variáveis de ambiente
@@ -44,7 +45,7 @@ class AgnoTradingAgent:
         # Obter API key
         api_key = os.getenv("DEEPSEEK_API_KEY")
         if not api_key:
-            print("⚠️ DEEPSEEK_API_KEY não encontrada. Executando em modo de demonstração.")
+            print("[AVISO] DEEPSEEK_API_KEY nao encontrada. Executando em modo de demonstracao.")
             api_key = "demo_key"  # Chave demo para testes
         
         # Aplicar decorator @tool nas ferramentas
@@ -116,6 +117,7 @@ class AgnoTradingAgent:
     async def analyze(self, symbol: str = "BTCUSDT") -> Dict[str, Any]:
         """
         Executa análise completa usando o AGNO Agent.
+        CORRIGIDO: Verifica posição existente antes de analisar.
         
         Args:
             symbol: Símbolo para analisar
@@ -123,25 +125,63 @@ class AgnoTradingAgent:
         Returns:
             Sinal de trading estruturado
         """
-        print(f"\n🤖 AGNO Agent iniciando análise de {symbol}")
+        print(f"\n[AGNO] AGNO Agent iniciando analise de {symbol}")
         print("="*60)
+        
+        # CRÍTICO: Verificar se já existe posição aberta antes de analisar
+        try:
+            import json
+            import os
+            if os.path.exists("portfolio/state.json"):
+                with open("portfolio/state.json", "r", encoding='utf-8') as f:
+                    state = json.load(f)
+                    positions = state.get("positions", {})
+                    
+                    # Verificar se existe posição BUY ou SELL aberta
+                    if symbol in positions and positions[symbol].get("status") == "OPEN":
+                        existing_signal = positions[symbol].get("signal", "UNKNOWN")
+                        print(f"[AVISO] Ja existe uma posicao {existing_signal} aberta para {symbol}. Pulando analise.")
+                        return {
+                            "symbol": symbol,
+                            "signal": "NO_SIGNAL",
+                            "confidence": 0,
+                            "reason": f"Posicao {existing_signal} ja aberta",
+                            "timestamp": datetime.now().isoformat()
+                        }
+                    
+                    if f"{symbol}_SHORT" in positions and positions[f"{symbol}_SHORT"].get("status") == "OPEN":
+                        existing_signal = positions[f"{symbol}_SHORT"].get("signal", "UNKNOWN")
+                        print(f"[AVISO] Ja existe uma posicao {existing_signal} aberta para {symbol}. Pulando analise.")
+                        return {
+                            "symbol": symbol,
+                            "signal": "NO_SIGNAL",
+                            "confidence": 0,
+                            "reason": f"Posicao {existing_signal} ja aberta",
+                            "timestamp": datetime.now().isoformat()
+                        }
+        except Exception as e:
+            # Se houver erro, continuar com análise
+            logger.warning(f"Erro ao verificar posicoes existentes: {e}")
         
         # Prompt para o agent
         prompt = f"""
-        Execute uma análise completa para {symbol} seguindo o processo definido:
+        Execute uma analise completa para {symbol} seguindo o processo definido:
         
         1. Colete dados de mercado usando get_market_data("{symbol}")
-        2. Analise indicadores técnicos com analyze_technical_indicators("{symbol}")
+        2. Analise indicadores tecnicos com analyze_technical_indicators("{symbol}")
         3. Capture sentimento com analyze_market_sentiment("{symbol}")
-        4. Obtenha análise DeepSeek usando get_deepseek_analysis() com os dados coletados
-        5. Valide o risco com validate_risk_and_position()
+        4. Obtenha analise DeepSeek usando get_deepseek_analysis() com os dados coletados
+        5. Valide o risco com validate_risk_and_position() 
         6. Se apropriado, execute paper trade com execute_paper_trade()
         
-        Forneça:
-        - Análise detalhada de cada componente
-        - Sinal final com justificativa
-        - Níveis de entrada, stop loss e take profit
-        - Avisos e considerações de risco
+        IMPORTANTE: Forneca APENAS UM sinal: BUY ou SELL (nao ambos).
+        Se o mercado estiver neutro ou sem oportunidade clara, retorne NO_SIGNAL.
+        
+        Forneca:
+        - Analise detalhada de cada componente
+        - Sinal final com justificativa (BUY, SELL ou NO_SIGNAL)
+        - Niveis de entrada, stop loss e take profit (se BUY ou SELL)
+        - Avisos e consideracoes de risco
         
         Seja detalhado mas objetivo.
         """
@@ -152,7 +192,8 @@ class AgnoTradingAgent:
                 signal = self._demo_analysis(symbol)
             else:
                 # Executar agent - ELE VAI ORQUESTRAR TUDO!
-                response = self.agent.run(prompt)
+                # Usar arun() porque algumas ferramentas são assíncronas
+                response = await self.agent.arun(prompt)
                 
                 # Processar resposta
                 signal = self._process_agent_response(response, symbol)
@@ -166,7 +207,7 @@ class AgnoTradingAgent:
             return signal
             
         except Exception as e:
-            print(f"❌ Erro na análise: {e}")
+            print(f"[ERRO] Erro na analise: {e}")
             return self._create_error_signal(symbol, str(e))
     
     def _process_agent_response(self, response: Any, symbol: str) -> Dict[str, Any]:
@@ -182,17 +223,56 @@ class AgnoTradingAgent:
         # Tentar extrair sinal estruturado
         response_text = str(response)
         
-        # Identificar tipo de sinal - APENAS BUY/SELL
-        if "BUY" in response_text.upper():
-            signal["signal"] = "BUY"
-        elif "SELL" in response_text.upper():
-            signal["signal"] = "SELL"
-        else:
-            # Se não conseguiu identificar, não executar
-            signal["signal"] = "NO_SIGNAL"
+        # CORRIGIDO: Procurar pelo sinal FINAL (não o primeiro encontrado)
+        # Priorizar "SINAL FINAL:" ou "SINAL:" que aparecem no final da análise
+        signal["signal"] = "NO_SIGNAL"
         
-        # Extrair números usando regex
-        import re
+        # CRÍTICO: Procurar primeiro por "SINAL FINAL" que é o mais importante
+        # O DeepSeek sempre envia "SINAL FINAL: BUY" ou "SINAL FINAL: SELL"
+        final_signal_patterns = [
+            r"SINAL\s+FINAL[:\s]+\*?\*?(BUY|SELL)\*?\*?",  # Prioridade máxima: "SINAL FINAL: **SELL**"
+            r"SINAL\s+FINAL[:\s]+(BUY|SELL)",              # "SINAL FINAL: SELL"
+            r"###\s*\*\*SINAL\s+FINAL[:\s]+\*\*(BUY|SELL)", # "### **SINAL FINAL:** SELL"
+            r"##\s+SINAL\s+FINAL[:\s]+(BUY|SELL)",          # "## SINAL FINAL: SELL"
+            r"RESUMO[^:]*Sinal\s+(BUY|SELL)",               # "RESUMO: Sinal SELL"
+            r"Conclusão[^:]*:\s*(BUY|SELL)",                 # "Conclusão: SELL"
+            r"Recomendação[^:]*:\s*(BUY|SELL)"              # "Recomendação: SELL"
+        ]
+        
+        # Procurar do final para o início (sinal mais recente)
+        for pattern in final_signal_patterns:
+            matches = list(re.finditer(pattern, response_text, re.IGNORECASE | re.MULTILINE))
+            if matches:
+                # Pegar o ÚLTIMO match (mais recente)
+                last_match = matches[-1]
+                signal_type = last_match.group(1).upper()
+                if signal_type in ["BUY", "SELL"]:
+                    signal["signal"] = signal_type
+                    logger.info(f"[SINAL EXTRAIDO] Encontrado '{signal_type}' via padrão: {pattern[:50]}")
+                    break
+        
+        # Se não encontrou padrão específico, procurar por qualquer BUY/SELL
+        # mas APENAS se não encontrou "SINAL FINAL" antes
+        if signal["signal"] == "NO_SIGNAL":
+            # Procurar todas as ocorrências de BUY e SELL
+            buy_matches = list(re.finditer(r'\bBUY\b', response_text, re.IGNORECASE))
+            sell_matches = list(re.finditer(r'\bSELL\b', response_text, re.IGNORECASE))
+            
+            # Pegar a última ocorrência de cada
+            last_buy_pos = buy_matches[-1].start() if buy_matches else -1
+            last_sell_pos = sell_matches[-1].start() if sell_matches else -1
+            
+            # Escolher o que aparece mais próximo do final
+            if last_buy_pos > last_sell_pos and last_buy_pos >= 0:
+                signal["signal"] = "BUY"
+                logger.warning(f"[SINAL FALLBACK] Usando BUY (última ocorrência na posição {last_buy_pos})")
+            elif last_sell_pos > last_buy_pos and last_sell_pos >= 0:
+                signal["signal"] = "SELL"
+                logger.warning(f"[SINAL FALLBACK] Usando SELL (última ocorrência na posição {last_sell_pos})")
+            elif last_buy_pos >= 0:
+                signal["signal"] = "BUY"
+            elif last_sell_pos >= 0:
+                signal["signal"] = "SELL"
         
         # Para NO_SIGNAL, não deve ter entrada, stop ou targets
         if signal["signal"] == "NO_SIGNAL":
@@ -204,9 +284,10 @@ class AgnoTradingAgent:
         else:
             # Para BUY/SELL, OBRIGATÓRIO ter entrada, stop e targets
             entry_patterns = [
-                r"entrada[^0-9]*([0-9,]+\.?[0-9]*)",
-                r"entry[^0-9]*([0-9,]+\.?[0-9]*)",
-                r"preço[^0-9]*([0-9,]+\.?[0-9]*)"
+                r"entrada[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                r"entry[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                r"preço[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                r"preco[^0-9]*\$?([0-9,]+\.?[0-9]*)"
             ]
             
             signal["entry_price"] = None
@@ -222,91 +303,156 @@ class AgnoTradingAgent:
                     except ValueError:
                         continue
             
-            # OBRIGATÓRIO: Stop Loss
-            stop_patterns = [
-                r"stop[^0-9]*loss[^0-9]*([0-9,]+\.?[0-9]*)",
-                r"stop[^0-9]*([0-9,]+\.?[0-9]*)"
-            ]
+            # CORRIGIDO: Stop Loss - melhor extração com validação
+            if signal["signal"] == "BUY":
+                # Para BUY, stop loss deve ser ABAIXO da entrada
+                stop_patterns = [
+                    r"stop[^0-9]*loss[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"stop[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"sl[^0-9]*\$?([0-9,]+\.?[0-9]*)"
+                ]
+                
+                signal["stop_loss"] = None
+                for pattern in stop_patterns:
+                    stop_match = re.search(pattern, response_text, re.IGNORECASE)
+                    if stop_match:
+                        try:
+                            stop_price = float(stop_match.group(1).replace(",", ""))
+                            # Validar: stop loss deve ser menor que entrada para BUY
+                            if signal["entry_price"] and 1000 <= stop_price < signal["entry_price"]:
+                                signal["stop_loss"] = stop_price
+                                break
+                        except ValueError:
+                            continue
+                
+                # Se não encontrou, calcular baseado em 2% abaixo da entrada
+                if not signal["stop_loss"] and signal["entry_price"]:
+                    signal["stop_loss"] = signal["entry_price"] * 0.98
+                    
+            elif signal["signal"] == "SELL":
+                # Para SELL, stop loss deve ser ACIMA da entrada
+                stop_patterns = [
+                    r"stop[^0-9]*loss[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"stop[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"sl[^0-9]*\$?([0-9,]+\.?[0-9]*)"
+                ]
+                
+                signal["stop_loss"] = None
+                for pattern in stop_patterns:
+                    stop_match = re.search(pattern, response_text, re.IGNORECASE)
+                    if stop_match:
+                        try:
+                            stop_price = float(stop_match.group(1).replace(",", ""))
+                            # Validar: stop loss deve ser maior que entrada para SELL
+                            if signal["entry_price"] and stop_price > signal["entry_price"] and stop_price <= 1000000:
+                                signal["stop_loss"] = stop_price
+                                break
+                        except ValueError:
+                            continue
+                
+                # Se não encontrou, calcular baseado em 2% acima da entrada
+                if not signal["stop_loss"] and signal["entry_price"]:
+                    signal["stop_loss"] = signal["entry_price"] * 1.02
             
-            signal["stop_loss"] = None
-            for pattern in stop_patterns:
-                stop_match = re.search(pattern, response_text, re.IGNORECASE)
-                if stop_match:
-                    try:
-                        price = float(stop_match.group(1).replace(",", ""))
-                        if 1000 <= price <= 1000000:
-                            signal["stop_loss"] = price
-                            break
-                    except ValueError:
-                        continue
+            # CORRIGIDO: Take Profit 1 - melhor extração
+            if signal["signal"] == "BUY":
+                # Para BUY, TP deve ser ACIMA da entrada
+                tp1_patterns = [
+                    r"take[^0-9]*profit[^0-9]*1[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"tp1[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"alvo[^0-9]*1[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"target[^0-9]*1[^0-9]*\$?([0-9,]+\.?[0-9]*)"
+                ]
+                
+                signal["take_profit_1"] = None
+                for pattern in tp1_patterns:
+                    tp1_match = re.search(pattern, response_text, re.IGNORECASE)
+                    if tp1_match:
+                        try:
+                            price = float(tp1_match.group(1).replace(",", ""))
+                            if signal["entry_price"] and price > signal["entry_price"] and price <= 1000000:
+                                signal["take_profit_1"] = price
+                                break
+                        except ValueError:
+                            continue
+                
+                # Se não encontrou, calcular 2% acima
+                if not signal["take_profit_1"] and signal["entry_price"]:
+                    signal["take_profit_1"] = signal["entry_price"] * 1.02
+                    
+            elif signal["signal"] == "SELL":
+                # Para SELL, TP deve ser ABAIXO da entrada
+                tp1_patterns = [
+                    r"take[^0-9]*profit[^0-9]*1[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"tp1[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"alvo[^0-9]*1[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"target[^0-9]*1[^0-9]*\$?([0-9,]+\.?[0-9]*)"
+                ]
+                
+                signal["take_profit_1"] = None
+                for pattern in tp1_patterns:
+                    tp1_match = re.search(pattern, response_text, re.IGNORECASE)
+                    if tp1_match:
+                        try:
+                            price = float(tp1_match.group(1).replace(",", ""))
+                            if signal["entry_price"] and price < signal["entry_price"] and price >= 1000:
+                                signal["take_profit_1"] = price
+                                break
+                        except ValueError:
+                            continue
+                
+                # Se não encontrou, calcular 2% abaixo
+                if not signal["take_profit_1"] and signal["entry_price"]:
+                    signal["take_profit_1"] = signal["entry_price"] * 0.98
             
-            # OBRIGATÓRIO: Take Profit 1
-            tp1_patterns = [
-                r"take[^0-9]*profit[^0-9]*1[^0-9]*([0-9,]+\.?[0-9]*)",
-                r"alvo[^0-9]*1[^0-9]*([0-9,]+\.?[0-9]*)",
-                r"target[^0-9]*1[^0-9]*([0-9,]+\.?[0-9]*)"
-            ]
-            
-            signal["take_profit_1"] = None
-            for pattern in tp1_patterns:
-                tp1_match = re.search(pattern, response_text, re.IGNORECASE)
-                if tp1_match:
-                    try:
-                        price = float(tp1_match.group(1).replace(",", ""))
-                        if 1000 <= price <= 1000000:
-                            signal["take_profit_1"] = price
-                            break
-                    except ValueError:
-                        continue
-            
-            # OBRIGATÓRIO: Take Profit 2
-            tp2_patterns = [
-                r"take[^0-9]*profit[^0-9]*2[^0-9]*([0-9,]+\.?[0-9]*)",
-                r"alvo[^0-9]*2[^0-9]*([0-9,]+\.?[0-9]*)",
-                r"target[^0-9]*2[^0-9]*([0-9,]+\.?[0-9]*)"
-            ]
-            
-            signal["take_profit_2"] = None
-            for pattern in tp2_patterns:
-                tp2_match = re.search(pattern, response_text, re.IGNORECASE)
-                if tp2_match:
-                    try:
-                        price = float(tp2_match.group(1).replace(",", ""))
-                        if 1000 <= price <= 1000000:
-                            signal["take_profit_2"] = price
-                            break
-                    except ValueError:
-                        continue
-
-        # Para BUY: stop loss ABAIXO da entrada, take profit ACIMA
-        # Para SELL: stop loss ACIMA da entrada, take profit ABAIXO
-        if signal["signal"] == "BUY":
-            # Stop loss deve ser ABAIXO da entrada
-            stop_pattern = r"stop loss[^0-9]*([0-9,]+\.?[0-9]*)"
-            stop_match = re.search(stop_pattern, response_text, re.IGNORECASE)
-            if stop_match:
-                try:
-                    stop_price = float(stop_match.group(1).replace(",", ""))
-                    # Validar se stop loss é menor que entrada para BUY
-                    if signal["entry_price"] and stop_price < signal["entry_price"]:
-                        signal["stop_loss"] = stop_price
-                except ValueError:
-                    pass
-        elif signal["signal"] == "SELL":
-            # Stop loss deve ser ACIMA da entrada
-            stop_pattern = r"stop loss[^0-9]*([0-9,]+\.?[0-9]*)"
-            stop_match = re.search(stop_pattern, response_text, re.IGNORECASE)
-            if stop_match:
-                try:
-                    stop_price = float(stop_match.group(1).replace(",", ""))
-                    # Validar se stop loss é maior que entrada para SELL
-                    if signal["entry_price"] and stop_price > signal["entry_price"]:
-                        signal["stop_loss"] = stop_price
-                except ValueError:
-                    pass
-        else:
-            # Para HOLD, não definir stop loss (não executa)
-            signal["stop_loss"] = None
+            # CORRIGIDO: Take Profit 2 - melhor extração
+            if signal["signal"] == "BUY":
+                tp2_patterns = [
+                    r"take[^0-9]*profit[^0-9]*2[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"tp2[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"alvo[^0-9]*2[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"target[^0-9]*2[^0-9]*\$?([0-9,]+\.?[0-9]*)"
+                ]
+                
+                signal["take_profit_2"] = None
+                for pattern in tp2_patterns:
+                    tp2_match = re.search(pattern, response_text, re.IGNORECASE)
+                    if tp2_match:
+                        try:
+                            price = float(tp2_match.group(1).replace(",", ""))
+                            if signal["entry_price"] and price > signal["take_profit_1"] and price <= 1000000:
+                                signal["take_profit_2"] = price
+                                break
+                        except ValueError:
+                            continue
+                
+                # Se não encontrou, calcular 5% acima
+                if not signal["take_profit_2"] and signal["entry_price"]:
+                    signal["take_profit_2"] = signal["entry_price"] * 1.05
+                    
+            elif signal["signal"] == "SELL":
+                tp2_patterns = [
+                    r"take[^0-9]*profit[^0-9]*2[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"tp2[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"alvo[^0-9]*2[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                    r"target[^0-9]*2[^0-9]*\$?([0-9,]+\.?[0-9]*)"
+                ]
+                
+                signal["take_profit_2"] = None
+                for pattern in tp2_patterns:
+                    tp2_match = re.search(pattern, response_text, re.IGNORECASE)
+                    if tp2_match:
+                        try:
+                            price = float(tp2_match.group(1).replace(",", ""))
+                            if signal["entry_price"] and price < signal["take_profit_1"] and price >= 1000:
+                                signal["take_profit_2"] = price
+                                break
+                        except ValueError:
+                            continue
+                
+                # Se não encontrou, calcular 5% abaixo
+                if not signal["take_profit_2"] and signal["entry_price"]:
+                    signal["take_profit_2"] = signal["entry_price"] * 0.95
         
         # Validação adicional: se não conseguiu extrair preço realista, usar preço atual
         if signal["entry_price"] is None or signal["entry_price"] < 1000:
@@ -346,24 +492,24 @@ class AgnoTradingAgent:
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(signal, f, indent=2, ensure_ascii=False, default=str)
         
-        print(f"💾 Sinal salvo: {filename}")
+        print(f"[SALVO] Sinal salvo: {filename}")
     
     def _print_summary(self, signal: Dict[str, Any]):
         """Imprime resumo do sinal"""
         print("\n" + "="*60)
-        print("📊 RESULTADO DA ANÁLISE")
+        print("RESULTADO DA ANALISE")
         print("="*60)
-        print(f"🎯 Sinal: {signal.get('signal', 'N/A')}")
-        print(f"💪 Confiança: {signal.get('confidence', 0)}/10")
+        print(f"Sinal: {signal.get('signal', 'N/A')}")
+        print(f"Confianca: {signal.get('confidence', 0)}/10")
         if signal.get('entry_price'):
-            print(f"💰 Entrada: ${signal['entry_price']:,.2f}")
+            print(f"Entrada: ${signal['entry_price']:,.2f}")
         if signal.get('stop_loss'):
-            print(f"🛑 Stop Loss: ${signal['stop_loss']:,.2f}")
+            print(f"Stop Loss: ${signal['stop_loss']:,.2f}")
         print("="*60)
     
     def _demo_analysis(self, symbol: str) -> Dict[str, Any]:
         """Análise demo local sem DeepSeek"""
-        print(f"🔍 Executando análise demo local para {symbol}...")
+        print(f"[DEMO] Executando analise demo local para {symbol}...")
         
         try:
             # Coletar dados
@@ -371,7 +517,7 @@ class AgnoTradingAgent:
             technical_indicators = analyze_technical_indicators(symbol)
             sentiment = analyze_market_sentiment(symbol)
             
-            print(f"📊 Dados coletados:")
+            print(f"[DADOS] Dados coletados:")
             print(f"   Preço: ${market_data.get('current_price', 0):,.2f}")
             print(f"   Variação 24h: {market_data.get('price_change_24h', 0):.2f}%")
             print(f"   RSI: {technical_indicators.get('indicators', {}).get('rsi', 50):.2f}")
@@ -424,7 +570,7 @@ class AgnoTradingAgent:
                 }
             }
             
-            print(f"🎯 Sinal gerado: {signal_type} com confiança {confidence}/10")
+            print(f"[SINAL] Sinal gerado: {signal_type} com confianca {confidence}/10")
             return signal
             
         except Exception as e:
@@ -448,17 +594,17 @@ class AgnoTradingAgent:
             symbols: Lista de símbolos
             interval: Intervalo em segundos
         """
-        print(f"🔄 Monitoramento contínuo de {symbols}")
-        print(f"⏰ Intervalo: {interval}s")
+        print(f"[MONITOR] Monitoramento continuo de {symbols}")
+        print(f"Intervalo: {interval}s")
         
         while True:
             for symbol in symbols:
                 try:
                     await self.analyze(symbol)
                 except Exception as e:
-                    print(f"❌ Erro em {symbol}: {e}")
+                    print(f"[ERRO] Erro em {symbol}: {e}")
                 
                 await asyncio.sleep(10)  # Pausa entre símbolos
             
-            print(f"💤 Aguardando {interval}s...")
+            print(f"[AGUARDANDO] Aguardando {interval}s...")
             await asyncio.sleep(interval)

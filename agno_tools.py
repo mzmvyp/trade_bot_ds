@@ -16,15 +16,7 @@ from constants import *
 
 logger = get_logger(__name__)
 
-# Importações para análise real do Twitter (opcional)
-try:
-    import tweepy
-    from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-    TWITTER_AVAILABLE = True
-    logger.info("Twitter sentiment analysis available")
-except ImportError:
-    TWITTER_AVAILABLE = False
-    logger.warning("Tweepy e VADER não disponíveis. Análise de sentimento será baseada apenas em dados de mercado.")
+# Análise de sentimento baseada apenas em dados de mercado (Twitter removido)
 
 def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
     """
@@ -76,8 +68,9 @@ def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
         oi_response.raise_for_status()
         open_interest = oi_response.json()
 
-        # Processar klines
-        recent_klines = klines if len(klines) >= SMA_SHORT else klines
+        # CORRIGIDO: Não incluir recent_klines no retorno para evitar erros de decodificação
+        # Os klines são muito grandes e causam problemas ao enviar para DeepSeek
+        # Manter apenas a contagem
 
         result = {
             "symbol": symbol,
@@ -89,7 +82,7 @@ def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
             "funding_rate": float(funding.get('lastFundingRate', 0)),
             "open_interest": float(open_interest.get('openInterest', 0)),
             "klines_count": len(klines),
-            "recent_klines": recent_klines,
+            # REMOVIDO: "recent_klines" - muito grande e causa erros de decodificação
             "timestamp": datetime.now().isoformat()
         }
 
@@ -326,21 +319,34 @@ def analyze_order_flow(symbol: str) -> Dict[str, Any]:
 def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any]:
     """
     Analisa indicadores técnicos REAIS usando TA-Lib.
+    MELHORADO: Inclui EMA, OBV, Volume Profile e Fibonacci conforme sugestões Claude/DeepSeek.
     """
     try:
-        market_data = get_market_data(symbol)
-        if "error" in market_data:
-            return market_data
+        # CORRIGIDO: Obter klines diretamente da API (não do market_data que não tem mais recent_klines)
+        base_url = "https://fapi.binance.com"
+        klines_response = requests.get(
+            f"{base_url}/fapi/v1/klines",
+            params={
+                'symbol': symbol,
+                'interval': '1h',
+                'limit': 200  # Aumentado para ter dados suficientes para EMA 200
+            },
+            timeout=10
+        )
         
-        klines = market_data.get('recent_klines', [])
-        if len(klines) < 20:
+        if klines_response.status_code != 200:
             return {
-                "error": "Dados insuficientes para análise técnica",
+                "error": f"Erro ao obter klines: {klines_response.status_code}",
                 "symbol": symbol
             }
         
-        # Usar todos os klines disponíveis para indicadores técnicos confiáveis
-        # klines já contém todos os dados necessários
+        klines = klines_response.json()
+        
+        if len(klines) < 50:  # Mínimo para indicadores confiáveis
+            return {
+                "error": "Dados insuficientes para análise técnica (mínimo 50 candles)",
+                "symbol": symbol
+            }
         
         # Converter klines para DataFrame
         df = pd.DataFrame(klines, columns=[
@@ -359,6 +365,8 @@ def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any]:
         low_prices = df['low'].values
         volume = df['volume'].values
         
+        current_price = close_prices[-1]
+        
         # RSI (14 períodos)
         rsi = talib.RSI(close_prices, timeperiod=14)[-1]
         
@@ -366,6 +374,8 @@ def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any]:
         macd, macd_signal, macd_hist = talib.MACD(close_prices)
         macd_value = macd[-1]
         macd_signal_value = macd_signal[-1]
+        macd_histogram = macd_hist[-1]
+        macd_crossover = "bullish" if macd_histogram > 0 and macd_value > macd_signal_value else "bearish" if macd_histogram < 0 else "neutral"
         
         # ADX (14 períodos)
         adx = talib.ADX(high_prices, low_prices, close_prices, timeperiod=14)[-1]
@@ -375,32 +385,83 @@ def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any]:
         
         # Bollinger Bands
         bb_upper, bb_middle, bb_lower = talib.BBANDS(close_prices, timeperiod=20)
-        bb_position = (close_prices[-1] - bb_lower[-1]) / (bb_upper[-1] - bb_lower[-1])
+        bb_position = (close_prices[-1] - bb_lower[-1]) / (bb_upper[-1] - bb_lower[-1]) if (bb_upper[-1] - bb_lower[-1]) > 0 else 0.5
         
-        # SMA 20 e 50
+        # SMA 20, 50 e 200
         sma_20 = talib.SMA(close_prices, timeperiod=20)[-1]
         sma_50 = talib.SMA(close_prices, timeperiod=50)[-1]
+        sma_200 = talib.SMA(close_prices, timeperiod=200) if len(close_prices) >= 200 else None
+        sma_200_value = float(sma_200[-1]) if sma_200 is not None and not np.isnan(sma_200[-1]) else None
         
-        # Determinar tendência
-        current_price = close_prices[-1]
-        if current_price > sma_20 > sma_50:
-            trend = "bullish"
-        elif current_price < sma_20 < sma_50:
-            trend = "bearish"
+        # EMA 20, 50 e 200 (conforme sugestão Claude/DeepSeek)
+        ema_20 = talib.EMA(close_prices, timeperiod=20)[-1]
+        ema_50 = talib.EMA(close_prices, timeperiod=50)[-1]
+        ema_200 = talib.EMA(close_prices, timeperiod=200) if len(close_prices) >= 200 else None
+        ema_200_value = float(ema_200[-1]) if ema_200 is not None and not np.isnan(ema_200[-1]) else None
+        
+        # OBV (On-Balance Volume) - conforme sugestão
+        obv = talib.OBV(close_prices, volume)
+        obv_value = float(obv[-1]) if not np.isnan(obv[-1]) else 0
+        obv_trend = "bullish" if len(obv) >= 5 and obv[-1] > obv[-5] else "bearish"
+        
+        # Volume Profile - identificar POC (Point of Control)
+        price_ranges = np.linspace(df['low'].min(), df['high'].max(), 20)
+        volume_profile = {}
+        for i in range(len(price_ranges) - 1):
+            mask = (df['close'] >= price_ranges[i]) & (df['close'] < price_ranges[i+1])
+            volume_profile[float(price_ranges[i])] = float(df[mask]['volume'].sum())
+        
+        poc_price = max(volume_profile, key=volume_profile.get) if volume_profile else current_price
+        
+        # Fibonacci Retracement (conforme sugestão)
+        period_high = df['high'].max()
+        period_low = df['low'].min()
+        fib_range = period_high - period_low
+        
+        fib_levels = {
+            "fib_0": float(period_high),
+            "fib_23.6": float(period_high - (fib_range * 0.236)),
+            "fib_38.2": float(period_high - (fib_range * 0.382)),
+            "fib_50": float(period_high - (fib_range * 0.50)),
+            "fib_61.8": float(period_high - (fib_range * 0.618)),
+            "fib_100": float(period_low)
+        }
+        
+        # Determinar tendência melhorada (usando EMA conforme sugestão)
+        if ema_200_value:
+            if current_price > ema_20 > ema_50 > ema_200_value:
+                trend = "strong_bullish"
+            elif current_price > ema_20 > ema_50:
+                trend = "bullish"
+            elif current_price < ema_20 < ema_50 < ema_200_value:
+                trend = "strong_bearish"
+            elif current_price < ema_20 < ema_50:
+                trend = "bearish"
+            else:
+                trend = "neutral"
         else:
-            trend = "neutral"
+            if current_price > ema_20 > ema_50:
+                trend = "bullish"
+            elif current_price < ema_20 < ema_50:
+                trend = "bearish"
+            else:
+                trend = "neutral"
         
-        # Determinar momentum
+        # Determinar momentum melhorado
         if rsi > 70:
             momentum = "overbought"
         elif rsi < 30:
             momentum = "oversold"
+        elif rsi > 50:
+            momentum = "bullish"
+        elif rsi < 50:
+            momentum = "bearish"
         else:
             momentum = "neutral"
         
-        # Suporte e resistência
-        support = bb_lower[-1]
-        resistance = bb_upper[-1]
+        # Suporte e resistência melhorados (usando Fibonacci e Volume Profile)
+        support = min([fib_levels["fib_61.8"], bb_lower[-1], poc_price])
+        resistance = max([fib_levels["fib_38.2"], bb_upper[-1], poc_price])
         
         # Análise de estrutura de mercado
         market_structure = _analyze_market_structure(df)
@@ -415,12 +476,28 @@ def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any]:
                 "rsi": float(rsi) if not np.isnan(rsi) else 50,
                 "macd": float(macd_value) if not np.isnan(macd_value) else 0,
                 "macd_signal": float(macd_signal_value) if not np.isnan(macd_signal_value) else 0,
+                "macd_histogram": float(macd_histogram) if not np.isnan(macd_histogram) else 0,
+                "macd_crossover": macd_crossover,
                 "adx": float(adx) if not np.isnan(adx) else 25,
                 "atr": float(atr) if not np.isnan(atr) else current_price * 0.01,
                 "bb_position": float(bb_position) if not np.isnan(bb_position) else 0.5,
+                "bb_upper": float(bb_upper[-1]) if not np.isnan(bb_upper[-1]) else current_price * 1.05,
+                "bb_middle": float(bb_middle[-1]) if not np.isnan(bb_middle[-1]) else current_price,
+                "bb_lower": float(bb_lower[-1]) if not np.isnan(bb_lower[-1]) else current_price * 0.95,
                 "sma_20": float(sma_20) if not np.isnan(sma_20) else current_price,
-                "sma_50": float(sma_50) if not np.isnan(sma_50) else current_price
+                "sma_50": float(sma_50) if not np.isnan(sma_50) else current_price,
+                "sma_200": sma_200_value,
+                "ema_20": float(ema_20) if not np.isnan(ema_20) else current_price,
+                "ema_50": float(ema_50) if not np.isnan(ema_50) else current_price,
+                "ema_200": ema_200_value,
+                "obv": obv_value,
+                "obv_trend": obv_trend
             },
+            "volume_profile": {
+                "poc_price": float(poc_price),
+                "high_volume_zones": sorted(volume_profile.items(), key=lambda x: x[1], reverse=True)[:3]
+            },
+            "fibonacci_levels": fib_levels,
             "support": float(support) if not np.isnan(support) else current_price * 0.95,
             "resistance": float(resistance) if not np.isnan(resistance) else current_price * 1.05,
             "timestamp": datetime.now().isoformat()
@@ -434,164 +511,12 @@ def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any]:
 
 def analyze_market_sentiment(symbol: str = "BTCUSDT") -> Dict[str, Any]:
     """
-    Análise de sentimento baseada em múltiplos fatores incluindo Twitter/X.
+    Análise de sentimento baseada em dados de mercado (preço, volume, funding rate).
     """
     try:
         market_data = get_market_data(symbol)
         if "error" in market_data:
             return market_data
-        
-        price_change = market_data['price_change_24h']
-        volume = market_data['volume_24h']
-        funding_rate = market_data['funding_rate']
-        
-        # Fatores de sentimento
-        sentiment_factors = []
-        
-        # 1. Variação de preço
-        if price_change > 5:
-            sentiment_factors.append(("price", "very_positive", 0.9))
-        elif price_change > 2:
-            sentiment_factors.append(("price", "positive", 0.7))
-        elif price_change < -5:
-            sentiment_factors.append(("price", "very_negative", 0.9))
-        elif price_change < -2:
-            sentiment_factors.append(("price", "negative", 0.7))
-        else:
-            sentiment_factors.append(("price", "neutral", 0.5))
-        
-        # 2. Volume (alta = interesse)
-        if volume > 1000000:  # Volume alto
-            sentiment_factors.append(("volume", "high_interest", 0.8))
-        elif volume < 100000:  # Volume baixo
-            sentiment_factors.append(("volume", "low_interest", 0.3))
-        else:
-            sentiment_factors.append(("volume", "normal_interest", 0.5))
-        
-        # 3. Funding rate (positivo = bullish)
-        if funding_rate > 0.01:
-            sentiment_factors.append(("funding", "bullish", 0.8))
-        elif funding_rate < -0.01:
-            sentiment_factors.append(("funding", "bearish", 0.8))
-        else:
-            sentiment_factors.append(("funding", "neutral", 0.5))
-        
-        # 4. Análise de sentimento baseada em dados reais de mercado
-        twitter_sentiment = analyze_twitter_sentiment(symbol)
-        sentiment_factors.append(("market_sentiment", twitter_sentiment[0], twitter_sentiment[1]))
-        
-        # Calcular sentimento médio
-        avg_confidence = np.mean([factor[2] for factor in sentiment_factors])
-        
-        # Determinar sentimento geral
-        positive_factors = sum(1 for factor in sentiment_factors if "positive" in factor[1] or "bullish" in factor[1])
-        negative_factors = sum(1 for factor in sentiment_factors if "negative" in factor[1] or "bearish" in factor[1])
-        
-        if positive_factors > negative_factors:
-            sentiment = "positive"
-        elif negative_factors > positive_factors:
-            sentiment = "negative"
-        else:
-            sentiment = "neutral"
-        
-        return {
-            "symbol": symbol,
-            "sentiment": sentiment,
-            "confidence": float(avg_confidence),
-            "factors": {
-                "price_change": price_change,
-                "volume_level": "high" if volume > 1000000 else "low" if volume < 100000 else "normal",
-                "funding_rate": funding_rate,
-                "twitter_sentiment": twitter_sentiment[0],
-                "twitter_confidence": twitter_sentiment[1]
-            },
-            "timestamp": datetime.now().isoformat()
-        }
-    except Exception as e:
-        return {
-            "error": f"Erro na análise de sentimento: {str(e)}",
-            "symbol": symbol,
-            "timestamp": datetime.now().isoformat()
-        }
-
-def analyze_twitter_sentiment(symbol: str) -> tuple:
-    """
-    Análise REAL de sentimento do Twitter/X usando Tweepy e VADER.
-    Se as bibliotecas não estiverem disponíveis, usa dados de mercado.
-    """
-    try:
-        # Verificar se realmente pode usar Twitter
-        if TWITTER_AVAILABLE and os.getenv("TWITTER_BEARER_TOKEN"):
-            print(f"🐦 Usando análise REAL do Twitter para {symbol}")
-            return _analyze_real_twitter_sentiment(symbol)
-        else:
-            if not TWITTER_AVAILABLE:
-                print(f"⚠️ Bibliotecas Twitter não disponíveis. Usando análise baseada em dados de mercado para {symbol}")
-            else:
-                print(f"⚠️ Token Twitter não configurado. Usando análise baseada em dados de mercado para {symbol}")
-            return _analyze_market_based_sentiment(symbol)
-            
-    except Exception as e:
-        print(f"⚠️ Erro na análise de sentimento para {symbol}: {e}")
-        return _analyze_market_based_sentiment(symbol)
-
-def _analyze_real_twitter_sentiment(symbol: str) -> tuple:
-    """
-    Análise REAL de sentimento do X/Twitter usando Tweepy e VADER.
-    """
-    try:
-        # Configurar Tweepy
-        bearer_token = os.getenv("TWITTER_BEARER_TOKEN")
-        if not bearer_token:
-            print("⚠️ TWITTER_BEARER_TOKEN não configurada. Usando análise baseada em dados de mercado.")
-            return _analyze_market_based_sentiment(symbol)
-        
-        client = tweepy.Client(bearer_token=bearer_token)
-        
-        # Buscar tweets recentes
-        query = f"#{symbol} OR ${symbol} -is:retweet lang:en"
-        tweets = client.search_recent_tweets(
-            query=query,
-            max_results=100,
-            tweet_fields=['created_at', 'public_metrics']
-        )
-        
-        if not tweets.data:
-            print(f"⚠️ Nenhum tweet encontrado para {symbol}. Usando análise baseada em dados de mercado.")
-            return _analyze_market_based_sentiment(symbol)
-        
-        # Análise de sentimento com VADER
-        analyzer = SentimentIntensityAnalyzer()
-        sentiments = []
-        
-        for tweet in tweets.data:
-            scores = analyzer.polarity_scores(tweet.text)
-            sentiments.append(scores['compound'])
-        
-        # Calcular média
-        avg_sentiment = np.mean(sentiments)
-        
-        # Classificar
-        if avg_sentiment >= 0.05:
-            return ("positive", min(0.9, 0.5 + abs(avg_sentiment)))
-        elif avg_sentiment <= -0.05:
-            return ("negative", min(0.9, 0.5 + abs(avg_sentiment)))
-        else:
-            return ("neutral", 0.5)
-            
-    except Exception as e:
-        print(f"⚠️ Erro no Twitter: {e}")
-        return _analyze_market_based_sentiment(symbol)
-
-def _analyze_market_based_sentiment(symbol: str) -> tuple:
-    """
-    Análise de sentimento baseada em dados reais de mercado (FALLBACK - não é Twitter real).
-    """
-    try:
-        # Obter dados reais de mercado
-        market_data = get_market_data(symbol)
-        if "error" in market_data:
-            return ("neutral", 0.5)
         
         price_change = market_data['price_change_24h']
         volume = market_data['volume_24h']
@@ -657,18 +582,40 @@ def _analyze_market_based_sentiment(symbol: str) -> tuple:
         
         # Determinar sentimento final baseado em dados reais
         if sentiment_score >= 3:
-            return ("very_positive", min(0.95, confidence))
+            sentiment = "very_positive"
+            final_confidence = min(0.95, confidence)
         elif sentiment_score >= 1:
-            return ("positive", min(0.9, confidence))
+            sentiment = "positive"
+            final_confidence = min(0.9, confidence)
         elif sentiment_score <= -3:
-            return ("very_negative", min(0.95, confidence))
+            sentiment = "very_negative"
+            final_confidence = min(0.95, confidence)
         elif sentiment_score <= -1:
-            return ("negative", min(0.9, confidence))
+            sentiment = "negative"
+            final_confidence = min(0.9, confidence)
         else:
-            return ("neutral", confidence)
-            
-    except Exception:
-        return ("neutral", 0.5)
+            sentiment = "neutral"
+            final_confidence = confidence
+        
+        return {
+            "symbol": symbol,
+            "sentiment": sentiment,
+            "confidence": float(final_confidence),
+            "factors": {
+                "price_change": price_change,
+                "volume_level": "high" if volume > 1000000 else "low" if volume < 100000 else "normal",
+                "funding_rate": funding_rate,
+                "open_interest": open_interest
+            },
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        return {
+            "error": f"Erro na análise de sentimento: {str(e)}",
+            "symbol": symbol,
+            "timestamp": datetime.now().isoformat()
+        }
+
 
 def get_deepseek_analysis(
     market_data: Dict[str, Any],
@@ -680,9 +627,16 @@ def get_deepseek_analysis(
     Esta função prepara os dados estruturados para o AGNO Agent processar com DeepSeek.
     """
     try:
+        # CORRIGIDO: Remover klines grandes para evitar erro de decodificação
+        market_data_clean = market_data.copy()
+        if "recent_klines" in market_data_clean:
+            # Manter apenas contagem, não os dados completos
+            market_data_clean["klines_count"] = market_data_clean.get("klines_count", 0)
+            del market_data_clean["recent_klines"]
+        
         # Preparar dados estruturados para análise
         analysis_data = {
-            "market_data": market_data,
+            "market_data": market_data_clean,
             "technical_indicators": technical_indicators,
             "sentiment": sentiment,
             "timestamp": datetime.now().isoformat()
@@ -702,13 +656,25 @@ def get_deepseek_analysis(
         
         INDICADORES TÉCNICOS:
         - RSI: {technical_indicators.get('indicators', {}).get('rsi', 50):.2f}
-        - MACD: {technical_indicators.get('indicators', {}).get('macd', 0):.2f}
+        - MACD: {technical_indicators.get('indicators', {}).get('macd', 0):.2f} (Signal: {technical_indicators.get('indicators', {}).get('macd_signal', 0):.2f})
+        - MACD Crossover: {technical_indicators.get('indicators', {}).get('macd_crossover', 'neutral')}
         - ADX: {technical_indicators.get('indicators', {}).get('adx', 25):.2f}
         - ATR: {technical_indicators.get('indicators', {}).get('atr', 0):.2f}
+        - EMA 20: ${technical_indicators.get('indicators', {}).get('ema_20', 0):.2f}
+        - EMA 50: ${technical_indicators.get('indicators', {}).get('ema_50', 0):.2f}
+        - EMA 200: ${technical_indicators.get('indicators', {}).get('ema_200', 0) or 'N/A'}
+        - OBV: {technical_indicators.get('indicators', {}).get('obv', 0):.0f} (Trend: {technical_indicators.get('indicators', {}).get('obv_trend', 'neutral')})
         - Tendência: {technical_indicators.get('trend', 'neutral')}
         - Momentum: {technical_indicators.get('momentum', 'neutral')}
         - Suporte: ${technical_indicators.get('support', 0):.2f}
         - Resistência: ${technical_indicators.get('resistance', 0):.2f}
+        
+        VOLUME PROFILE:
+        - POC (Point of Control): ${technical_indicators.get('volume_profile', {}).get('poc_price', 0):.2f}
+        - Zonas de Alto Volume: {technical_indicators.get('volume_profile', {}).get('high_volume_zones', [])}
+        
+        FIBONACCI LEVELS:
+        {technical_indicators.get('fibonacci_levels', {})}
         
         ESTRUTURA DE MERCADO:
         - Estrutura: {technical_indicators.get('market_structure', {}).get('structure', 'N/A')}
@@ -722,13 +688,22 @@ def get_deepseek_analysis(
         - Fatores: {sentiment.get('factors', {})}
         
         Forneça uma análise detalhada e um sinal de trading com:
-        1. Sinal: BUY ou SELL (seja decisivo)
+        1. SINAL FINAL: BUY ou SELL (seja decisivo e claro)
         2. Entrada: [preço específico]
         3. Stop Loss: [preço específico]
         4. Take Profit 1: [preço específico]
         5. Take Profit 2: [preço específico]
         6. Confiança: [1-10]
-        7. Justificativa técnica detalhada
+        7. Justificativa técnica detalhada considerando:
+           - RSI e momentum
+           - MACD crossover
+           - EMA 20/50/200 e tendência
+           - Volume Profile e POC
+           - Fibonacci levels
+           - OBV e fluxo de volume
+           - Estrutura de mercado (suporte/resistência)
+        
+        IMPORTANTE: Sempre termine sua resposta com "SINAL FINAL: [BUY/SELL]" para garantir extração correta.
         """
         
         return {
@@ -787,14 +762,43 @@ def validate_risk_and_position(
 ) -> Dict[str, Any]:
     """
     Valida risco e calcula tamanho de posição apropriado com circuit breakers.
+    CORRIGIDO: Verifica se já existe posição aberta para o símbolo.
     """
     try:
-        if signal.get('signal') == 'HOLD':
+        if signal.get('signal') == 'HOLD' or signal.get('signal') == 'NO_SIGNAL':
             return {
                 "can_execute": False,
-                "reason": "Sinal HOLD - não executar",
+                "reason": "Sinal HOLD/NO_SIGNAL - não executar",
                 "risk_level": "low"
             }
+        
+        # CRÍTICO: Verificar se já existe posição aberta para este símbolo
+        try:
+            import json
+            import os
+            if os.path.exists("portfolio/state.json"):
+                with open("portfolio/state.json", "r", encoding='utf-8') as f:
+                    state = json.load(f)
+                    positions = state.get("positions", {})
+                    
+                    # Verificar se existe posição BUY (chave = symbol)
+                    if symbol in positions and positions[symbol].get("status") == "OPEN":
+                        return {
+                            "can_execute": False,
+                            "reason": f"Ja existe uma posicao BUY aberta para {symbol}. Feche a posicao existente antes de abrir uma nova.",
+                            "risk_level": "medium"
+                        }
+                    
+                    # Verificar se existe posição SELL (chave = symbol_SHORT)
+                    if f"{symbol}_SHORT" in positions and positions[f"{symbol}_SHORT"].get("status") == "OPEN":
+                        return {
+                            "can_execute": False,
+                            "reason": f"Ja existe uma posicao SELL aberta para {symbol}. Feche a posicao existente antes de abrir uma nova.",
+                            "risk_level": "medium"
+                        }
+        except Exception as e:
+            # Se houver erro ao verificar, continuar (não bloquear)
+            pass
         
         entry_price = signal.get('entry_price', 0)
         stop_loss = signal.get('stop_loss', 0)
@@ -803,7 +807,7 @@ def validate_risk_and_position(
         if not entry_price or not stop_loss:
             return {
                 "can_execute": False,
-                "reason": "Preços de entrada ou stop loss não definidos",
+                "reason": "Precos de entrada ou stop loss nao definidos",
                 "risk_level": "high"
             }
         

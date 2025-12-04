@@ -14,20 +14,30 @@ from logger import get_logger
 logger = get_logger(__name__)
 
 def get_active_positions():
-    """Retorna símbolos com posições ativas"""
+    """Retorna símbolos com posições ativas (CORRIGIDO: verifica BUY e SELL)"""
     active_symbols = []
 
     try:
         if os.path.exists("portfolio/state.json"):
-            with open("portfolio/state.json", "r") as f:
+            with open("portfolio/state.json", "r", encoding='utf-8') as f:
                 state = json.load(f)
                 positions = state.get("positions", {})
-                active_symbols = [pos["symbol"] for pos in positions.values() if pos.get("status") == "OPEN"]
+                
+                # CORRIGIDO: Verificar tanto posições BUY quanto SELL
+                for key, pos in positions.items():
+                    if pos.get("status") == "OPEN":
+                        symbol = pos.get("symbol")
+                        if symbol:
+                            # Se for SELL, remover sufixo _SHORT para comparar
+                            base_symbol = symbol.replace("_SHORT", "")
+                            if base_symbol not in active_symbols:
+                                active_symbols.append(base_symbol)
+                
                 logger.debug(f"Loaded {len(active_symbols)} active positions")
     except (json.JSONDecodeError, IOError) as e:
-        logger.error(f"Erro ao carregar posições ativas: {e}")
+        logger.error(f"Erro ao carregar posicoes ativas: {e}")
     except Exception as e:
-        logger.exception(f"Erro inesperado ao carregar posições ativas: {e}")
+        logger.exception(f"Erro inesperado ao carregar posicoes ativas: {e}")
 
     return active_symbols
 
@@ -63,11 +73,11 @@ async def main():
 
     # Banner
     print("\n" + "="*60)
-    print("🤖 SISTEMA DE TRADING COM AGNO AGENT")
+    print("SISTEMA DE TRADING COM AGNO AGENT")
     print("="*60)
-    print(f"📊 Símbolo: {args.symbol}")
-    print(f"🔄 Modo: {args.mode}")
-    print(f"📝 Paper Trading: {'Sim' if args.paper else 'Não'}")
+    print(f"Simbolo: {args.symbol}")
+    print(f"Modo: {args.mode}")
+    print(f"Paper Trading: {'Sim' if args.paper else 'Nao'}")
     print("="*60)
 
     logger.info(f"Starting trading system - Mode: {args.mode}, Symbol: {args.symbol}, Paper: {args.paper}")
@@ -81,83 +91,83 @@ async def main():
             signal = await agent.analyze(args.symbol)
             
             if signal.get('signal') in ['BUY', 'SELL'] and signal.get('confidence', 0) >= 7:
-                print("\n⚠️  ALERTA: Sinal forte detectado!")
+                print("\n[ALERTA] Sinal forte detectado!")
                 print("Considere executar o trade com cautela.")
         
         elif args.mode == 'monitor':
-            # Monitoramento contínuo do Top 5
+            # Monitoramento contínuo do Top 3 (BTC, ETH, SOL)
             from config import settings
-            symbols = settings.top_crypto_pairs[:5]
+            symbols = settings.top_crypto_pairs[:3]  # Apenas BTC, ETH, SOL
             
-            print(f"\n🔄 Monitoramento contínuo do Top 5")
-            print(f"📊 Pares: {symbols}")
-            print(f"⏰ Intervalo: {args.interval}s")
+            print(f"\n[MONITOR] Monitoramento continuo do Top 5")
+            print(f"Pares: {symbols}")
+            print(f"Intervalo: {args.interval}s")
             print("="*60)
             
             while True:
                 try:
                     # Verificar posições ativas
                     active_positions = get_active_positions()
-                    print(f"\n📍 Posições ativas: {active_positions if active_positions else 'Nenhuma'}")
+                    print(f"\n[POSICOES] Posicoes ativas: {active_positions if active_positions else 'Nenhuma'}")
                     
                     # Filtrar apenas símbolos sem posição ativa
                     symbols_to_analyze = [s for s in symbols if s not in active_positions]
                     
                     if not symbols_to_analyze:
-                        print("\n✅ Todos os pares têm posições ativas. Aguardando...")
+                        print("\n[OK] Todos os pares tem posicoes ativas. Aguardando...")
                     else:
-                        print(f"\n🔍 Analisando {len(symbols_to_analyze)} pares sem posições ativas...")
+                        print(f"\n[ANALISE] Analisando {len(symbols_to_analyze)} pares sem posicoes ativas...")
                         
                         for symbol in symbols_to_analyze:
                             try:
                                 await agent.analyze(symbol)
                             except Exception as e:
                                 logger.error(f"Erro ao analisar {symbol}: {e}")
-                                print(f"❌ Erro em {symbol}: {e}")
+                                print(f"[ERRO] Erro em {symbol}: {e}")
 
                             await asyncio.sleep(3)  # Pausa entre análises
                     
-                    print(f"\n💤 Aguardando {args.interval}s...")
+                    print(f"\n[AGUARDANDO] Aguardando {args.interval}s...")
                     await asyncio.sleep(args.interval)
                     
                 except KeyboardInterrupt:
                     raise
                 except Exception as e:
                     logger.exception(f"Erro no ciclo de monitoramento: {e}")
-                    print(f"❌ Erro no ciclo de monitoramento: {e}")
+                    print(f"[ERRO] Erro no ciclo de monitoramento: {e}")
                     await asyncio.sleep(30)
         
         elif args.mode == 'top5':
-            # Top 5 criptomoedas (BTC + 4 maiores)
+            # Top 3 criptomoedas (BTC, ETH, SOL)
             from config import settings
-            symbols = settings.top_crypto_pairs[:5]
+            symbols = settings.top_crypto_pairs[:3]  # Apenas BTC, ETH, SOL
             
-            print(f"\n🔝 Analisando Top 5 criptomoedas...")
-            print("📊 BTC + 4 maiores por market cap")
+            print(f"\n[TOP5] Analisando Top 5 criptomoedas...")
+            print("BTC + 4 maiores por market cap")
             print("="*60)
             
             # Verificar posições ativas
             active_positions = get_active_positions()
-            print(f"\n📍 Posições ativas: {active_positions if active_positions else 'Nenhuma'}")
+            print(f"\n[POSICOES] Posicoes ativas: {active_positions if active_positions else 'Nenhuma'}")
             
             # Filtrar apenas símbolos sem posição ativa
             symbols_to_analyze = [s for s in symbols if s not in active_positions]
             
             if not symbols_to_analyze:
-                print("\n✅ Todos os pares têm posições ativas. Aguardando fechamento...")
+                print("\n[OK] Todos os pares tem posicoes ativas. Aguardando fechamento...")
             else:
-                print(f"\n🔍 Analisando {len(symbols_to_analyze)} pares sem posições ativas...")
+                print(f"\n[ANALISE] Analisando {len(symbols_to_analyze)} pares sem posicoes ativas...")
                 
                 for i, symbol in enumerate(symbols_to_analyze, 1):
-                    print(f"\n[{i}/{len(symbols_to_analyze)}] 🔍 Analisando {symbol}...")
+                    print(f"\n[{i}/{len(symbols_to_analyze)}] Analisando {symbol}...")
                     print("-" * 40)
                     signal = await agent.analyze(symbol)
                     
                     # Mostrar resumo rápido
                     if signal.get('signal') in ['BUY', 'SELL']:
-                        print(f"⚠️  ALERTA: {signal.get('signal')} com confiança {signal.get('confidence', 0)}/10")
+                        print(f"[ALERTA] {signal.get('signal')} com confianca {signal.get('confidence', 0)}/10")
                     else:
-                        print(f"📊 {signal.get('signal')} - Confiança: {signal.get('confidence', 0)}/10")
+                        print(f"[SINAL] {signal.get('signal')} - Confianca: {signal.get('confidence', 0)}/10")
                     
                     await asyncio.sleep(3)  # Pausa entre análises
         
@@ -166,7 +176,7 @@ async def main():
             from config import settings
             symbols = settings.top_crypto_pairs[:10]
             
-            print(f"\n🔝 Analisando Top 10 criptomoedas...")
+            print(f"\n[TOP10] Analisando Top 10 criptomoedas...")
             for i, symbol in enumerate(symbols, 1):
                 print(f"\n[{i}/10] Analisando {symbol}...")
                 await agent.analyze(symbol)
@@ -174,10 +184,10 @@ async def main():
     
     except KeyboardInterrupt:
         logger.info("Sistema interrompido pelo usuário")
-        print("\n\n⏹️  Sistema interrompido pelo usuário")
+        print("\n\n[PARADO] Sistema interrompido pelo usuario")
     except Exception as e:
         logger.exception(f"Erro fatal: {e}")
-        print(f"\n❌ Erro fatal: {e}")
+        print(f"\n[ERRO FATAL] Erro fatal: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":

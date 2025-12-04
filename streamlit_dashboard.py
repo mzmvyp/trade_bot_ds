@@ -256,7 +256,14 @@ if portfolio_data:
             trades_df['timestamp'] = pd.to_datetime(trades_df['timestamp'])
             trades_df = trades_df.sort_values('timestamp')
             
-            # Calcular P&L acumulado
+            # CORRIGIDO: Verificar se coluna 'pnl' existe e preencher valores nulos
+            if 'pnl' not in trades_df.columns:
+                trades_df['pnl'] = 0.0
+            else:
+                # Preencher valores nulos com 0 (trades abertos ainda não têm P&L)
+                trades_df['pnl'] = trades_df['pnl'].fillna(0.0)
+            
+            # Calcular P&L acumulado apenas para trades fechados
             trades_df['cumulative_pnl'] = trades_df['pnl'].cumsum()
             
             # Criar gráfico
@@ -332,7 +339,7 @@ if portfolio_data:
                     "Entrada": f"${trade.get('entry_price', 0):,.2f}",
                     "Tamanho": f"{trade.get('position_size', 0):.4f}",
                     "Status": trade.get("status", "N/A"),
-                    "P&L": f"${trade.get('pnl', 0):,.2f}" if trade.get('pnl') else "N/A",
+                    "P&L": f"${trade.get('pnl', 0):,.2f}" if trade.get('pnl') is not None else "N/A",
                     "Data": trade.get("timestamp", "N/A")[:19] if trade.get("timestamp") else "N/A"
                 })
             
@@ -348,7 +355,8 @@ if portfolio_data:
             # Estatísticas dos trades fechados
             st.subheader("📊 Estatísticas dos Trades")
             
-            pnl_values = [t.get("pnl", 0) for t in closed_trades]
+            # CORRIGIDO: Filtrar apenas trades com P&L válido
+            pnl_values = [t.get("pnl", 0) for t in closed_trades if t.get("pnl") is not None]
             
             col1, col2 = st.columns(2)
             

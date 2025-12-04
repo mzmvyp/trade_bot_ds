@@ -161,11 +161,32 @@ class RealPaperTradingSystem:
             # Calcular valor da posição
             position_value = position_size * entry_price
             
+            # CRÍTICO: Verificar se já existe posição aberta para este símbolo (BUY ou SELL)
+            # Não permitir duas posições no mesmo ativo simultaneamente
+            existing_position = None
+            existing_key = None
+            
+            # Verificar se existe posição BUY (chave = symbol)
+            if symbol in self.positions:
+                existing_position = self.positions[symbol]
+                existing_key = symbol
+            # Verificar se existe posição SELL (chave = symbol_SHORT)
+            elif f"{symbol}_SHORT" in self.positions:
+                existing_position = self.positions[f"{symbol}_SHORT"]
+                existing_key = f"{symbol}_SHORT"
+            
+            if existing_position and existing_position.get("status") == "OPEN":
+                existing_signal = existing_position.get("signal", "UNKNOWN")
+                return {
+                    "success": False,
+                    "error": f"Ja existe uma posicao {existing_signal} aberta para {symbol}. Feche a posicao existente antes de abrir uma nova."
+                }
+            
             # Verificar se tem saldo suficiente
             if position_value > self.current_balance:
                 return {
                     "success": False,
-                    "error": f"Saldo insuficiente. Necessário: ${position_value:.2f}, Disponível: ${self.current_balance:.2f}"
+                    "error": f"Saldo insuficiente. Necessario: ${position_value:.2f}, Disponivel: ${self.current_balance:.2f}"
                 }
             
             # Criar trade
@@ -231,7 +252,7 @@ class RealPaperTradingSystem:
             try:
                 loop = asyncio.get_running_loop()
                 self.monitor_task = loop.create_task(self._monitor_positions())
-                logger.info("🔄 Monitoramento automático iniciado (async context)")
+                logger.info("[MONITOR] Monitoramento automatico iniciado (async context)")
             except RuntimeError:
                 # No event loop running - create one
                 logger.warning("Sem event loop ativo, criando nova thread de monitoramento")
@@ -242,7 +263,7 @@ class RealPaperTradingSystem:
 
                 self.monitor_thread = threading.Thread(target=run_monitoring, daemon=True)
                 self.monitor_thread.start()
-                logger.info("🔄 Monitoramento automático iniciado (thread separada)")
+                logger.info("[MONITOR] Monitoramento automatico iniciado (thread separada)")
     
     def stop_monitoring(self):
         """Para monitoramento automático"""
@@ -250,7 +271,7 @@ class RealPaperTradingSystem:
             self.is_monitoring = False
             if self.monitor_task:
                 self.monitor_task.cancel()
-            logger.info("⏹️ Monitoramento automático parado")
+            logger.info("[PARADO] Monitoramento automatico parado")
     
     async def _monitor_positions(self):
         """Monitora posições abertas e executa stop loss/take profit"""
@@ -284,11 +305,11 @@ class RealPaperTradingSystem:
                     if position.get("stop_loss"):
                         sl = position["stop_loss"]
                         if signal_type == "BUY" and current_price <= sl:
-                            logger.warning(f"🛑 Stop Loss atingido para {symbol}: ${current_price:.2f} (SL: ${sl:.2f})")
+                            logger.warning(f"[STOP LOSS] Stop Loss atingido para {symbol}: ${current_price:.2f} (SL: ${sl:.2f})")
                             await self._close_position_auto(symbol, current_price, "STOP_LOSS")
                             continue
                         elif signal_type == "SELL" and current_price >= sl:
-                            logger.warning(f"🛑 Stop Loss atingido para {symbol}: ${current_price:.2f} (SL: ${sl:.2f})")
+                            logger.warning(f"[STOP LOSS] Stop Loss atingido para {symbol}: ${current_price:.2f} (SL: ${sl:.2f})")
                             await self._close_position_auto(symbol, current_price, "STOP_LOSS")
                             continue
 
@@ -297,11 +318,11 @@ class RealPaperTradingSystem:
                         tp1 = position["take_profit_1"]
                         if signal_type == "BUY" and current_price >= tp1:
                             # Verificar se o preço REAL atingiu o take profit
-                            logger.info(f"✅ Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
+                            logger.info(f"[TAKE PROFIT 1] Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
                             await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_1")
                             continue
                         elif signal_type == "SELL" and current_price <= tp1:
-                            logger.info(f"✅ Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
+                            logger.info(f"[TAKE PROFIT 1] Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
                             await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_1")
                             continue
 
@@ -309,11 +330,11 @@ class RealPaperTradingSystem:
                     if position.get("take_profit_2"):
                         tp2 = position["take_profit_2"]
                         if signal_type == "BUY" and current_price >= tp2:
-                            logger.info(f"✅ Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f})")
+                            logger.info(f"[TAKE PROFIT 2] Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f})")
                             await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_2")
                             continue
                         elif signal_type == "SELL" and current_price <= tp2:
-                            logger.info(f"✅ Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f})")
+                            logger.info(f"[TAKE PROFIT 2] Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f})")
                             await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_2")
                             continue
                     
@@ -340,10 +361,28 @@ class RealPaperTradingSystem:
             
             # Calcular P&L final
             if signal_type == "BUY":
+                # Para BUY: vendemos a posição ao preço atual
                 pnl = (current_price - entry_price) * position_size
+                # Recuperamos o valor da posição vendida (que foi pago na abertura)
                 self.current_balance += current_price * position_size
             else:  # SELL
+                # Para SELL: compramos de volta ao preço atual
+                # Lucro = (preço de venda - preço de compra) * quantidade
                 pnl = (entry_price - current_price) * position_size
+                # Na abertura SELL: recebemos entry_price * position_size (linha 216)
+                # No fechamento SELL: precisamos devolver current_price * position_size
+                # O P&L já está calculado acima, então ajustamos o saldo:
+                # saldo_atual = saldo_atual - (valor que precisamos devolver)
+                # saldo_atual = saldo_atual - current_price * position_size
+                # Mas o P&L = (entry_price - current_price) * position_size
+                # Então: saldo_atual = saldo_atual - current_price * position_size
+                # Como já recebemos entry_price * position_size na abertura:
+                # saldo_final = saldo_atual - current_price * position_size
+                # saldo_final = saldo_atual - (entry_price - entry_price + current_price) * position_size
+                # saldo_final = saldo_atual - entry_price * position_size + entry_price * position_size - current_price * position_size
+                # saldo_final = saldo_atual - entry_price * position_size + pnl
+                # Como saldo_atual já inclui entry_price * position_size da abertura:
+                # saldo_final = saldo_atual - current_price * position_size
                 self.current_balance -= current_price * position_size
             
             # Atualizar trade

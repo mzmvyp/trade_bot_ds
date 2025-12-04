@@ -11,12 +11,7 @@ class Settings(BaseSettings):
     binance_api_key: Optional[str] = None
     binance_secret_key: Optional[str] = None
     
-    # Configurações do Twitter/X
-    twitter_bearer_token: Optional[str] = None
-    twitter_api_key: Optional[str] = None
-    twitter_api_secret: Optional[str] = None
-    twitter_access_token: Optional[str] = None
-    twitter_access_token_secret: Optional[str] = None
+    # Twitter removido - análise de sentimento baseada apenas em dados de mercado
     
     # Configurações do DeepSeek
     deepseek_base_url: str = "https://api.deepseek.com/v1"
@@ -32,18 +27,11 @@ class Settings(BaseSettings):
     max_daily_trades: int = 5  # Máximo 5 trades por dia
     base_risk_percentage: float = 0.02  # 2% base de risco
     
-    # Top 10 criptomoedas por market cap (pares USDT)
+    # Top 3 criptomoedas para análise (BTC, ETH, SOL)
     top_crypto_pairs: list = [
         "BTCUSDT",   # Bitcoin
         "ETHUSDT",   # Ethereum
-        "BNBUSDT",   # BNB
-        "SOLUSDT",   # Solana
-        "XRPUSDT",   # XRP
-        "ADAUSDT",   # Cardano
-        "DOGEUSDT",  # Dogecoin
-        "AVAXUSDT",  # Avalanche
-        "DOTUSDT",   # Polkadot
-        "LINKUSDT"   # Chainlink
+        "SOLUSDT"    # Solana
     ]
     
     
