@@ -1,0 +1,7 @@
+{
+  "symbol": "ETHUSDT",
+  "timestamp": "2025-12-05T01:08:23.355182",
+  "prompt_sent": "",
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": 3175.25,\n    \"stop_loss\": 3124.75,\n    \"take_profit_1\": 3242.25,\n    \"take_profit_2\": 3275.75,\n    \"confidence\": 6,\n    \"reasoning\": \"Apesar da tendência primária strong_bullish e alinhamento multi-timeframe positivo, múltiplos sinais conflitantes reduzem significativamente a confiança: 1) MACD bearish com aceleração descendente, 2) Pressão de venda forte no orderbook (strong_sell_pressure), 3) RSI neutro (55.3) sem sobrevenda, 4) Preço próximo da resistência imediata (+1.08%), 5) Volatilidade extrema aumenta o risco. O score de confluência de apenas 3/5 e o bias geral de 3/10 (fraco) confirmam a falta de clareza. A confiança calculada é 6 (moderada), abaixo do mínimo de 7 necessário para execução.\"\n}\n```",
+  "response_type": "str"
+}

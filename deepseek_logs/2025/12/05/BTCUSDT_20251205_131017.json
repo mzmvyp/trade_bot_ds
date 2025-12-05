@@ -1,0 +1,102 @@
+{
+  "symbol": "BTCUSDT",
+  "timestamp": "2025-12-05T13:10:17.384308",
+  "prompt_sent": "\nAnalise os dados e forneça um sinal de trading.\n\n## DADOS DE MERCADO\n\n- Símbolo: BTCUSDT\n- Preço: $89,477.30\n- Variação 24h: -3.43%\n- Posição no range: 4%\n\n## ANÁLISE DE TENDÊNCIA\n\n- Tendência primária: bearish\n- Força (ADX): moderate\n- Momentum: oversold\n- Alinhamento timeframes: strong_bearish_alignment\n- Score confluência: -5/5\n\n## INDICADORES\n\n- RSI: 25.7 (oversold)\n- MACD: bearish - accelerating_down\n- Bollinger: lower_band\n- EMAs: mixed\n\n## NÍVEIS CHAVE\n\n- Suporte: $87,758.42 (+1.92%)\n- Resistência: $93,242.60 (+4.21%)\n- POC Volume: $90,353.79\n\n## VOLUME E FLUXO\n\n- Pressão orderbook: strong_buy_pressure\n- OBV: bearish\n\n## SENTIMENTO\n\n- Geral: very_negative\n- Funding: neutral\n\n## VOLATILIDADE\n\n- Nível: extreme\n- Stop sugerido: 1.19%\n- TP1 sugerido: 1.58%\n- TP2 sugerido: 2.38%\n\n## SINAIS CONFLITANTES\n\n- RSI oversold but strong bearish trend\n- Bearish trend but buy pressure in orderbook\n\n## SCORE AGREGADO\n\n- Fatores bullish: 3\n- Fatores bearish: 5\n- Bias geral: -2/10 (neutral)\n- Ação recomendada: WAIT\n\n---\n\n## IMPORTANTE: ESCALA DE CONFIANÇA (0-10)\n\nA confiança deve ser um número inteiro de 1 a 10, onde:\n\n- **10**: Sinal extremamente forte, múltiplas confluências, alta probabilidade de sucesso\n- **9**: Sinal muito forte, confluências claras, boa probabilidade\n- **8**: Sinal forte, confluências presentes, probabilidade acima da média\n- **7**: Sinal moderado-forte, algumas confluências, probabilidade razoável (MÍNIMO PARA EXECUÇÃO)\n- **6**: Sinal moderado, confluências limitadas, probabilidade média (NÃO SERÁ EXECUTADO)\n- **5**: Sinal fraco, poucas confluências, probabilidade baixa (NÃO SERÁ EXECUTADO)\n- **4 ou menos**: Sinal muito fraco ou ambíguo (NÃO SERÁ EXECUTADO)\n\n**CRÍTICO**: Apenas sinais com confiança >= 7 serão executados pelo sistema. \nSe você não tiver confiança suficiente (>= 7), retorne \"NO_SIGNAL\" ao invés de um sinal fraco.\n\n**Como calcular a confiança:**\n- Considere a força da tendência (ADX, alinhamento EMAs)\n- Considere a confluência de indicadores (RSI, MACD, Bollinger)\n- Considere o alinhamento multi-timeframe\n- Considere a clareza dos níveis de suporte/resistência\n- Considere sinais conflitantes (reduz confiança)\n- Considere a volatilidade (alta volatilidade pode reduzir confiança)\n\n---\n\nRESPONDA APENAS COM JSON:\n\n```json\n{\n    \"signal\": \"BUY\" ou \"SELL\" ou \"NO_SIGNAL\",\n    \"entry_price\": <número>,\n    \"stop_loss\": <número>,\n    \"take_profit_1\": <número>,\n    \"take_profit_2\": <número>,\n    \"confidence\": <1-10> (APENAS >= 7 será executado),\n    \"reasoning\": \"<justificativa detalhada incluindo cálculo da confiança>\"\n}\n```\n",
+  "analysis_data_sent": {
+    "symbol": "BTCUSDT",
+    "timestamp": "2025-12-05T13:10:04.872723",
+    "price_context": {
+      "current": 89477.3,
+      "change_24h_pct": -3.428,
+      "high_24h": 93143.4,
+      "low_24h": 89324.6,
+      "position_in_range_pct": 3.9986383157012035
+    },
+    "trend_analysis": {
+      "primary_trend": "bearish",
+      "trend_strength_adx": 32.55217326181573,
+      "trend_strength_interpretation": "moderate",
+      "momentum": "oversold",
+      "timeframe_alignment": {
+        "5m": "bearish",
+        "15m": "bearish",
+        "1h": "bearish",
+        "4h": "bearish",
+        "1d": "bearish"
+      },
+      "confluence_score": -5,
+      "confluence_interpretation": "strong_bearish_alignment"
+    },
+    "key_indicators": {
+      "rsi": {
+        "value": 25.697645485529357,
+        "zone": "oversold",
+        "action_hint": "potential_buy"
+      },
+      "macd": {
+        "histogram": -212.84652247730202,
+        "crossover": "bearish",
+        "momentum_direction": "accelerating_down"
+      },
+      "bollinger": {
+        "position": -0.13017866578697565,
+        "zone": "lower_band",
+        "squeeze_detected": false
+      },
+      "ema_structure": {
+        "price_vs_ema20": "below",
+        "price_vs_ema50": "below",
+        "price_vs_ema200": "below",
+        "ema_alignment": "mixed"
+      },
+      "obv_trend": "bearish"
+    },
+    "key_levels": {
+      "immediate_support": 87758.418,
+      "immediate_resistance": 93242.60248704656,
+      "fib_382": 90212.582,
+      "fib_50": 88985.5,
+      "fib_618": 87758.418,
+      "volume_poc": 90353.78947368421,
+      "distance_to_support_pct": 1.9210257797228993,
+      "distance_to_resistance_pct": 4.208109193109939
+    },
+    "volume_flow": {
+      "volume_24h": 156422.328,
+      "volume_trend": "stable",
+      "obv_trend": "bearish",
+      "orderbook_imbalance": 0.8087278680049973,
+      "orderbook_bias": "strong_buy_pressure",
+      "cvd_direction": "negative"
+    },
+    "sentiment": {
+      "overall": "very_negative",
+      "confidence": 0.7999999999999999,
+      "funding_rate": -1.45e-06,
+      "funding_interpretation": "neutral",
+      "open_interest_trend": "stable"
+    },
+    "volatility": {
+      "atr_value": 708.9529285320106,
+      "atr_pct": 0.792327136080336,
+      "level": "extreme",
+      "suggested_stop_pct": 1.188490704120504,
+      "suggested_tp1_pct": 1.584654272160672,
+      "suggested_tp2_pct": 2.376981408241008
+    },
+    "conflicting_signals": [
+      "RSI oversold but strong bearish trend",
+      "Bearish trend but buy pressure in orderbook"
+    ],
+    "aggregated_scores": {
+      "bullish_factors_count": 3,
+      "bearish_factors_count": 5,
+      "neutral_factors_count": 1,
+      "overall_bias": -2,
+      "overall_bias_interpretation": "neutral",
+      "recommended_action": "WAIT"
+    }
+  },
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": 89477.30,\n    \"stop_loss\": 90542.00,\n    \"take_profit_1\": 90891.00,\n    \"take_profit_2\": 91567.00,\n    \"confidence\": 4,\n    \"reasoning\": \"A análise apresenta múltiplos sinais conflitantes que reduzem drasticamente a confiança. A tendência primária é bearish com forte alinhamento de timeframes (score -5/5), ADX moderado e momentum oversold, indicando forte pressão de venda. No entanto, o RSI em 25.7 mostra oversold extremo, e há forte pressão de compra no orderbook. Os indicadores estão mistos (EMAs mixed, MACD bearish acelerando, preço na lower band do Bollinger). O bias geral é -2/10 (neutral) com recomendação de WAIT. A volatilidade extrema e os sinais contraditórios (tendência bearish vs. oversold e buy pressure) criam um ambiente de alta incerteza. A confiança calculada é 4 devido à falta de confluência clara - os fatores bearish (5) superam os bullish (3), mas os sinais conflitantes impedem uma direção definida com probabilidade suficiente para execução (<7).\"\n}\n```",
+  "response_type": "str"
+}

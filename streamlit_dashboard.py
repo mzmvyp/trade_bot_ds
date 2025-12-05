@@ -198,6 +198,7 @@ if portfolio_data:
                 closed_list.append({
                     "Data": trade.get("timestamp", "N/A")[:16],
                     "Símbolo": trade.get("symbol", "N/A"),
+                    "Fonte": trade.get("source", "UNKNOWN"),  # DEEPSEEK ou AGNO
                     "Tipo": trade.get("signal", "N/A"),
                     "Entrada": f"${entry_price:,.2f}",
                     "Tamanho": f"{position_size:.6f}",
@@ -234,6 +235,7 @@ if portfolio_data:
                 open_list.append({
                     "Data": trade.get("timestamp", "N/A")[:16],
                     "Símbolo": trade.get("symbol", "N/A"),
+                    "Fonte": trade.get("source", "UNKNOWN"),  # DEEPSEEK ou AGNO
                     "Tipo": trade.get("signal", "N/A"),
                     "Entrada": f"${entry_price:,.2f}",
                     "Tamanho": f"{position_size:.6f}",
@@ -296,7 +298,10 @@ if portfolio_data:
         if positions:
             # Preparar dados para tabela
             positions_list = []
-            for symbol, position in positions.items():
+            for position_key, position in positions.items():
+                # Extrair símbolo limpo e fonte
+                symbol = position.get("symbol", position_key.split("_")[0])
+                source = position.get("source", "UNKNOWN")
                 entry_price = position.get('entry_price', 0)
                 position_size = position.get('position_size', 0)
                 stop_loss = position.get('stop_loss', 0)
@@ -309,7 +314,8 @@ if portfolio_data:
                 tp2_diff = ((take_profit_2 - entry_price) / entry_price * 100) if entry_price > 0 else 0
                 
                 positions_list.append({
-                    "Símbolo": symbol.replace("_SHORT", ""),
+                    "Fonte": source,  # DEEPSEEK ou AGNO
+                    "Símbolo": symbol,
                     "Tipo": position.get("signal", "N/A"),
                     "Preço Entrada": f"${entry_price:,.2f}",
                     "Tamanho": f"{position_size:.6f}",

@@ -1,0 +1,7 @@
+{
+  "symbol": "BTCUSDT",
+  "timestamp": "2025-12-05T01:08:04.991668",
+  "prompt_sent": "",
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": 92213.00,\n    \"stop_loss\": 93171.35,\n    \"take_profit_1\": 90901.11,\n    \"take_profit_2\": 87758.42,\n    \"confidence\": 5,\n    \"reasoning\": \"A análise apresenta múltiplos fatores que reduzem a confiança abaixo do limiar de execução (7). O bias geral é bearish (-3/10) com 3 fatores bearish vs. 0 bullish, mas a tendência primária é neutral com ADX weak, indicando falta de direção clara. O momentum é bearish e há bearish alignment nos timeframes, porém o score de confluência é baixo (-1/5). Os indicadores mostram sinais mistos: RSI neutral (46.9), MACD bearish acelerando, Bollinger abaixo do meio, e EMAs mixed. A volatilidade está em nível extreme, aumentando o risco. A posição no range é 50% (neutra) e o sentimento geral é negative, mas o OBV é bullish e o funding neutral, criando contradições. A pressão do orderbook é neutral. Embora a ação recomendada seja SELL, a falta de confluência forte, tendência indefinida, indicadores mistos e alta volatilidade resultam em confiança insuficiente para execução.\"\n}\n```",
+  "response_type": "str"
+}

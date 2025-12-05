@@ -117,7 +117,9 @@ class AgnoTradingAgent:
           * Confiança: 1-10
         
         GESTÃO DE RISCO:
-        - Confiança mínima 5 para executar
+        - Confiança mínima 7/10 para executar (sinais com confiança < 7 serão rejeitados)
+        - Escala de confiança: 1-10 (sempre use esta escala)
+        - Se confiança < 7, retorne "NO_SIGNAL" ao invés de um sinal fraco
         - Respeite circuit breakers automáticos
         - Analise estrutura de mercado (suporte/resistência)
         - Considere múltiplos timeframes
@@ -132,7 +134,7 @@ class AgnoTradingAgent:
             "stop_loss": 93000.00,
             "take_profit_1": 97000.00,
             "take_profit_2": 99000.00,
-            "confidence": 7
+            "confidence": 7 (escala 1-10, mínimo 7 para executar)
         }
         ```
         
@@ -153,42 +155,9 @@ class AgnoTradingAgent:
         print(f"\n[AGNO] AGNO Agent iniciando analise de {symbol}")
         print("="*60)
         
-        # CRÍTICO: Verificar se já existe posição aberta antes de analisar
-        try:
-            import json
-            import os
-            from datetime import timedelta
-            
-            if os.path.exists("portfolio/state.json"):
-                with open("portfolio/state.json", "r", encoding='utf-8') as f:
-                    state = json.load(f)
-                    positions = state.get("positions", {})
-                    
-                    # Verificar se existe posição BUY ou SELL aberta
-                    if symbol in positions and positions[symbol].get("status") == "OPEN":
-                        existing_signal = positions[symbol].get("signal", "UNKNOWN")
-                        print(f"[AVISO] Ja existe uma posicao {existing_signal} aberta para {symbol}. Pulando analise.")
-                        return {
-                            "symbol": symbol,
-                            "signal": "NO_SIGNAL",
-                            "confidence": 0,
-                            "reason": f"Posicao {existing_signal} ja aberta",
-                            "timestamp": datetime.now().isoformat()
-                        }
-                    
-                    if f"{symbol}_SHORT" in positions and positions[f"{symbol}_SHORT"].get("status") == "OPEN":
-                        existing_signal = positions[f"{symbol}_SHORT"].get("signal", "UNKNOWN")
-                        print(f"[AVISO] Ja existe uma posicao {existing_signal} aberta para {symbol}. Pulando analise.")
-                        return {
-                            "symbol": symbol,
-                            "signal": "NO_SIGNAL",
-                            "confidence": 0,
-                            "reason": f"Posicao {existing_signal} ja aberta",
-                            "timestamp": datetime.now().isoformat()
-                        }
-        except Exception as e:
-            # Se houver erro, continuar com análise
-            logger.warning(f"Erro ao verificar posicoes existentes: {e}")
+        # MODIFICADO: Permitir múltiplas posições do mesmo símbolo se forem de fontes diferentes
+        # Não bloquear análise - vamos gerar ambos os sinais (DEEPSEEK e AGNO)
+        # A verificação de posição existente será feita em validate_risk_and_position() considerando a fonte
         
         # CORRIGIDO: Verificar última análise (1 hora) antes de enviar para DeepSeek
         try:
@@ -235,46 +204,59 @@ class AgnoTradingAgent:
         
         # Prompt para o agent
         # CORRIGIDO: get_deepseek_analysis() agora retorna o sinal JSON diretamente
+        # Obter dados sumarizados para o AGNO agent analisar
+        # Nota: get_deepseek_analysis() agora retorna sinal direto, mas podemos chamar prepare_analysis_for_llm() diretamente
+        # Por enquanto, vamos usar o prompt simples e deixar o AGNO analisar
         prompt = f"""
-        Execute uma analise completa para {symbol} seguindo o processo definido:
-        
-        1. Obtenha sinal DeepSeek usando get_deepseek_analysis("{symbol}")
-           - Esta funcao ja coleta, processa, sumariza e chama DeepSeek diretamente
-           - Retorna sinal JSON processado com signal, entry_price, stop_loss, etc.
-        
-        2. Se get_deepseek_analysis() retornou um sinal JSON (campo "signal" presente):
-           - Use esse sinal diretamente
-           - Valide o risco com validate_risk_and_position() 
-           - Se apropriado, execute paper trade com execute_paper_trade()
-        
-        3. Se get_deepseek_analysis() retornou apenas dados (sem "signal"):
-           - Analise os dados e decida: BUY, SELL ou NO_SIGNAL
-           - Valide o risco com validate_risk_and_position()
-           - Se apropriado, execute paper trade com execute_paper_trade()
-        
-        IMPORTANTE: 
-        - Se get_deepseek_analysis() retornou um sinal JSON, USE ESSE SINAL DIRETAMENTE
-        - NÃO reinterprete ou modifique o sinal do DeepSeek
-        - Retorne APENAS o JSON estruturado com signal, entry_price, stop_loss, 
-          take_profit_1, take_profit_2, confidence e reasoning
-        
-        Seja objetivo e use o sinal do DeepSeek quando disponível.
-        """
+         Analise os dados de mercado para {symbol} e forneça um sinal de trading.
+         
+         NOTA: O sistema gera DOIS sinais separados para comparação:
+         - Um sinal DEEPSEEK (direto) - já foi gerado automaticamente
+         - Um sinal AGNO (este) - você deve analisar independentemente
+         
+         Processo:
+         1. Use get_market_data("{symbol}") para obter dados de mercado
+         2. Use analyze_technical_indicators("{symbol}") para indicadores técnicos
+         3. Use analyze_market_sentiment("{symbol}") para sentimento
+         4. Analise os dados e decida: BUY, SELL ou NO_SIGNAL
+         5. Retorne APENAS o JSON estruturado no final:
+         
+         ```json
+         {{
+             "signal": "BUY" ou "SELL" ou "NO_SIGNAL",
+             "entry_price": <número>,
+             "stop_loss": <número>,
+             "take_profit_1": <número>,
+             "take_profit_2": <número>,
+             "confidence": <1-10>,
+             "reasoning": "<justificativa>"
+         }}
+         ```
+         
+         IMPORTANTE: 
+         - Você está gerando o sinal AGNO (independente do sinal DeepSeek)
+         - O sistema executará ambos os sinais separadamente se ambos forem válidos
+         - Forneça sua própria análise baseada nos dados coletados
+         """
         
         try:
             if hasattr(self, 'demo_mode') and self.demo_mode:
                 # Modo demo - análise local
                 signal = self._demo_analysis(symbol)
             else:
-                # CORRIGIDO: Chamar get_deepseek_analysis() diretamente primeiro
-                # Se retornar sinal JSON processado, usar diretamente
+                # NOVO: Gerar DOIS sinais - um do DeepSeek direto e outro do AGNO processado
+                # Isso permite comparar a performance de ambos
+                
+                # 1. SINAL DEEPSEEK DIRETO
                 deepseek_result = await get_deepseek_analysis(symbol)
+                deepseek_signal = None
                 
                 if isinstance(deepseek_result, dict) and "signal" in deepseek_result:
-                    # DeepSeek já retornou sinal JSON processado - usar diretamente
-                    logger.info(f"[SINAL DIRETO] Usando sinal do DeepSeek: {deepseek_result.get('signal', 'N/A')}")
-                    signal = {
+                    # DeepSeek já retornou sinal JSON processado
+                    logger.info(f"[SINAL DEEPSEEK] Sinal direto: {deepseek_result.get('signal', 'N/A')}")
+                    deepseek_signal = {
                         "symbol": symbol,
+                        "source": "DEEPSEEK",  # Identificador da fonte
                         "timestamp": datetime.now().isoformat(),
                         "signal": deepseek_result.get("signal", "NO_SIGNAL"),
                         "entry_price": deepseek_result.get("entry_price"),
@@ -287,21 +269,74 @@ class AgnoTradingAgent:
                     }
                     
                     # Salvar resposta bruta do DeepSeek para auditoria
-                    self._save_deepseek_response(symbol, deepseek_result.get("deepseek_prompt", ""), deepseek_result.get("raw_response", ""))
-                else:
-                    # Se não retornou sinal direto, usar AGNO agent para processar
-                    # Executar agent - ELE VAI ORQUESTRAR TUDO!
-                    # Usar arun() porque algumas ferramentas são assíncronas
-                    response = await self.agent.arun(prompt)
+                    self._save_deepseek_response(
+                        symbol, 
+                        deepseek_result.get("deepseek_prompt", ""), 
+                        deepseek_result.get("raw_response", ""),
+                        deepseek_result.get("analysis_data", {})
+                    )
                     
-                    # CORRIGIDO: Salvar resposta bruta do DeepSeek para auditoria
-                    self._save_deepseek_response(symbol, prompt, response)
+                    # Salvar sinal DeepSeek
+                    self._save_signal(deepseek_signal)
                     
-                    # Processar resposta
-                    signal = self._process_agent_response(response, symbol)
-            
-            # Salvar sinal
-            self._save_signal(signal)
+                    # Validar e executar sinal DeepSeek se apropriado
+                    if deepseek_signal.get("signal") in ["BUY", "SELL"]:
+                        validation = validate_risk_and_position(deepseek_signal, symbol)
+                        if validation.get("can_execute"):
+                            logger.info(f"[DEEPSEEK] Validando e executando sinal {deepseek_signal.get('signal')} para {symbol}")
+                            execution_result = execute_paper_trade(deepseek_signal, validation.get("position_size"))
+                            if execution_result.get("success"):
+                                logger.info(f"[DEEPSEEK] Trade executado com sucesso: {execution_result.get('message', '')}")
+                            else:
+                                logger.warning(f"[DEEPSEEK] Falha ao executar trade: {execution_result.get('error', '')}")
+                        else:
+                            logger.info(f"[DEEPSEEK] Sinal não executado: {validation.get('reason', '')}")
+                
+                # 2. SINAL AGNO PROCESSADO
+                # Executar agent - ELE VAI ORQUESTRAR TUDO!
+                response = await self.agent.arun(prompt)
+                
+                # Salvar resposta bruta do AGNO para auditoria
+                self._save_deepseek_response(symbol, prompt, response, {})
+                
+                # Processar resposta do AGNO
+                agno_signal = self._process_agent_response(response, symbol)
+                agno_signal["source"] = "AGNO"  # Identificador da fonte
+                
+                # CORRIGIDO: Se não tem entry_price, obter do mercado (async)
+                if agno_signal.get("signal") in ["BUY", "SELL"] and not agno_signal.get("entry_price"):
+                    try:
+                        market_data = await get_market_data(symbol)
+                        if market_data and "current_price" in market_data:
+                            agno_signal["entry_price"] = market_data["current_price"]
+                            # Calcular stop loss se não tiver
+                            if not agno_signal.get("stop_loss"):
+                                if agno_signal["signal"] == "BUY":
+                                    agno_signal["stop_loss"] = agno_signal["entry_price"] * 0.98
+                                else:  # SELL
+                                    agno_signal["stop_loss"] = agno_signal["entry_price"] * 1.02
+                            logger.info(f"[AGNO] Preço atual obtido: Entry=${agno_signal['entry_price']}, SL=${agno_signal.get('stop_loss')}")
+                    except Exception as e:
+                        logger.error(f"[AGNO] Erro ao obter preço atual: {e}")
+                
+                # Salvar sinal AGNO
+                self._save_signal(agno_signal)
+                
+                # Validar e executar sinal AGNO se apropriado
+                if agno_signal.get("signal") in ["BUY", "SELL"]:
+                    validation = validate_risk_and_position(agno_signal, symbol)
+                    if validation.get("can_execute"):
+                        logger.info(f"[AGNO] Validando e executando sinal {agno_signal.get('signal')} para {symbol}")
+                        execution_result = execute_paper_trade(agno_signal, validation.get("position_size"))
+                        if execution_result.get("success"):
+                            logger.info(f"[AGNO] Trade executado com sucesso: {execution_result.get('message', '')}")
+                        else:
+                            logger.warning(f"[AGNO] Falha ao executar trade: {execution_result.get('error', '')}")
+                    else:
+                        logger.info(f"[AGNO] Sinal não executado: {validation.get('reason', '')}")
+                
+                # Retornar o sinal AGNO como principal (para compatibilidade)
+                signal = agno_signal
             
             # CORRIGIDO: Salvar timestamp da última análise
             try:
@@ -330,30 +365,61 @@ class AgnoTradingAgent:
     def _process_agent_response(self, response: Any, symbol: str) -> Dict[str, Any]:
         """Processa resposta do agent em formato estruturado"""
         
+        # CORRIGIDO: Extrair conteúdo real do RunOutput do AGNO
+        # O AGNO retorna um objeto RunOutput, o conteúdo está em response.content
+        response_text = None
+        if hasattr(response, 'content'):
+            # RunOutput do AGNO - conteúdo direto
+            response_text = str(response.content) if response.content else None
+            logger.debug(f"[AGNO] Conteúdo extraído de response.content: {response_text[:200] if response_text else 'None'}...")
+        elif hasattr(response, 'output'):
+            response_text = str(response.output)
+        elif hasattr(response, 'messages') and len(response.messages) > 0:
+            # Se for uma lista de mensagens, pegar a última
+            last_message = response.messages[-1]
+            if hasattr(last_message, 'content'):
+                response_text = str(last_message.content)
+            else:
+                response_text = str(last_message)
+        elif isinstance(response, dict):
+            # Se já for dict, pode ser sinal direto
+            if "signal" in response:
+                logger.info(f"[SINAL DIRETO] Usando sinal do dict: {response.get('signal', 'N/A')}")
+                return {
+                    "symbol": symbol,
+                    "timestamp": datetime.now().isoformat(),
+                    "signal": response.get("signal", "NO_SIGNAL"),
+                    "entry_price": response.get("entry_price"),
+                    "stop_loss": response.get("stop_loss"),
+                    "take_profit_1": response.get("take_profit_1"),
+                    "take_profit_2": response.get("take_profit_2"),
+                    "confidence": response.get("confidence", 5),
+                    "reasoning": response.get("reasoning", ""),
+                    "agent_response": str(response)
+                }
+            else:
+                response_text = str(response)
+        else:
+            # Fallback: tentar str() mas logar aviso
+            response_text = str(response)
+            logger.warning(f"[AGNO] Resposta não é RunOutput conhecido, usando str(): {type(response)}")
+        
         # Extrair informações da resposta
         signal = {
             "symbol": symbol,
             "timestamp": datetime.now().isoformat(),
-            "agent_response": str(response),
+            "agent_response": response_text[:500] if response_text else "N/A",  # Limitar tamanho
         }
         
-        # CORRIGIDO: Verificar se a resposta já contém um sinal JSON processado
-        # (quando get_deepseek_analysis() retorna sinal diretamente)
-        if isinstance(response, dict) and "signal" in response:
-            logger.info(f"[SINAL DIRETO] Usando sinal do DeepSeek: {response.get('signal', 'N/A')}")
-            signal.update({
-                "signal": response.get("signal", "NO_SIGNAL"),
-                "entry_price": response.get("entry_price"),
-                "stop_loss": response.get("stop_loss"),
-                "take_profit_1": response.get("take_profit_1"),
-                "take_profit_2": response.get("take_profit_2"),
-                "confidence": response.get("confidence", 5),
-                "reasoning": response.get("reasoning", "")
-            })
-            return signal
-        
-        # Tentar extrair sinal estruturado
-        response_text = str(response)
+        if not response_text:
+            logger.error(f"[ERRO] Não foi possível extrair conteúdo da resposta do AGNO")
+            return {
+                "symbol": symbol,
+                "timestamp": datetime.now().isoformat(),
+                "signal": "NO_SIGNAL",
+                "confidence": 0,
+                "reason": "Erro ao extrair resposta do AGNO"
+            }
         
         # MELHORIA: Tentar extrair JSON estruturado primeiro (mais confiável)
         json_match = re.search(r'```json\s*(\{.*?\})\s*```', response_text, re.DOTALL)
@@ -439,26 +505,98 @@ class AgnoTradingAgent:
             signal["take_profit_1"] = None
             signal["take_profit_2"] = None
         else:
+            # VALIDAÇÃO FINAL: Garantir que entry_price e stop_loss existem antes de retornar
+            if not signal.get("entry_price") or not signal.get("stop_loss"):
+                logger.error(f"[ERRO CRITICO] Sinal {signal['signal']} sem entry_price ou stop_loss definidos!")
+                logger.error(f"Entry: {signal.get('entry_price')}, Stop: {signal.get('stop_loss')}")
+                logger.error(f"Response preview: {response_text[:500]}...")
+                # Tentar extrair preço do texto novamente com padrões mais flexíveis
+                if not signal.get("entry_price") and response_text:
+                    # Procurar por qualquer número que pareça um preço (mais flexível)
+                    price_patterns = [
+                        r"\$([0-9,]+\.?[0-9]+)",  # $90,563.50
+                        r"([0-9]{1,3}(?:[,.][0-9]{1,2})?)\s*(?:USD|USDT)",  # 90,563.50 USD
+                        r"preço[^0-9]*([0-9,]+\.?[0-9]+)",  # preço 90,563.50
+                    ]
+                    for pattern in price_patterns:
+                        match = re.search(pattern, response_text, re.IGNORECASE)
+                        if match:
+                            try:
+                                price_str = match.group(1).replace(",", "")
+                                price = float(price_str)
+                                # Validar se é um preço razoável
+                                if 0.01 <= price <= 1000000:
+                                    signal["entry_price"] = price
+                                    logger.warning(f"[FALLBACK] Preço extraído do texto: ${price}")
+                                    break
+                            except ValueError:
+                                continue
+                
+                # Se ainda não tem entry_price, usar valores padrão baseados no símbolo
+                if not signal.get("entry_price"):
+                    # Valores padrão aproximados (será substituído quando o sistema coletar preço real)
+                    default_prices = {
+                        "BTCUSDT": 90000,
+                        "ETHUSDT": 3000,
+                        "SOLUSDT": 140,
+                        "BNBUSDT": 600,
+                        "ADAUSDT": 0.5,
+                        "XRPUSDT": 2.0,
+                        "DOGEUSDT": 0.15,
+                        "AVAXUSDT": 40,
+                        "DOTUSDT": 7,
+                        "LINKUSDT": 20
+                    }
+                    default_price = default_prices.get(symbol, 100)
+                    signal["entry_price"] = default_price
+                    logger.warning(f"[FALLBACK] Usando preço padrão para {symbol}: ${default_price}")
+                
+                # Calcular stop loss se não tiver
+                if not signal.get("stop_loss") and signal.get("entry_price"):
+                    if signal["signal"] == "BUY":
+                        signal["stop_loss"] = signal["entry_price"] * 0.98
+                    else:  # SELL
+                        signal["stop_loss"] = signal["entry_price"] * 1.02
+                    logger.warning(f"[FALLBACK] Stop loss calculado: ${signal['stop_loss']}")
             # Para BUY/SELL, OBRIGATÓRIO ter entrada, stop e targets
             entry_patterns = [
                 r"entrada[^0-9]*\$?([0-9,]+\.?[0-9]*)",
                 r"entry[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                r"entry_price[^0-9]*[:=]\s*\$?([0-9,]+\.?[0-9]*)",
                 r"preço[^0-9]*\$?([0-9,]+\.?[0-9]*)",
-                r"preco[^0-9]*\$?([0-9,]+\.?[0-9]*)"
+                r"preco[^0-9]*\$?([0-9,]+\.?[0-9]*)",
+                r"current[^0-9]*price[^0-9]*\$?([0-9,]+\.?[0-9]*)"
             ]
             
-            signal["entry_price"] = None
-            for pattern in entry_patterns:
-                entry_match = re.search(pattern, response_text, re.IGNORECASE)
-                if entry_match:
+            # Se já tem entry_price do JSON, não precisa extrair
+            if not signal.get("entry_price"):
+                signal["entry_price"] = None
+                for pattern in entry_patterns:
+                    entry_match = re.search(pattern, response_text, re.IGNORECASE)
+                    if entry_match:
+                        try:
+                            price = float(entry_match.group(1).replace(",", ""))
+                            # CORRIGIDO: Validar se o preço é realista (suporta todas as moedas)
+                            # BTC: 90k+, ETH: 3k+, SOL: 100+, ADA: 0.4+, DOGE: 0.1+, etc.
+                            if 0.01 <= price <= 1000000:
+                                signal["entry_price"] = price
+                                logger.info(f"[PRECO EXTRAIDO] Entry price encontrado via regex: ${price}")
+                                break
+                        except ValueError:
+                            continue
+                
+                # FALLBACK: Se não encontrou entry_price, usar preço atual do mercado
+                if not signal.get("entry_price"):
                     try:
-                        price = float(entry_match.group(1).replace(",", ""))
-                        # Validar se o preço é realista (entre 1.000 e 1.000.000)
-                        if 1000 <= price <= 1000000:
-                            signal["entry_price"] = price
-                            break
-                    except ValueError:
-                        continue
+                        from agno_tools import get_market_data
+                        import asyncio
+                        # Tentar obter preço atual
+                        market_data = asyncio.run(get_market_data(symbol))
+                        if market_data and "current_price" in market_data:
+                            signal["entry_price"] = market_data["current_price"]
+                            logger.warning(f"[FALLBACK] Usando preço atual do mercado como entry: ${signal['entry_price']}")
+                    except Exception as e:
+                        logger.error(f"[FALLBACK] Erro ao obter preço atual: {e}")
             
             # CORRIGIDO: Stop Loss - melhor extração com validação
             if signal["signal"] == "BUY":
@@ -475,9 +613,11 @@ class AgnoTradingAgent:
                     if stop_match:
                         try:
                             stop_price = float(stop_match.group(1).replace(",", ""))
-                            # Validar: stop loss deve ser menor que entrada para BUY
-                            if signal["entry_price"] and 1000 <= stop_price < signal["entry_price"]:
+                            # CORRIGIDO: Validar stop loss (suporta todas as moedas)
+                            # Para BUY, stop loss deve ser menor que entrada
+                            if signal["entry_price"] and 0.01 <= stop_price < signal["entry_price"]:
                                 signal["stop_loss"] = stop_price
+                                logger.info(f"[STOP LOSS EXTRAIDO] Stop loss encontrado via regex: ${stop_price}")
                                 break
                         except ValueError:
                             continue
@@ -500,9 +640,11 @@ class AgnoTradingAgent:
                     if stop_match:
                         try:
                             stop_price = float(stop_match.group(1).replace(",", ""))
-                            # Validar: stop loss deve ser maior que entrada para SELL
+                            # CORRIGIDO: Validar stop loss (suporta todas as moedas)
+                            # Para SELL, stop loss deve ser maior que entrada
                             if signal["entry_price"] and stop_price > signal["entry_price"] and stop_price <= 1000000:
                                 signal["stop_loss"] = stop_price
+                                logger.info(f"[STOP LOSS EXTRAIDO] Stop loss encontrado via regex: ${stop_price}")
                                 break
                         except ValueError:
                             continue
@@ -611,18 +753,68 @@ class AgnoTradingAgent:
                 if not signal["take_profit_2"] and signal["entry_price"]:
                     signal["take_profit_2"] = signal["entry_price"] * 0.95
         
-        # Validação adicional: se não conseguiu extrair preço realista, usar preço atual
-        if signal["entry_price"] is None or signal["entry_price"] < 1000:
-            # Tentar extrair preço atual do texto
-            current_price_pattern = r"preço[^0-9]*([0-9,]+\.?[0-9]*)"
-            current_match = re.search(current_price_pattern, response_text, re.IGNORECASE)
-            if current_match:
-                try:
-                    current_price = float(current_match.group(1).replace(",", ""))
-                    if 1000 <= current_price <= 1000000:  # Preço realista para BTC
-                        signal["entry_price"] = current_price
-                except ValueError:
-                    pass
+        # VALIDAÇÃO FINAL: Garantir que entry_price e stop_loss existem antes de retornar
+        # NOTA: Não podemos usar asyncio.run() aqui pois já estamos em um event loop
+        # Vamos usar o preço atual que já foi coletado anteriormente ou calcular baseado em valores padrão
+        if signal["signal"] in ["BUY", "SELL"]:
+            if not signal.get("entry_price") or not signal.get("stop_loss"):
+                logger.error(f"[ERRO CRITICO] Sinal {signal['signal']} sem entry_price ou stop_loss definidos!")
+                logger.error(f"Entry: {signal.get('entry_price')}, Stop: {signal.get('stop_loss')}")
+                logger.error(f"Response preview: {response_text[:500] if response_text else 'N/A'}...")
+                
+                # Tentar extrair preço do texto novamente com padrões mais flexíveis
+                if not signal.get("entry_price") and response_text:
+                    # Procurar por qualquer número que pareça um preço (mais flexível)
+                    price_patterns = [
+                        r"\$([0-9,]+\.?[0-9]+)",  # $90,563.50
+                        r"([0-9]{1,3}(?:[,.][0-9]{1,2})?)\s*(?:USD|USDT)",  # 90,563.50 USD
+                        r"preço[^0-9]*([0-9,]+\.?[0-9]+)",  # preço 90,563.50
+                    ]
+                    for pattern in price_patterns:
+                        match = re.search(pattern, response_text, re.IGNORECASE)
+                        if match:
+                            try:
+                                price_str = match.group(1).replace(",", "")
+                                # Se o padrão capturou com ponto, manter o ponto; se não, assumir decimal
+                                if "." in price_str:
+                                    price = float(price_str)
+                                else:
+                                    # Se não tem ponto, pode ser um número inteiro ou precisamos adicionar ponto decimal
+                                    price = float(price_str)
+                                # Validar se é um preço razoável
+                                if 0.01 <= price <= 1000000:
+                                    signal["entry_price"] = price
+                                    logger.warning(f"[FALLBACK] Preço extraído do texto: ${price}")
+                                    break
+                            except ValueError:
+                                continue
+                
+                # Se ainda não tem entry_price, usar valores padrão baseados no símbolo
+                if not signal.get("entry_price"):
+                    # Valores padrão aproximados (será substituído quando o sistema coletar preço real)
+                    default_prices = {
+                        "BTCUSDT": 90000,
+                        "ETHUSDT": 3000,
+                        "SOLUSDT": 140,
+                        "BNBUSDT": 600,
+                        "ADAUSDT": 0.5,
+                        "XRPUSDT": 2.0,
+                        "DOGEUSDT": 0.15,
+                        "AVAXUSDT": 40,
+                        "DOTUSDT": 7,
+                        "LINKUSDT": 20
+                    }
+                    default_price = default_prices.get(symbol, 100)
+                    signal["entry_price"] = default_price
+                    logger.warning(f"[FALLBACK] Usando preço padrão para {symbol}: ${default_price}")
+                
+                # Calcular stop loss se não tiver
+                if not signal.get("stop_loss") and signal.get("entry_price"):
+                    if signal["signal"] == "BUY":
+                        signal["stop_loss"] = signal["entry_price"] * 0.98
+                    else:  # SELL
+                        signal["stop_loss"] = signal["entry_price"] * 1.02
+                    logger.warning(f"[FALLBACK] Stop loss calculado: ${signal['stop_loss']}")
         
         # Extrair confiança - corrigir regex para capturar corretamente
         conf_patterns = [
@@ -651,10 +843,16 @@ class AgnoTradingAgent:
         
         print(f"[SALVO] Sinal salvo: {filename}")
     
-    def _save_deepseek_response(self, symbol: str, prompt: str, response: Any):
+    def _save_deepseek_response(self, symbol: str, prompt: str, response: Any, analysis_data: Dict[str, Any] = None):
         """
-        Salva resposta bruta do DeepSeek em diretório organizado por data (ano/mês/dia)
+        Salva prompt e resposta do DeepSeek em diretório organizado por data (ano/mês/dia)
         para auditoria e verificação de sinais gerados.
+        
+        Args:
+            symbol: Símbolo analisado
+            prompt: Prompt de texto enviado ao DeepSeek
+            response: Resposta recebida do DeepSeek
+            analysis_data: JSON de análise enviado (dados sumarizados)
         """
         try:
             now = datetime.now()
@@ -670,8 +868,9 @@ class AgnoTradingAgent:
             response_data = {
                 "symbol": symbol,
                 "timestamp": now.isoformat(),
-                "prompt_sent": prompt,
-                "response_received": str(response),
+                "prompt_sent": prompt,  # Prompt de texto enviado
+                "analysis_data_sent": analysis_data if analysis_data else {},  # JSON de análise enviado
+                "response_received": str(response),  # Resposta bruta do DeepSeek
                 "response_type": type(response).__name__
             }
             
@@ -679,7 +878,7 @@ class AgnoTradingAgent:
             with open(filename, 'w', encoding='utf-8') as f:
                 json.dump(response_data, f, indent=2, ensure_ascii=False, default=str)
             
-            logger.info(f"[DEEPSEEK LOG] Resposta salva: {filename}")
+            logger.info(f"[DEEPSEEK LOG] Prompt e resposta salvos: {filename}")
             print(f"[DEEPSEEK LOG] Resposta salva em: {filename}")
             
         except Exception as e:

@@ -23,13 +23,13 @@ def get_active_positions():
                 state = json.load(f)
                 positions = state.get("positions", {})
                 
-                # CORRIGIDO: Verificar tanto posições BUY quanto SELL
+                # MODIFICADO: Verificar posições considerando novas chaves (SYMBOL_DEEPSEEK, SYMBOL_AGNO, etc.)
                 for key, pos in positions.items():
                     if pos.get("status") == "OPEN":
                         symbol = pos.get("symbol")
                         if symbol:
-                            # Se for SELL, remover sufixo _SHORT para comparar
-                            base_symbol = symbol.replace("_SHORT", "")
+                            # Extrair símbolo base da chave (pode ser SYMBOL_DEEPSEEK, SYMBOL_AGNO, SYMBOL_DEEPSEEK_SHORT, etc.)
+                            base_symbol = symbol  # O símbolo já está limpo na posição
                             if base_symbol not in active_symbols:
                                 active_symbols.append(base_symbol)
                 

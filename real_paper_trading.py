@@ -35,6 +35,8 @@ class RealPaperTradingSystem:
         # CORREÇÃO: Adicionar lock para evitar race condition no monitoramento
         import threading
         self._monitoring_lock = threading.Lock()
+        self._save_lock = threading.Lock()  # Lock para salvamento de estado
+        self._save_lock = threading.Lock()  # Lock para salvamento de estado
         
         # Criar diretórios
         Path("paper_trades").mkdir(exist_ok=True)
@@ -55,6 +57,25 @@ class RealPaperTradingSystem:
                     self.trade_history = state.get("trade_history", [])
                     logger.info(f"Estado carregado: {len(self.positions)} posições abertas, saldo ${self.current_balance:.2f}")
                     
+                    # MIGRAÇÃO: Adicionar campo 'source' para posições antigas que não têm
+                    migration_needed = False
+                    for pos_key, pos in self.positions.items():
+                        if "source" not in pos:
+                            # Tentar inferir da chave
+                            if "_DEEPSEEK" in pos_key:
+                                pos["source"] = "DEEPSEEK"
+                            elif "_AGNO" in pos_key:
+                                pos["source"] = "AGNO"
+                            else:
+                                pos["source"] = "LEGACY"  # Posições antigas sem identificação
+                            migration_needed = True
+                            logger.info(f"[MIGRACAO] Adicionado campo 'source' para posição {pos_key}: {pos['source']}")
+                    
+                    # Salvar estado após migração se necessário
+                    if migration_needed:
+                        self._save_state()
+                        logger.info("[MIGRACAO] Estado salvo após migração de campos 'source'")
+                    
                     # CRÍTICO: Iniciar monitoramento se houver posições abertas
                     if len(self.positions) > 0 and not self.is_monitoring:
                         logger.warning(f"[CRITICO] Posicoes abertas encontradas mas monitoramento nao esta ativo. Iniciando monitoramento...")
@@ -67,40 +88,95 @@ class RealPaperTradingSystem:
             logger.exception(f"Erro inesperado ao carregar estado: {e}")
     
     def _save_state(self):
-        """Salva estado atual do sistema usando escrita atômica"""
-        try:
-            state = {
-                "current_balance": self.current_balance,
-                "positions": self.positions,
-                "trade_history": self.trade_history,
-                "last_update": datetime.now().isoformat()
-            }
+        """Salva estado atual do sistema usando escrita atômica com retry e lock"""
+        # Usar lock para evitar salvamentos simultâneos
+        with self._save_lock:
+            max_retries = 3
+            retry_delay = 0.1  # 100ms
+            
+            for attempt in range(max_retries):
+                try:
+                    state = {
+                        "current_balance": self.current_balance,
+                        "positions": self.positions,
+                        "trade_history": self.trade_history,
+                        "last_update": datetime.now().isoformat()
+                    }
 
-            # Atomic write to prevent corruption
-            state_file = Path("portfolio/state.json")
-            fd, temp_path = tempfile.mkstemp(
-                dir=state_file.parent,
-                prefix='.state_',
-                suffix='.json.tmp'
-            )
+                    # Atomic write to prevent corruption
+                    state_file = Path("portfolio/state.json")
+                    
+                    # Criar arquivo temporário no mesmo diretório com nome único
+                    import time
+                    temp_path = state_file.parent / f".state_{os.getpid()}_{int(time.time() * 1000000)}.tmp"
+                    
+                    try:
+                        # Escrever para arquivo temporário
+                        with open(temp_path, 'w', encoding='utf-8') as f:
+                            json.dump(state, f, indent=2)
+                            f.flush()
+                            os.fsync(f.fileno())  # Forçar escrita no disco
 
-            try:
-                with os.fdopen(fd, 'w') as f:
-                    json.dump(state, f, indent=2)
-
-                # Atomic rename
-                os.replace(temp_path, state_file)
-                logger.debug(f"Estado salvo atomicamente: {len(self.positions)} posições, saldo ${self.current_balance:.2f}")
-            except Exception:
-                # Cleanup temp file on error
-                if os.path.exists(temp_path):
-                    os.unlink(temp_path)
-                raise
-
-        except IOError as e:
-            logger.error(f"Erro de I/O ao salvar estado: {e}")
-        except Exception as e:
-            logger.exception(f"Erro inesperado ao salvar estado: {e}")
+                        # Tentar substituir o arquivo original
+                        # No Windows, pode falhar se o arquivo estiver aberto (ex: Streamlit)
+                        try:
+                            os.replace(temp_path, state_file)
+                        except (PermissionError, OSError) as e:
+                            # Se falhar por permissão/arquivo em uso, tentar remover o arquivo antigo primeiro
+                            if state_file.exists():
+                                try:
+                                    # Tentar remover arquivo antigo
+                                    os.remove(state_file)
+                                    os.replace(temp_path, state_file)
+                                except Exception as e2:
+                                    logger.warning(f"Tentativa {attempt + 1}: Erro ao substituir state.json: {e2}")
+                                    if temp_path.exists():
+                                        try:
+                                            temp_path.unlink()
+                                        except:
+                                            pass
+                                    if attempt < max_retries - 1:
+                                        time.sleep(retry_delay * (attempt + 1))
+                                        continue
+                                    raise
+                            else:
+                                # Arquivo não existe, apenas renomear
+                                os.replace(temp_path, state_file)
+                        
+                        logger.debug(f"Estado salvo atomicamente: {len(self.positions)} posições, saldo ${self.current_balance:.2f}")
+                        return  # Sucesso, sair da função
+                        
+                    except Exception as e:
+                        # Cleanup temp file on error
+                        if temp_path.exists():
+                            try:
+                                temp_path.unlink()
+                            except:
+                                pass
+                        
+                        if attempt < max_retries - 1:
+                            logger.warning(f"Tentativa {attempt + 1}/{max_retries} falhou ao salvar estado: {e}. Tentando novamente...")
+                            time.sleep(retry_delay * (attempt + 1))
+                            continue
+                        else:
+                            raise
+                            
+                except IOError as e:
+                    if attempt < max_retries - 1:
+                        logger.warning(f"Erro de I/O ao salvar estado (tentativa {attempt + 1}): {e}. Tentando novamente...")
+                        import time
+                        time.sleep(retry_delay * (attempt + 1))
+                        continue
+                    else:
+                        logger.error(f"Erro de I/O ao salvar estado após {max_retries} tentativas: {e}")
+                except Exception as e:
+                    if attempt < max_retries - 1:
+                        logger.warning(f"Erro inesperado ao salvar estado (tentativa {attempt + 1}): {e}. Tentando novamente...")
+                        import time
+                        time.sleep(retry_delay * (attempt + 1))
+                        continue
+                    else:
+                        logger.exception(f"Erro inesperado ao salvar estado após {max_retries} tentativas: {e}")
     
     async def get_current_price(self, symbol: str) -> Optional[float]:
         """Obtém preço atual do símbolo"""
@@ -170,26 +246,26 @@ class RealPaperTradingSystem:
             # Calcular valor da posição
             position_value = position_size * entry_price
             
-            # CRÍTICO: Verificar se já existe posição aberta para este símbolo (BUY ou SELL)
-            # Não permitir duas posições no mesmo ativo simultaneamente
-            existing_position = None
-            existing_key = None
+            # MODIFICADO: Verificar se já existe posição aberta para este símbolo E FONTE
+            # Permite duas posições do mesmo símbolo se forem de fontes diferentes (DEEPSEEK vs AGNO)
+            signal_source = signal.get("source", "UNKNOWN")  # DEEPSEEK ou AGNO
             
-            # Verificar se existe posição BUY (chave = symbol)
-            if symbol in self.positions:
-                existing_position = self.positions[symbol]
-                existing_key = symbol
-            # Verificar se existe posição SELL (chave = symbol_SHORT)
-            elif f"{symbol}_SHORT" in self.positions:
-                existing_position = self.positions[f"{symbol}_SHORT"]
-                existing_key = f"{symbol}_SHORT"
+            # Determinar chave da posição baseada em símbolo, fonte e tipo de sinal
+            if signal_type == "BUY":
+                position_key = f"{symbol}_{signal_source}"
+            elif signal_type == "SELL":
+                position_key = f"{symbol}_{signal_source}_SHORT"
+            else:
+                position_key = None
             
-            if existing_position and existing_position.get("status") == "OPEN":
-                existing_signal = existing_position.get("signal", "UNKNOWN")
-                return {
-                    "success": False,
-                    "error": f"Ja existe uma posicao {existing_signal} aberta para {symbol}. Feche a posicao existente antes de abrir uma nova."
-                }
+            if position_key and position_key in self.positions:
+                existing_position = self.positions[position_key]
+                if existing_position.get("status") == "OPEN":
+                    existing_signal = existing_position.get("signal", "UNKNOWN")
+                    return {
+                        "success": False,
+                        "error": f"Ja existe uma posicao {existing_signal} {signal_source} aberta para {symbol}. Feche a posicao existente antes de abrir uma nova."
+                    }
             
             # Verificar se tem saldo suficiente
             if position_value > self.current_balance:
@@ -203,6 +279,7 @@ class RealPaperTradingSystem:
             trade = {
                 "trade_id": trade_id,
                 "symbol": symbol,
+                "source": signal_source,  # DEEPSEEK ou AGNO
                 "signal": signal_type,
                 "entry_price": entry_price,
                 "position_size": position_size,
@@ -220,16 +297,17 @@ class RealPaperTradingSystem:
             }
             
             # Executar trade
+            # Usar chave baseada em símbolo, fonte e tipo de sinal
             if signal_type == "BUY":
                 # Para BUY: deduzir valor da posição do saldo
                 self.current_balance -= position_value
-                self.positions[symbol] = trade
+                self.positions[position_key] = trade
             elif signal_type == "SELL":
                 # CORRIGIDO: Para SELL (SHORT), precisamos RESERVAR margem (não receber dinheiro)
                 # Em uma posição SHORT, você "empresta" o ativo e vende, mas precisa ter margem para cobrir
                 # Deduzir margem do saldo (similar a BUY)
                 self.current_balance -= position_value
-                self.positions[f"{symbol}_SHORT"] = trade
+                self.positions[position_key] = trade
             
             # Adicionar ao histórico
             self.trade_history.append(trade)
@@ -295,19 +373,35 @@ class RealPaperTradingSystem:
         logger.warning(f"[MONITOR] Iniciando monitoramento de {len(self.positions)} posicoes")
         while self.is_monitoring and self.positions:
             try:
-                for symbol, position in list(self.positions.items()):
-                    current_price = await self.get_current_price(symbol.replace("_SHORT", ""))
+                for position_key, position in list(self.positions.items()):
+                    # Extrair símbolo limpo da chave (pode ser SYMBOL_DEEPSEEK, SYMBOL_AGNO, SYMBOL_DEEPSEEK_SHORT, etc.)
+                    clean_symbol = position_key.replace("_DEEPSEEK", "").replace("_AGNO", "").replace("_SHORT", "")
+                    source = position.get("source", "UNKNOWN")
+                    
+                    current_price = await self.get_current_price(clean_symbol)
                     
                     if current_price is None:
-                        logger.warning(f"[MONITOR] Nao foi possivel obter preco para {symbol}")
+                        logger.warning(f"[MONITOR] Nao foi possivel obter preco para {clean_symbol}")
                         continue
                     
                     # Log detalhado a cada verificação (INFO para visibilidade)
-                    clean_symbol = symbol.replace("_SHORT", "")
                     entry_price = position.get("entry_price", 0)
                     tp1 = position.get("take_profit_1", 0)
                     signal_type = position.get("signal", "UNKNOWN")
-                    logger.info(f"[MONITOR] {clean_symbol} ({signal_type}): Preco ${current_price:.2f} | Entry ${entry_price:.2f} | TP1 ${tp1:.2f}")
+                    # Se source for UNKNOWN, tentar inferir da chave ou atualizar posição
+                    if source == "UNKNOWN":
+                        if "_DEEPSEEK" in position_key:
+                            source = "DEEPSEEK"
+                        elif "_AGNO" in position_key:
+                            source = "AGNO"
+                        else:
+                            # Posições antigas sem source - tentar inferir do trade_id ou usar padrão
+                            # Se não conseguir inferir, usar "LEGACY" e atualizar a posição
+                            source = "LEGACY"
+                            # Atualizar a posição com o source inferido
+                            position["source"] = source
+                            self._save_state()
+                    logger.info(f"[MONITOR] {clean_symbol} ({signal_type} {source}): Preco ${current_price:.2f} | Entry ${entry_price:.2f} | TP1 ${tp1:.2f}")
                     
                     # Calcular P&L atual
                     entry_price = position["entry_price"]
@@ -335,12 +429,12 @@ class RealPaperTradingSystem:
                     if position.get("stop_loss"):
                         sl = position["stop_loss"]
                         if signal_type == "BUY" and current_price <= sl:
-                            logger.warning(f"[STOP LOSS] Stop Loss atingido para {symbol}: ${current_price:.2f} (SL: ${sl:.2f})")
-                            await self._close_position_auto(symbol, current_price, "STOP_LOSS")
+                            logger.warning(f"[STOP LOSS] Stop Loss atingido para {clean_symbol} {source}: ${current_price:.2f} (SL: ${sl:.2f})")
+                            await self._close_position_auto(position_key, current_price, "STOP_LOSS")
                             continue
                         elif signal_type == "SELL" and current_price >= sl:
-                            logger.warning(f"[STOP LOSS] Stop Loss atingido para {symbol}: ${current_price:.2f} (SL: ${sl:.2f})")
-                            await self._close_position_auto(symbol, current_price, "STOP_LOSS")
+                            logger.warning(f"[STOP LOSS] Stop Loss atingido para {clean_symbol} {source}: ${current_price:.2f} (SL: ${sl:.2f})")
+                            await self._close_position_auto(position_key, current_price, "STOP_LOSS")
                             continue
 
                     # Verificar take profit 1 (CORRIGIDO: fechar apenas 50% da posição)
@@ -348,28 +442,28 @@ class RealPaperTradingSystem:
                         tp1 = position["take_profit_1"]
                         if signal_type == "BUY" and current_price >= tp1:
                             # Verificar se o preço REAL atingiu o take profit
-                            logger.warning(f"[TAKE PROFIT 1] Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
-                            await self._close_position_partial(symbol, current_price, "TAKE_PROFIT_1", partial_percent=0.5)
+                            logger.warning(f"[TAKE PROFIT 1] Take Profit 1 atingido para {clean_symbol} {source}: ${current_price:.2f} (TP: ${tp1:.2f})")
+                            await self._close_position_partial(position_key, current_price, "TAKE_PROFIT_1", partial_percent=0.5)
                             continue
                         elif signal_type == "SELL" and current_price <= tp1:
-                            logger.warning(f"[TAKE PROFIT 1] Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
-                            await self._close_position_partial(symbol, current_price, "TAKE_PROFIT_1", partial_percent=0.5)
+                            logger.warning(f"[TAKE PROFIT 1] Take Profit 1 atingido para {clean_symbol} {source}: ${current_price:.2f} (TP: ${tp1:.2f})")
+                            await self._close_position_partial(position_key, current_price, "TAKE_PROFIT_1", partial_percent=0.5)
                             continue
 
                     # Verificar take profit 2 (fechar 50% restante quando TP2 for atingido)
                     if position.get("take_profit_2") and position.get("tp1_partial_closed", False):
                         tp2 = position["take_profit_2"]
                         if signal_type == "BUY" and current_price >= tp2:
-                            logger.warning(f"[TAKE PROFIT 2] Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f}) - Fechando 50% restante")
-                            await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_2")
+                            logger.warning(f"[TAKE PROFIT 2] Take Profit 2 atingido para {clean_symbol} {source}: ${current_price:.2f} (TP: ${tp2:.2f}) - Fechando 50% restante")
+                            await self._close_position_auto(position_key, current_price, "TAKE_PROFIT_2")
                             continue
                         elif signal_type == "SELL" and current_price <= tp2:
-                            logger.warning(f"[TAKE PROFIT 2] Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f}) - Fechando 50% restante")
-                            await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_2")
+                            logger.warning(f"[TAKE PROFIT 2] Take Profit 2 atingido para {clean_symbol} {source}: ${current_price:.2f} (TP: ${tp2:.2f}) - Fechando 50% restante")
+                            await self._close_position_auto(position_key, current_price, "TAKE_PROFIT_2")
                             continue
                     
                     # Log de monitoramento
-                    self._log_monitoring(symbol, current_price, pnl_percent, pnl_amount)
+                    self._log_monitoring(clean_symbol, current_price, pnl_percent, pnl_amount)
                 
                 # Pausa entre verificações
                 await asyncio.sleep(5)  # Verifica a cada 5 segundos
@@ -381,18 +475,19 @@ class RealPaperTradingSystem:
                 logger.exception(f"❌ Erro no monitoramento: {e}")
                 await asyncio.sleep(10)
     
-    async def _close_position_partial(self, symbol: str, current_price: float, reason: str, partial_percent: float = 0.5):
+    async def _close_position_partial(self, position_key: str, current_price: float, reason: str, partial_percent: float = 0.5):
         """
         Fecha parcialmente uma posição (ex: 50% no TP1, 50% restante no TP2)
         
         Args:
-            symbol: Símbolo da posição
+            position_key: Chave da posição (ex: BTCUSDT_DEEPSEEK, BTCUSDT_AGNO_SHORT)
             current_price: Preço atual para fechamento
             reason: Motivo do fechamento (TAKE_PROFIT_1, TAKE_PROFIT_2, STOP_LOSS)
             partial_percent: Porcentagem da posição a fechar (0.5 = 50%)
         """
         try:
-            position = self.positions[symbol]
+            position = self.positions[position_key]
+            symbol = position.get("symbol", position_key.split("_")[0])  # Extrair símbolo da posição ou da chave
             entry_price = position["entry_price"]
             original_position_size = position.get("original_position_size", position["position_size"])
             current_position_size = position["position_size"]
@@ -423,7 +518,8 @@ class RealPaperTradingSystem:
             # Registrar fechamento parcial no histórico
             partial_close_entry = {
                 "trade_id": f"{position.get('trade_id')}_partial_{reason}",
-                "symbol": symbol.replace("_SHORT", ""),
+                "symbol": symbol,  # Já está limpo
+                "source": position.get("source", "UNKNOWN"),
                 "signal": signal_type,
                 "entry_price": entry_price,
                 "close_price": current_price,
@@ -455,10 +551,11 @@ class RealPaperTradingSystem:
         except Exception as e:
             logger.exception(f"❌ Erro ao fechar parcialmente posição {symbol}: {e}")
     
-    async def _close_position_auto(self, symbol: str, current_price: float, reason: str):
+    async def _close_position_auto(self, position_key: str, current_price: float, reason: str):
         """Fecha posição automaticamente (100% - usado para TP2 final ou Stop Loss)"""
         try:
-            position = self.positions[symbol]
+            position = self.positions[position_key]
+            symbol = position.get("symbol", position_key.split("_")[0])  # Extrair símbolo da posição ou da chave
             entry_price = position["entry_price"]
             position_size = position["position_size"]
             signal_type = position["signal"]
@@ -507,20 +604,21 @@ class RealPaperTradingSystem:
             position["close_timestamp"] = datetime.now().isoformat()
             position["close_reason"] = reason
             
-            # Remover da posição ativa
-            del self.positions[symbol]
+            # Remover da posição ativa (usar position_key, não symbol)
+            del self.positions[position_key]
             
             # Salvar estado IMEDIATAMENTE (CRÍTICO)
             self._save_state()
             
             # Log de fechamento
-            logger.warning(f"[FECHADO] {reason}: {symbol} fechado a ${current_price:.2f} | P&L Total: ${total_pnl:.2f}")
+            source = position.get("source", "UNKNOWN")
+            logger.warning(f"[FECHADO] {reason}: {symbol} {source} fechado a ${current_price:.2f} | P&L Total: ${total_pnl:.2f}")
             self._log_trade_close(symbol, current_price, total_pnl, reason)
 
         except KeyError as e:
-            logger.error(f"Posição não encontrada: {symbol} - {e}")
+            logger.error(f"Posição não encontrada: {position_key} - {e}")
         except Exception as e:
-            logger.exception(f"❌ Erro ao fechar posição {symbol}: {e}")
+            logger.exception(f"❌ Erro ao fechar posição {position_key}: {e}")
     
     def _log_monitoring(self, symbol: str, price: float, pnl_percent: float, pnl_amount: float):
         """Log de monitoramento"""

@@ -58,11 +58,14 @@ async def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
         return result
 
     except Exception as e:
-        logger.exception(f"Unexpected error fetching market data for {symbol}: {e}")
+        error_type = type(e).__name__
+        error_msg = str(e)
+        logger.exception(f"[{symbol}] Erro ao obter dados de mercado ({error_type}): {error_msg}")
         return {
-            "error": f"Erro ao obter dados de mercado: {str(e)}",
+            "error": f"Erro ao obter dados de mercado ({error_type}): {error_msg}",
             "symbol": symbol,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "error_type": error_type
         }
 
 def _analyze_market_structure(df: pd.DataFrame) -> Dict[str, Any]:
@@ -287,10 +290,34 @@ async def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any
                 df[col] = pd.to_numeric(df[col], errors='coerce')
         
         # Calcular indicadores técnicos REAIS
-        close_prices = df['close'].values
-        high_prices = df['high'].values
-        low_prices = df['low'].values
-        volume = df['volume'].values
+        # CORRIGIDO: TA-Lib requer arrays float64 (double), converter explicitamente
+        # Preencher NaN antes de converter para numpy array
+        df['close'] = df['close'].ffill().bfill().fillna(0)
+        df['high'] = df['high'].ffill().bfill().fillna(0)
+        df['low'] = df['low'].ffill().bfill().fillna(0)
+        df['volume'] = df['volume'].fillna(0)
+        
+        # Converter para arrays numpy float64 (double) - REQUERIDO pelo TA-Lib
+        close_prices = np.asarray(df['close'].values, dtype=np.float64)
+        high_prices = np.asarray(df['high'].values, dtype=np.float64)
+        low_prices = np.asarray(df['low'].values, dtype=np.float64)
+        volume = np.asarray(df['volume'].values, dtype=np.float64)
+        
+        # Verificação final: garantir que são float64 e não têm NaN
+        if close_prices.dtype != np.float64:
+            close_prices = close_prices.astype(np.float64)
+        if high_prices.dtype != np.float64:
+            high_prices = high_prices.astype(np.float64)
+        if low_prices.dtype != np.float64:
+            low_prices = low_prices.astype(np.float64)
+        if volume.dtype != np.float64:
+            volume = volume.astype(np.float64)
+        
+        # Remover qualquer NaN restante (não deveria ter, mas garantir)
+        close_prices = np.nan_to_num(close_prices, nan=0.0)
+        high_prices = np.nan_to_num(high_prices, nan=0.0)
+        low_prices = np.nan_to_num(low_prices, nan=0.0)
+        volume = np.nan_to_num(volume, nan=0.0)
         
         current_price = close_prices[-1]
         
@@ -459,10 +486,14 @@ async def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any
             "timestamp": datetime.now().isoformat()
         }
     except Exception as e:
+        error_type = type(e).__name__
+        error_msg = str(e)
+        logger.exception(f"[{symbol}] Erro na análise técnica ({error_type}): {error_msg}")
         return {
-            "error": f"Erro na análise técnica: {str(e)}",
+            "error": f"Erro na análise técnica ({error_type}): {error_msg}",
             "symbol": symbol,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "error_type": error_type
         }
 
 async def analyze_market_sentiment(symbol: str = "BTCUSDT") -> Dict[str, Any]:
@@ -936,10 +967,42 @@ async def prepare_analysis_for_llm(symbol: str) -> Dict[str, Any]:
         multi_timeframe = await analyze_multiple_timeframes(symbol)
         order_flow = await analyze_order_flow(symbol)
         
-        # Verificar erros
+        # Verificar erros e logar detalhes
+        errors = []
+        if "error" in market_data:
+            error_msg = market_data.get("error", "Erro desconhecido em market_data")
+            errors.append(f"market_data: {error_msg}")
+            logger.error(f"[{symbol}] Erro em market_data: {error_msg}")
+        
+        if "error" in technical_indicators:
+            error_msg = technical_indicators.get("error", "Erro desconhecido em technical_indicators")
+            errors.append(f"technical_indicators: {error_msg}")
+            logger.error(f"[{symbol}] Erro em technical_indicators: {error_msg}")
+        
+        if "error" in sentiment:
+            error_msg = sentiment.get("error", "Erro desconhecido em sentiment")
+            errors.append(f"sentiment: {error_msg}")
+            logger.warning(f"[{symbol}] Erro em sentiment: {error_msg}")  # Warning pois não é crítico
+        
+        if "error" in multi_timeframe:
+            error_msg = multi_timeframe.get("error", "Erro desconhecido em multi_timeframe")
+            errors.append(f"multi_timeframe: {error_msg}")
+            logger.warning(f"[{symbol}] Erro em multi_timeframe: {error_msg}")  # Warning pois não é crítico
+        
+        if "error" in order_flow:
+            error_msg = order_flow.get("error", "Erro desconhecido em order_flow")
+            errors.append(f"order_flow: {error_msg}")
+            logger.warning(f"[{symbol}] Erro em order_flow: {error_msg}")  # Warning pois não é crítico
+        
+        # Se houver erro crítico (market_data ou technical_indicators), retornar erro
         if "error" in market_data or "error" in technical_indicators:
-            logger.error(f"Erro ao coletar dados para {symbol}")
-            return {"error": "Erro ao coletar dados de mercado"}
+            error_summary = "; ".join(errors)
+            logger.error(f"[{symbol}] Erro ao coletar dados críticos: {error_summary}")
+            return {
+                "error": f"Erro ao coletar dados de mercado: {error_summary}",
+                "symbol": symbol,
+                "timestamp": datetime.now().isoformat()
+            }
         
         # Extrair valores principais
         current_price = market_data.get("current_price", 0)
@@ -1203,6 +1266,31 @@ Analise os dados e forneça um sinal de trading.
 
 ---
 
+## IMPORTANTE: ESCALA DE CONFIANÇA (0-10)
+
+A confiança deve ser um número inteiro de 1 a 10, onde:
+
+- **10**: Sinal extremamente forte, múltiplas confluências, alta probabilidade de sucesso
+- **9**: Sinal muito forte, confluências claras, boa probabilidade
+- **8**: Sinal forte, confluências presentes, probabilidade acima da média
+- **7**: Sinal moderado-forte, algumas confluências, probabilidade razoável (MÍNIMO PARA EXECUÇÃO)
+- **6**: Sinal moderado, confluências limitadas, probabilidade média (NÃO SERÁ EXECUTADO)
+- **5**: Sinal fraco, poucas confluências, probabilidade baixa (NÃO SERÁ EXECUTADO)
+- **4 ou menos**: Sinal muito fraco ou ambíguo (NÃO SERÁ EXECUTADO)
+
+**CRÍTICO**: Apenas sinais com confiança >= 7 serão executados pelo sistema. 
+Se você não tiver confiança suficiente (>= 7), retorne "NO_SIGNAL" ao invés de um sinal fraco.
+
+**Como calcular a confiança:**
+- Considere a força da tendência (ADX, alinhamento EMAs)
+- Considere a confluência de indicadores (RSI, MACD, Bollinger)
+- Considere o alinhamento multi-timeframe
+- Considere a clareza dos níveis de suporte/resistência
+- Considere sinais conflitantes (reduz confiança)
+- Considere a volatilidade (alta volatilidade pode reduzir confiança)
+
+---
+
 RESPONDA APENAS COM JSON:
 
 ```json
@@ -1212,8 +1300,8 @@ RESPONDA APENAS COM JSON:
     "stop_loss": <número>,
     "take_profit_1": <número>,
     "take_profit_2": <número>,
-    "confidence": <1-10>,
-    "reasoning": "<justificativa>"
+    "confidence": <1-10> (APENAS >= 7 será executado),
+    "reasoning": "<justificativa detalhada incluindo cálculo da confiança>"
 }}
 ```
 """
@@ -1282,8 +1370,9 @@ async def get_deepseek_analysis(symbol: str) -> Dict[str, Any]:
                     "take_profit_2": signal_json.get("take_profit_2"),
                     "confidence": signal_json.get("confidence", 5),
                     "reasoning": signal_json.get("reasoning", ""),
-                    "analysis_data": analysis,
-                    "raw_response": response_content,
+                    "analysis_data": analysis,  # JSON de análise enviado
+                    "deepseek_prompt": prompt,  # Prompt de texto enviado
+                    "raw_response": response_content,  # Resposta bruta do DeepSeek
                     "timestamp": datetime.now().isoformat()
                 }
             except json.JSONDecodeError as e:
@@ -1292,9 +1381,9 @@ async def get_deepseek_analysis(symbol: str) -> Dict[str, Any]:
         # Se não conseguiu extrair JSON, retornar resposta bruta
         logger.warning(f"[DEEPSEEK] Não foi possível extrair JSON, retornando resposta bruta")
         return {
-            "analysis_data": analysis,
-            "deepseek_prompt": prompt,
-            "raw_response": response_content,
+            "analysis_data": analysis,  # JSON de análise enviado
+            "deepseek_prompt": prompt,  # Prompt de texto enviado
+            "raw_response": response_content,  # Resposta bruta do DeepSeek
             "needs_agent_processing": True,
             "timestamp": datetime.now().isoformat()
         }
@@ -1361,56 +1450,73 @@ def validate_risk_and_position(
                 "risk_level": "low"
             }
         
-        # CRÍTICO: Verificar se já existe posição aberta para este símbolo
+        # MODIFICADO: Verificar se já existe posição aberta para este símbolo E FONTE
+        # Permite duas posições do mesmo símbolo se forem de fontes diferentes (DEEPSEEK vs AGNO)
         try:
             import json
             import os
+            signal_source = signal.get("source", "UNKNOWN")  # DEEPSEEK ou AGNO
+            
             if os.path.exists("portfolio/state.json"):
                 with open("portfolio/state.json", "r", encoding='utf-8') as f:
                     state = json.load(f)
                     positions = state.get("positions", {})
                     
-                    # Verificar se existe posição BUY (chave = symbol)
-                    if symbol in positions and positions[symbol].get("status") == "OPEN":
-                        return {
-                            "can_execute": False,
-                            "reason": f"Ja existe uma posicao BUY aberta para {symbol}. Feche a posicao existente antes de abrir uma nova.",
-                            "risk_level": "medium"
-                        }
+                    # Verificar se existe posição para este símbolo E fonte
+                    # Chaves possíveis: SYMBOL_DEEPSEEK, SYMBOL_AGNO, SYMBOL_DEEPSEEK_SHORT, SYMBOL_AGNO_SHORT
+                    signal_type = signal.get("signal", "")
                     
-                    # Verificar se existe posição SELL (chave = symbol_SHORT)
-                    if f"{symbol}_SHORT" in positions and positions[f"{symbol}_SHORT"].get("status") == "OPEN":
-                        return {
-                            "can_execute": False,
-                            "reason": f"Ja existe uma posicao SELL aberta para {symbol}. Feche a posicao existente antes de abrir uma nova.",
-                            "risk_level": "medium"
-                        }
+                    if signal_type == "BUY":
+                        position_key = f"{symbol}_{signal_source}"
+                    elif signal_type == "SELL":
+                        position_key = f"{symbol}_{signal_source}_SHORT"
+                    else:
+                        position_key = None
+                    
+                    if position_key and position_key in positions:
+                        existing_position = positions[position_key]
+                        if existing_position.get("status") == "OPEN":
+                            return {
+                                "can_execute": False,
+                                "reason": f"Ja existe uma posicao {signal_type} {signal_source} aberta para {symbol}. Feche a posicao existente antes de abrir uma nova.",
+                                "risk_level": "medium"
+                            }
         except Exception as e:
             # Se houver erro ao verificar, continuar (não bloquear)
+            logger.warning(f"Erro ao verificar posicoes existentes: {e}")
             pass
         
         entry_price = signal.get('entry_price', 0)
         stop_loss = signal.get('stop_loss', 0)
-        confidence = signal.get('confidence', 5)
+        confidence = signal.get('confidence', 0)
         
         # CORRIGIDO: Validar confiança antes de executar
-        # Se escala 0-10: executar apenas se confiança >= 7
-        # Se escala 0-5: executar apenas se confiança >= 3
+        # UNIFICADO: Sempre usar escala 0-10, mínimo 7 para executar
         from config import settings
         
-        if confidence > 5:
-            # Escala 0-10
-            min_confidence = settings.min_confidence_0_10
-            confidence_scale = "0-10"
-        else:
-            # Escala 0-5
-            min_confidence = settings.min_confidence_0_5
-            confidence_scale = "0-5"
+        # Normalizar confiança para escala 0-10 se necessário
+        # Se confiança for <= 5, pode ser escala antiga (0-5), converter para 0-10
+        if confidence > 0 and confidence <= 5:
+            # Converter escala 0-5 para 0-10 (multiplicar por 2)
+            confidence = confidence * 2
+            logger.warning(f"[CONFIANCA] Convertendo escala 0-5 para 0-10: {signal.get('confidence')} -> {confidence}")
+        
+        # Garantir que confiança está no range válido (1-10)
+        if confidence < 1 or confidence > 10:
+            return {
+                "can_execute": False,
+                "reason": f"Confianca invalida: {confidence} (deve ser entre 1 e 10)",
+                "risk_level": "medium",
+                "confidence": confidence
+            }
+        
+        # Validar mínimo de confiança (sempre 7 para escala 0-10)
+        min_confidence = settings.min_confidence_0_10  # Sempre 7
         
         if confidence < min_confidence:
             return {
                 "can_execute": False,
-                "reason": f"Confianca muito baixa: {confidence}/{confidence_scale} (minimo {min_confidence})",
+                "reason": f"Confianca muito baixa: {confidence}/10 (minimo {min_confidence}/10 para executar)",
                 "risk_level": "medium",
                 "confidence": confidence,
                 "min_confidence": min_confidence
@@ -1436,13 +1542,18 @@ def validate_risk_and_position(
             }
         
         # Circuit Breaker 2: Verificar drawdown atual
+        # MODIFICADO: Para paper trading, permitir drawdown maior (40%) para não bloquear recuperação
         current_drawdown = _calculate_current_drawdown()
-        if current_drawdown > 0.15:  # Máximo 15% de drawdown
+        max_drawdown_allowed = 0.40  # 40% para paper trading (mais flexível)
+        if current_drawdown > max_drawdown_allowed:
             return {
                 "can_execute": False,
-                "reason": f"Drawdown atual muito alto: {current_drawdown:.2%} (máximo 15%)",
+                "reason": f"Drawdown atual muito alto: {current_drawdown:.2%} (máximo {max_drawdown_allowed:.0%})",
                 "risk_level": "high"
             }
+        elif current_drawdown > 0.15:
+            # Drawdown entre 15% e 40%: permitir mas reduzir tamanho da posição
+            logger.warning(f"[RISCO] Drawdown elevado ({current_drawdown:.2%}), reduzindo tamanho de posição")
         
         # Circuit Breaker 3: Verificar exposição total
         total_exposure = _calculate_total_exposure()
@@ -1465,7 +1576,16 @@ def validate_risk_and_position(
         # Calcular tamanho da posição baseado na confiança
         base_risk = account_balance * 0.02  # 2% base
         confidence_multiplier = confidence / 10  # 0.1 a 1.0
-        max_risk_amount = base_risk * confidence_multiplier
+        
+        # MODIFICADO: Reduzir tamanho da posição se drawdown estiver alto (15-30%)
+        drawdown_multiplier = 1.0
+        if current_drawdown > 0.15:
+            # Reduzir tamanho da posição proporcionalmente ao drawdown
+            # Drawdown 15% = 1.0, Drawdown 30% = 0.5
+            drawdown_multiplier = max(0.5, 1.0 - ((current_drawdown - 0.15) / 0.15))
+            logger.info(f"[RISCO] Drawdown {current_drawdown:.2%} - Aplicando multiplicador: {drawdown_multiplier:.2f}")
+        
+        max_risk_amount = base_risk * confidence_multiplier * drawdown_multiplier
         
         position_size = max_risk_amount / risk_per_trade
         

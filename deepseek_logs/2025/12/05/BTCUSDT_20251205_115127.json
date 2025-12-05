@@ -1,0 +1,101 @@
+{
+  "symbol": "BTCUSDT",
+  "timestamp": "2025-12-05T11:51:27.027963",
+  "prompt_sent": "\nAnalise os dados e forneça um sinal de trading.\n\n## DADOS DE MERCADO\n\n- Símbolo: BTCUSDT\n- Preço: $90,012.90\n- Variação 24h: -2.56%\n- Posição no range: 4%\n\n## ANÁLISE DE TENDÊNCIA\n\n- Tendência primária: bearish\n- Força (ADX): moderate\n- Momentum: oversold\n- Alinhamento timeframes: strong_bearish_alignment\n- Score confluência: -3/5\n\n## INDICADORES\n\n- RSI: 27.8 (oversold)\n- MACD: bearish - accelerating_down\n- Bollinger: lower_band\n- EMAs: mixed\n\n## NÍVEIS CHAVE\n\n- Suporte: $87,758.42 (+2.50%)\n- Resistência: $93,110.72 (+3.44%)\n- POC Volume: $90,353.79\n\n## VOLUME E FLUXO\n\n- Pressão orderbook: sell_pressure\n- OBV: bearish\n\n## SENTIMENTO\n\n- Geral: negative\n- Funding: neutral\n\n## VOLATILIDADE\n\n- Nível: extreme\n- Stop sugerido: 1.06%\n- TP1 sugerido: 1.41%\n- TP2 sugerido: 2.11%\n\n## SINAIS CONFLITANTES\n\n- RSI oversold but strong bearish trend\n\n## SCORE AGREGADO\n\n- Fatores bullish: 2\n- Fatores bearish: 5\n- Bias geral: -3/10 (sell)\n- Ação recomendada: SELL\n\n---\n\n## IMPORTANTE: ESCALA DE CONFIANÇA (0-10)\n\nA confiança deve ser um número inteiro de 1 a 10, onde:\n\n- **10**: Sinal extremamente forte, múltiplas confluências, alta probabilidade de sucesso\n- **9**: Sinal muito forte, confluências claras, boa probabilidade\n- **8**: Sinal forte, confluências presentes, probabilidade acima da média\n- **7**: Sinal moderado-forte, algumas confluências, probabilidade razoável (MÍNIMO PARA EXECUÇÃO)\n- **6**: Sinal moderado, confluências limitadas, probabilidade média (NÃO SERÁ EXECUTADO)\n- **5**: Sinal fraco, poucas confluências, probabilidade baixa (NÃO SERÁ EXECUTADO)\n- **4 ou menos**: Sinal muito fraco ou ambíguo (NÃO SERÁ EXECUTADO)\n\n**CRÍTICO**: Apenas sinais com confiança >= 7 serão executados pelo sistema. \nSe você não tiver confiança suficiente (>= 7), retorne \"NO_SIGNAL\" ao invés de um sinal fraco.\n\n**Como calcular a confiança:**\n- Considere a força da tendência (ADX, alinhamento EMAs)\n- Considere a confluência de indicadores (RSI, MACD, Bollinger)\n- Considere o alinhamento multi-timeframe\n- Considere a clareza dos níveis de suporte/resistência\n- Considere sinais conflitantes (reduz confiança)\n- Considere a volatilidade (alta volatilidade pode reduzir confiança)\n\n---\n\nRESPONDA APENAS COM JSON:\n\n```json\n{\n    \"signal\": \"BUY\" ou \"SELL\" ou \"NO_SIGNAL\",\n    \"entry_price\": <número>,\n    \"stop_loss\": <número>,\n    \"take_profit_1\": <número>,\n    \"take_profit_2\": <número>,\n    \"confidence\": <1-10> (APENAS >= 7 será executado),\n    \"reasoning\": \"<justificativa detalhada incluindo cálculo da confiança>\"\n}\n```\n",
+  "analysis_data_sent": {
+    "symbol": "BTCUSDT",
+    "timestamp": "2025-12-05T11:51:12.470081",
+    "price_context": {
+      "current": 90012.9,
+      "change_24h_pct": -2.564,
+      "high_24h": 93256.3,
+      "low_24h": 89863.0,
+      "position_in_range_pct": 4.417528659416911
+    },
+    "trend_analysis": {
+      "primary_trend": "bearish",
+      "trend_strength_adx": 31.77519653062586,
+      "trend_strength_interpretation": "moderate",
+      "momentum": "oversold",
+      "timeframe_alignment": {
+        "5m": "bearish",
+        "15m": "bearish",
+        "1h": "bearish",
+        "4h": "bearish",
+        "1d": "bullish"
+      },
+      "confluence_score": -3,
+      "confluence_interpretation": "strong_bearish_alignment"
+    },
+    "key_indicators": {
+      "rsi": {
+        "value": 27.82524537914284,
+        "zone": "oversold",
+        "action_hint": "potential_buy"
+      },
+      "macd": {
+        "histogram": -185.12867145824504,
+        "crossover": "bearish",
+        "momentum_direction": "accelerating_down"
+      },
+      "bollinger": {
+        "position": -0.16350499957103531,
+        "zone": "lower_band",
+        "squeeze_detected": false
+      },
+      "ema_structure": {
+        "price_vs_ema20": "below",
+        "price_vs_ema50": "below",
+        "price_vs_ema200": "below",
+        "ema_alignment": "mixed"
+      },
+      "obv_trend": "bearish"
+    },
+    "key_levels": {
+      "immediate_support": 87758.418,
+      "immediate_resistance": 93110.71669737792,
+      "fib_382": 90212.582,
+      "fib_50": 88985.5,
+      "fib_618": 87758.418,
+      "volume_poc": 90353.78947368421,
+      "distance_to_support_pct": 2.504621004322702,
+      "distance_to_resistance_pct": 3.441525267353824
+    },
+    "volume_flow": {
+      "volume_24h": 145188.704,
+      "volume_trend": "stable",
+      "obv_trend": "bearish",
+      "orderbook_imbalance": -0.3940930130041878,
+      "orderbook_bias": "sell_pressure",
+      "cvd_direction": "negative"
+    },
+    "sentiment": {
+      "overall": "negative",
+      "confidence": 0.7,
+      "funding_rate": 1.754e-05,
+      "funding_interpretation": "neutral",
+      "open_interest_trend": "stable"
+    },
+    "volatility": {
+      "atr_value": 633.1915571585507,
+      "atr_pct": 0.7034453474541436,
+      "level": "extreme",
+      "suggested_stop_pct": 1.0551680211812153,
+      "suggested_tp1_pct": 1.406890694908287,
+      "suggested_tp2_pct": 2.1103360423624307
+    },
+    "conflicting_signals": [
+      "RSI oversold but strong bearish trend"
+    ],
+    "aggregated_scores": {
+      "bullish_factors_count": 2,
+      "bearish_factors_count": 5,
+      "neutral_factors_count": 1,
+      "overall_bias": -3,
+      "overall_bias_interpretation": "sell",
+      "recommended_action": "SELL"
+    }
+  },
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": 90012.90,\n    \"stop_loss\": 90967.03,\n    \"take_profit_1\": 88758.42,\n    \"take_profit_2\": 88112.63,\n    \"confidence\": 6,\n    \"reasoning\": \"Apesar do bias geral ser de venda (-3/10) e múltiplos fatores bearish (tendência primária bearish, alinhamento multi-timeframe strong_bearish, ADX moderado, pressão de venda no orderbook, OBV bearish), existem sinais conflitantes significativos que reduzem a confiança abaixo do limiar de execução (7). O RSI está em 27.8 (oversold), indicando possível exaustão da venda. O preço está no extremo inferior do range (4%) e próximo a um nível de suporte forte ($87,758.42). A volatilidade extrema e o momentum oversold sugerem alto risco de um movimento de alívio (bounce) contra a tendência. A confluência para um sinal de venda não é suficientemente clara para justificar uma entrada com alta probabilidade no momento. A confiança é calculada como 6: tendência bearish forte (+2), alinhamento multi-timeframe (+2), mas RSI oversold conflitante (-2), proximidade de suporte chave (-1) e volatilidade extrema (-1).\"\n}\n```",
+  "response_type": "str"
+}

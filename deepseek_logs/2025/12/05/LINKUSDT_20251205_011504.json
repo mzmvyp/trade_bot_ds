@@ -1,0 +1,7 @@
+{
+  "symbol": "LINKUSDT",
+  "timestamp": "2025-12-05T01:15:04.968198",
+  "prompt_sent": "",
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": null,\n    \"stop_loss\": null,\n    \"take_profit_1\": null,\n    \"take_profit_2\": null,\n    \"confidence\": 4,\n    \"reasoning\": \"A análise dos dados não apresenta confluências suficientes para gerar um sinal de alta confiança (>=7). O bias geral é neutro (-2/10) com recomendação de 'WAIT'. A tendência primária é neutra (ADX: no_trend) e o momentum é bearish, enquanto o alinhamento de timeframes é bullish, criando um cenário misto. Os indicadores são conflitantes: RSI neutro, MACD bearish acelerando para baixo, Bollinger abaixo do meio e EMAs mistas. A posição no range (39%) não é extrema, e os níveis-chave de suporte ($12.95) e resistência ($14.56) estão relativamente distantes do preço atual. A volatilidade extrema aumenta o risco. O score de confluência é muito baixo (1/5) e os fatores bearish superam os bullish (2 vs 0). Portanto, a confiança é insuficiente para uma execução.\"\n}\n```",
+  "response_type": "str"
+}
