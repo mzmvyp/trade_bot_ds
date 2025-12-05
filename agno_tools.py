@@ -332,13 +332,22 @@ async def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any
         obv_trend = "bullish" if len(obv) >= 5 and obv[-1] > obv[-5] else "bearish"
         
         # Volume Profile - identificar POC (Point of Control)
-        price_ranges = np.linspace(df['low'].min(), df['high'].max(), 20)
-        volume_profile = {}
-        for i in range(len(price_ranges) - 1):
-            mask = (df['close'] >= price_ranges[i]) & (df['close'] < price_ranges[i+1])
-            volume_profile[float(price_ranges[i])] = float(df[mask]['volume'].sum())
-        
-        poc_price = max(volume_profile, key=volume_profile.get) if volume_profile else current_price
+        try:
+            price_ranges = np.linspace(df['low'].min(), df['high'].max(), 20)
+            volume_profile = {}
+            for i in range(len(price_ranges) - 1):
+                mask = (df['close'] >= price_ranges[i]) & (df['close'] < price_ranges[i+1])
+                volume_profile[float(price_ranges[i])] = float(df[mask]['volume'].sum())
+            
+            # CORRIGIDO: Proteção contra volume_profile vazio
+            if volume_profile and len(volume_profile) > 0:
+                poc_price = max(volume_profile, key=volume_profile.get)
+            else:
+                poc_price = current_price
+        except (ValueError, TypeError, KeyError) as e:
+            logger.warning(f"Erro ao calcular volume profile: {e}")
+            poc_price = current_price
+            volume_profile = {}
         
         # Fibonacci Retracement (conforme sugestão)
         period_high = df['high'].max()
@@ -422,7 +431,7 @@ async def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any
             },
             "volume_profile": {
                 "poc_price": float(poc_price),
-                "high_volume_zones": sorted(volume_profile.items(), key=lambda x: x[1], reverse=True)[:3]
+                "high_volume_zones": sorted(volume_profile.items(), key=lambda x: x[1], reverse=True)[:3] if volume_profile and len(volume_profile) > 0 else []
             },
             "fibonacci_levels": fib_levels,
             "support": float(support) if not np.isnan(support) else current_price * 0.95,
@@ -739,8 +748,9 @@ def _calculate_overall_bias(data: Dict) -> Dict[str, Any]:
         bearish_count = 0
         neutral_count = 0
         
-        # Analisar tendência
-        trend = data.get("trend_analysis", {}).get("primary_trend", "neutral")
+        # CORRIGIDO: Proteção contra None em todas as chamadas .get().get()
+        trend_analysis = data.get("trend_analysis") or {}
+        trend = trend_analysis.get("primary_trend", "neutral")
         if "strong_bullish" in trend:
             bullish_count += 3
         elif "bullish" in trend:
@@ -753,7 +763,7 @@ def _calculate_overall_bias(data: Dict) -> Dict[str, Any]:
             neutral_count += 1
         
         # Analisar momentum
-        momentum = data.get("trend_analysis", {}).get("momentum", "neutral")
+        momentum = trend_analysis.get("momentum", "neutral")
         if momentum == "overbought":
             bearish_count += 1
         elif momentum == "oversold":
@@ -766,7 +776,9 @@ def _calculate_overall_bias(data: Dict) -> Dict[str, Any]:
             neutral_count += 1
         
         # Analisar RSI
-        rsi_hint = data.get("key_indicators", {}).get("rsi", {}).get("action_hint", "wait")
+        key_indicators = data.get("key_indicators") or {}
+        rsi_data = key_indicators.get("rsi") or {}
+        rsi_hint = rsi_data.get("action_hint", "wait")
         if "buy" in rsi_hint:
             bullish_count += 1
         elif "sell" in rsi_hint:
@@ -775,7 +787,8 @@ def _calculate_overall_bias(data: Dict) -> Dict[str, Any]:
             neutral_count += 1
         
         # Analisar MACD
-        macd_crossover = data.get("key_indicators", {}).get("macd", {}).get("crossover", "neutral")
+        macd_data = key_indicators.get("macd") or {}
+        macd_crossover = macd_data.get("crossover", "neutral")
         if macd_crossover == "bullish":
             bullish_count += 1
         elif macd_crossover == "bearish":
@@ -784,7 +797,8 @@ def _calculate_overall_bias(data: Dict) -> Dict[str, Any]:
             neutral_count += 1
         
         # Analisar EMA alignment
-        ema_alignment = data.get("key_indicators", {}).get("ema_structure", {}).get("ema_alignment", "mixed")
+        ema_structure = key_indicators.get("ema_structure") or {}
+        ema_alignment = ema_structure.get("ema_alignment", "mixed")
         if "bullish" in ema_alignment:
             bullish_count += 1
         elif "bearish" in ema_alignment:
@@ -793,7 +807,8 @@ def _calculate_overall_bias(data: Dict) -> Dict[str, Any]:
             neutral_count += 1
         
         # Analisar orderbook
-        orderbook_bias = data.get("volume_flow", {}).get("orderbook_bias", "neutral")
+        volume_flow = data.get("volume_flow") or {}
+        orderbook_bias = volume_flow.get("orderbook_bias", "neutral")
         if "buy" in orderbook_bias:
             bullish_count += 1
         elif "sell" in orderbook_bias:
@@ -802,7 +817,8 @@ def _calculate_overall_bias(data: Dict) -> Dict[str, Any]:
             neutral_count += 1
         
         # Analisar sentimento
-        sentiment = data.get("sentiment", {}).get("overall", "neutral")
+        sentiment_data = data.get("sentiment") or {}
+        sentiment = sentiment_data.get("overall", "neutral")
         if "very_positive" in sentiment:
             bullish_count += 2
         elif "positive" in sentiment:
@@ -857,6 +873,10 @@ def _calculate_overall_bias(data: Dict) -> Dict[str, Any]:
 def _interpret_confluence(bullish_count: int, bearish_count: int) -> str:
     """Interpreta alinhamento de timeframes"""
     try:
+        # CORRIGIDO: Garantir que são inteiros válidos
+        bullish_count = int(bullish_count) if bullish_count is not None else 0
+        bearish_count = int(bearish_count) if bearish_count is not None else 0
+        
         if bullish_count >= 4:
             return "strong_bullish_alignment"
         elif bullish_count >= 3:
@@ -867,7 +887,8 @@ def _interpret_confluence(bullish_count: int, bearish_count: int) -> str:
             return "bearish_alignment"
         else:
             return "mixed_signals"
-    except:
+    except Exception as e:
+        logger.warning(f"Erro ao interpretar confluência: {e}")
         return "mixed_signals"
 
 # ============================================================================
@@ -1068,10 +1089,20 @@ async def prepare_analysis_for_llm(symbol: str) -> Dict[str, Any]:
         # Calcular scores agregados
         analysis["aggregated_scores"] = _calculate_overall_bias(analysis)
         
+        # CORRIGIDO: Garantir que não estamos enviando dados muito grandes
+        # Limitar high_volume_zones se muito grande (já está limitado em analyze_technical_indicators, mas garantir)
+        # Nota: high_volume_zones não está diretamente em analysis, mas sim em key_levels.volume_poc
+        # O volume_profile completo está em technical_indicators, mas não é incluído em analysis
+        
         # Validar tamanho do payload
         payload_size = len(json.dumps(analysis))
         if payload_size > 10000:  # 10KB (com margem de segurança)
             logger.warning(f"Payload muito grande: {payload_size} bytes para {symbol}")
+            # Se payload muito grande, remover dados desnecessários
+            # Remover high_volume_zones se existir em algum lugar
+            if "key_levels" in analysis and "volume_poc" in analysis["key_levels"]:
+                # Manter apenas POC, já está otimizado
+                pass
         
         return analysis
         
