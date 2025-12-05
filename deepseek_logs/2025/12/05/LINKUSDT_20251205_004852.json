@@ -1,0 +1,7 @@
+{
+  "symbol": "LINKUSDT",
+  "timestamp": "2025-12-05T00:48:52.795024",
+  "prompt_sent": "",
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": 14.26,\n    \"stop_loss\": 14.52,\n    \"take_profit_1\": 13.91,\n    \"take_profit_2\": 13.74,\n    \"confidence\": 3,\n    \"reasoning\": \"Análise mostra tendência primária neutra com momentum bearish, alinhamento de timeframes bearish e score de confluência negativo (-1/5). Indicadores mistos (RSI neutro, MACD bearish, EMAs mistas) com bias geral neutro (-2/10). Ação recomendada é WAIT devido à falta de sinais claros de entrada, volatilidade extrema e posição desfavorável no range (36%).\"\n}\n```",
+  "response_type": "str"
+}

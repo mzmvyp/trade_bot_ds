@@ -1223,11 +1223,14 @@ RESPONDA APENAS COM JSON:
 
 async def get_deepseek_analysis(symbol: str) -> Dict[str, Any]:
     """
-    Prepara análise otimizada para o DeepSeek.
-    CORRIGIDO: Agora usa prepare_analysis_for_llm() que sumariza dados.
-    NÃO recebe mais dados brutos - coleta internamente e sumariza.
+    Prepara análise otimizada para o DeepSeek e chama diretamente.
+    CORRIGIDO: Agora chama DeepSeek diretamente e retorna o sinal JSON processado.
     """
     try:
+        import os
+        from agno.models.deepseek import DeepSeek
+        from agno.agent import Agent
+        
         # Usar a nova função que já sumariza tudo
         analysis = await prepare_analysis_for_llm(symbol)
         
@@ -1237,9 +1240,61 @@ async def get_deepseek_analysis(symbol: str) -> Dict[str, Any]:
         # Criar prompt estruturado
         prompt = _create_analysis_prompt(analysis)
         
+        # CORRIGIDO: Chamar DeepSeek diretamente ao invés de retornar prompt
+        api_key = os.getenv("DEEPSEEK_API_KEY")
+        if not api_key:
+            logger.warning("DEEPSEEK_API_KEY não encontrada, retornando apenas prompt")
+            return {
+                "analysis_data": analysis,
+                "deepseek_prompt": prompt,
+                "needs_agent_processing": True,
+                "timestamp": datetime.now().isoformat()
+            }
+        
+        # Criar agent simples apenas para chamar DeepSeek
+        model = DeepSeek(id="deepseek-chat", api_key=api_key, temperature=0.3, max_tokens=1000)
+        agent = Agent(
+            model=model,
+            instructions="Você é um trader profissional. Analise os dados e forneça um sinal de trading em formato JSON."
+        )
+        
+        # Chamar DeepSeek diretamente
+        logger.info(f"[DEEPSEEK] Chamando DeepSeek diretamente para {symbol}")
+        response = await agent.arun(prompt)
+        
+        # Extrair conteúdo da resposta
+        response_content = str(response.content) if hasattr(response, 'content') else str(response)
+        
+        # Tentar extrair JSON da resposta
+        import re
+        json_match = re.search(r'```json\s*(\{.*?\})\s*```', response_content, re.DOTALL)
+        if json_match:
+            try:
+                signal_json = json.loads(json_match.group(1))
+                logger.info(f"[DEEPSEEK] Sinal extraído: {signal_json.get('signal', 'N/A')} com confiança {signal_json.get('confidence', 0)}")
+                
+                # Retornar sinal processado
+                return {
+                    "signal": signal_json.get("signal", "NO_SIGNAL"),
+                    "entry_price": signal_json.get("entry_price"),
+                    "stop_loss": signal_json.get("stop_loss"),
+                    "take_profit_1": signal_json.get("take_profit_1"),
+                    "take_profit_2": signal_json.get("take_profit_2"),
+                    "confidence": signal_json.get("confidence", 5),
+                    "reasoning": signal_json.get("reasoning", ""),
+                    "analysis_data": analysis,
+                    "raw_response": response_content,
+                    "timestamp": datetime.now().isoformat()
+                }
+            except json.JSONDecodeError as e:
+                logger.warning(f"[DEEPSEEK] Erro ao decodificar JSON: {e}")
+        
+        # Se não conseguiu extrair JSON, retornar resposta bruta
+        logger.warning(f"[DEEPSEEK] Não foi possível extrair JSON, retornando resposta bruta")
         return {
             "analysis_data": analysis,
             "deepseek_prompt": prompt,
+            "raw_response": response_content,
             "needs_agent_processing": True,
             "timestamp": datetime.now().isoformat()
         }

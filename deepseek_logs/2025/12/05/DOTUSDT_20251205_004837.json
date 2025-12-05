@@ -1,0 +1,7 @@
+{
+  "symbol": "DOTUSDT",
+  "timestamp": "2025-12-05T00:48:37.504405",
+  "prompt_sent": "",
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": 2.28,\n    \"stop_loss\": 2.24,\n    \"take_profit_1\": 2.33,\n    \"take_profit_2\": 2.35,\n    \"confidence\": 3,\n    \"reasoning\": \"Análise mostra múltiplos sinais conflitantes: tendência primária neutra com alinhamento bearish, momentum bearish, score de confluência negativo (-1/5) e bias geral neutro (0/10). Embora exista pressão de compra no orderbook e OBV bullish, os indicadores técnicos (MACD acelerando para baixo, RSI neutro, EMAs mistas) e posição abaixo do meio da banda de Bollinger sugerem fraqueza. A ação recomendada é WAIT devido à falta de clareza direcional e volatilidade extrema.\"\n}\n```",
+  "response_type": "str"
+}

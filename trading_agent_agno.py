@@ -84,6 +84,11 @@ class AgnoTradingAgent:
         Path("signals").mkdir(exist_ok=True)
         Path("logs").mkdir(exist_ok=True)
         Path("paper_trades").mkdir(exist_ok=True)
+        
+        # Criar estrutura de diretórios para respostas do DeepSeek (ano/mês/dia)
+        today = datetime.now()
+        deepseek_logs_dir = Path(f"deepseek_logs/{today.year}/{today.month:02d}/{today.day:02d}")
+        deepseek_logs_dir.mkdir(parents=True, exist_ok=True)
     
     def _get_instructions(self) -> str:
         """Retorna as instruções para o agent"""
@@ -229,26 +234,31 @@ class AgnoTradingAgent:
             logger.warning(f"Erro ao verificar ultima analise: {e}")
         
         # Prompt para o agent
+        # CORRIGIDO: get_deepseek_analysis() agora retorna o sinal JSON diretamente
         prompt = f"""
         Execute uma analise completa para {symbol} seguindo o processo definido:
         
-        1. Obtenha analise DeepSeek usando get_deepseek_analysis("{symbol}")
-           - Esta funcao ja coleta, processa e sumariza todos os dados necessarios
-           - Retorna dados interpretados e otimizados (sem arrays de klines)
+        1. Obtenha sinal DeepSeek usando get_deepseek_analysis("{symbol}")
+           - Esta funcao ja coleta, processa, sumariza e chama DeepSeek diretamente
+           - Retorna sinal JSON processado com signal, entry_price, stop_loss, etc.
         
-        2. Analise o resultado e decida: BUY, SELL ou NO_SIGNAL
+        2. Se get_deepseek_analysis() retornou um sinal JSON (campo "signal" presente):
+           - Use esse sinal diretamente
+           - Valide o risco com validate_risk_and_position() 
+           - Se apropriado, execute paper trade com execute_paper_trade()
         
-        3. Valide o risco com validate_risk_and_position() 
-        
-        4. Se apropriado, execute paper trade com execute_paper_trade()
+        3. Se get_deepseek_analysis() retornou apenas dados (sem "signal"):
+           - Analise os dados e decida: BUY, SELL ou NO_SIGNAL
+           - Valide o risco com validate_risk_and_position()
+           - Se apropriado, execute paper trade com execute_paper_trade()
         
         IMPORTANTE: 
-        - Forneca APENAS UM sinal: BUY ou SELL (nao ambos)
-        - Se o mercado estiver neutro ou sem oportunidade clara, retorne NO_SIGNAL
+        - Se get_deepseek_analysis() retornou um sinal JSON, USE ESSE SINAL DIRETAMENTE
+        - NÃO reinterprete ou modifique o sinal do DeepSeek
         - Retorne APENAS o JSON estruturado com signal, entry_price, stop_loss, 
           take_profit_1, take_profit_2, confidence e reasoning
         
-        Seja detalhado mas objetivo.
+        Seja objetivo e use o sinal do DeepSeek quando disponível.
         """
         
         try:
@@ -256,12 +266,39 @@ class AgnoTradingAgent:
                 # Modo demo - análise local
                 signal = self._demo_analysis(symbol)
             else:
-                # Executar agent - ELE VAI ORQUESTRAR TUDO!
-                # Usar arun() porque algumas ferramentas são assíncronas
-                response = await self.agent.arun(prompt)
+                # CORRIGIDO: Chamar get_deepseek_analysis() diretamente primeiro
+                # Se retornar sinal JSON processado, usar diretamente
+                deepseek_result = await get_deepseek_analysis(symbol)
                 
-                # Processar resposta
-                signal = self._process_agent_response(response, symbol)
+                if isinstance(deepseek_result, dict) and "signal" in deepseek_result:
+                    # DeepSeek já retornou sinal JSON processado - usar diretamente
+                    logger.info(f"[SINAL DIRETO] Usando sinal do DeepSeek: {deepseek_result.get('signal', 'N/A')}")
+                    signal = {
+                        "symbol": symbol,
+                        "timestamp": datetime.now().isoformat(),
+                        "signal": deepseek_result.get("signal", "NO_SIGNAL"),
+                        "entry_price": deepseek_result.get("entry_price"),
+                        "stop_loss": deepseek_result.get("stop_loss"),
+                        "take_profit_1": deepseek_result.get("take_profit_1"),
+                        "take_profit_2": deepseek_result.get("take_profit_2"),
+                        "confidence": deepseek_result.get("confidence", 5),
+                        "reasoning": deepseek_result.get("reasoning", ""),
+                        "raw_response": deepseek_result.get("raw_response", "")
+                    }
+                    
+                    # Salvar resposta bruta do DeepSeek para auditoria
+                    self._save_deepseek_response(symbol, deepseek_result.get("deepseek_prompt", ""), deepseek_result.get("raw_response", ""))
+                else:
+                    # Se não retornou sinal direto, usar AGNO agent para processar
+                    # Executar agent - ELE VAI ORQUESTRAR TUDO!
+                    # Usar arun() porque algumas ferramentas são assíncronas
+                    response = await self.agent.arun(prompt)
+                    
+                    # CORRIGIDO: Salvar resposta bruta do DeepSeek para auditoria
+                    self._save_deepseek_response(symbol, prompt, response)
+                    
+                    # Processar resposta
+                    signal = self._process_agent_response(response, symbol)
             
             # Salvar sinal
             self._save_signal(signal)
@@ -299,6 +336,21 @@ class AgnoTradingAgent:
             "timestamp": datetime.now().isoformat(),
             "agent_response": str(response),
         }
+        
+        # CORRIGIDO: Verificar se a resposta já contém um sinal JSON processado
+        # (quando get_deepseek_analysis() retorna sinal diretamente)
+        if isinstance(response, dict) and "signal" in response:
+            logger.info(f"[SINAL DIRETO] Usando sinal do DeepSeek: {response.get('signal', 'N/A')}")
+            signal.update({
+                "signal": response.get("signal", "NO_SIGNAL"),
+                "entry_price": response.get("entry_price"),
+                "stop_loss": response.get("stop_loss"),
+                "take_profit_1": response.get("take_profit_1"),
+                "take_profit_2": response.get("take_profit_2"),
+                "confidence": response.get("confidence", 5),
+                "reasoning": response.get("reasoning", "")
+            })
+            return signal
         
         # Tentar extrair sinal estruturado
         response_text = str(response)
@@ -598,6 +650,41 @@ class AgnoTradingAgent:
             json.dump(signal, f, indent=2, ensure_ascii=False, default=str)
         
         print(f"[SALVO] Sinal salvo: {filename}")
+    
+    def _save_deepseek_response(self, symbol: str, prompt: str, response: Any):
+        """
+        Salva resposta bruta do DeepSeek em diretório organizado por data (ano/mês/dia)
+        para auditoria e verificação de sinais gerados.
+        """
+        try:
+            now = datetime.now()
+            # Criar diretório: deepseek_logs/YYYY/MM/DD
+            log_dir = Path(f"deepseek_logs/{now.year}/{now.month:02d}/{now.day:02d}")
+            log_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Nome do arquivo: symbol_timestamp.json
+            timestamp = now.strftime('%Y%m%d_%H%M%S')
+            filename = log_dir / f"{symbol}_{timestamp}.json"
+            
+            # Preparar dados para salvar
+            response_data = {
+                "symbol": symbol,
+                "timestamp": now.isoformat(),
+                "prompt_sent": prompt,
+                "response_received": str(response),
+                "response_type": type(response).__name__
+            }
+            
+            # Salvar arquivo
+            with open(filename, 'w', encoding='utf-8') as f:
+                json.dump(response_data, f, indent=2, ensure_ascii=False, default=str)
+            
+            logger.info(f"[DEEPSEEK LOG] Resposta salva: {filename}")
+            print(f"[DEEPSEEK LOG] Resposta salva em: {filename}")
+            
+        except Exception as e:
+            logger.error(f"Erro ao salvar resposta do DeepSeek: {e}")
+            # Não bloquear o fluxo se houver erro ao salvar
     
     def _print_summary(self, signal: Dict[str, Any]):
         """Imprime resumo do sinal"""

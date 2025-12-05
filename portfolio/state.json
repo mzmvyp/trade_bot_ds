@@ -1,0 +1,44 @@
+{
+  "current_balance": 3755.1515151515096,
+  "positions": {
+    "DOGEUSDT_SHORT": {
+      "trade_id": "20251205_004659",
+      "symbol": "DOGEUSDT",
+      "signal": "SELL",
+      "entry_price": 0.1472,
+      "position_size": 42424.24242424246,
+      "original_position_size": 42424.24242424246,
+      "position_value": 6244.84848484849,
+      "stop_loss": 0.1505,
+      "take_profit_1": 0.143,
+      "take_profit_2": 0.14,
+      "confidence": 7,
+      "timestamp": "2025-12-05T00:46:59.308993",
+      "status": "OPEN",
+      "max_profit_reached": 0.0,
+      "max_loss_reached": -9.757575757576104,
+      "tp1_partial_closed": false
+    }
+  },
+  "trade_history": [
+    {
+      "trade_id": "20251205_004659",
+      "symbol": "DOGEUSDT",
+      "signal": "SELL",
+      "entry_price": 0.1472,
+      "position_size": 42424.24242424246,
+      "original_position_size": 42424.24242424246,
+      "position_value": 6244.84848484849,
+      "stop_loss": 0.1505,
+      "take_profit_1": 0.143,
+      "take_profit_2": 0.14,
+      "confidence": 7,
+      "timestamp": "2025-12-05T00:46:59.308993",
+      "status": "OPEN",
+      "max_profit_reached": 0.0,
+      "max_loss_reached": -9.757575757576104,
+      "tp1_partial_closed": false
+    }
+  ],
+  "last_update": "2025-12-05T00:48:46.446154"
+}

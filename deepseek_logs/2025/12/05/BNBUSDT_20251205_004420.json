@@ -1,0 +1,7 @@
+{
+  "symbol": "BNBUSDT",
+  "timestamp": "2025-12-05T00:44:20.426279",
+  "prompt_sent": "",
+  "response_received": "```json\n{\n    \"signal\": \"SELL\",\n    \"entry_price\": 901.64,\n    \"stop_loss\": 911.65,\n    \"take_profit_1\": 888.39,\n    \"take_profit_2\": 882.71,\n    \"confidence\": 6,\n    \"reasoning\": \"Bias geral bearish (-4/10) com múltiplas confirmações: alinhamento de timeframes bearish, momentum bearish, MACD acelerando para baixo, pressão forte de venda no orderbook, posição abaixo da média das Bollinger Bands e resistência próxima a $913. O volume (OBV bullish) é o principal fator contrário, mas a confluência de indicadores suporta uma operação de venda com alvos definidos pela volatilidade extrema.\"\n}\n```",
+  "response_type": "str"
+}
