@@ -1,5 +1,5 @@
 {
-  "current_balance": 9223.167820457487,
+  "current_balance": 8878.324820457487,
   "positions": {
     "BTCUSDT_SHORT": {
       "trade_id": "20251204_163109",
@@ -15,7 +15,7 @@
       "timestamp": "2025-12-04T16:31:09.720812",
       "status": "OPEN",
       "max_profit_reached": 0.0,
-      "max_loss_reached": -65.8264997842037
+      "max_loss_reached": -71.01596892533433
     },
     "SOLUSDT": {
       "trade_id": "20251204_163847",
@@ -46,8 +46,62 @@
       "confidence": 6,
       "timestamp": "2025-12-04T22:38:59.246521",
       "status": "OPEN",
-      "max_profit_reached": 5.7,
+      "max_profit_reached": 7.519999999999982,
       "max_loss_reached": 0.0
+    },
+    "BNBUSDT": {
+      "trade_id": "20251204_235732",
+      "symbol": "BNBUSDT",
+      "signal": "BUY",
+      "entry_price": 905.23,
+      "position_size": 0.1,
+      "original_position_size": 0.1,
+      "position_value": 90.52300000000001,
+      "stop_loss": 895.0,
+      "take_profit_1": 918.0,
+      "take_profit_2": 925.0,
+      "confidence": 6,
+      "timestamp": "2025-12-04T23:57:32.232104",
+      "status": "OPEN",
+      "max_profit_reached": 0.19199999999999592,
+      "max_loss_reached": -0.050999999999999095,
+      "tp1_partial_closed": false
+    },
+    "ADAUSDT": {
+      "trade_id": "20251204_235927",
+      "symbol": "ADAUSDT",
+      "signal": "BUY",
+      "entry_price": 0.4404,
+      "position_size": 100.0,
+      "original_position_size": 100.0,
+      "position_value": 44.04,
+      "stop_loss": 0.428,
+      "take_profit_1": 0.465,
+      "take_profit_2": 0.48,
+      "confidence": 6,
+      "timestamp": "2025-12-04T23:59:27.555615",
+      "status": "OPEN",
+      "max_profit_reached": 0.20999999999999908,
+      "max_loss_reached": -0.02000000000000335,
+      "tp1_partial_closed": false
+    },
+    "XRPUSDT_SHORT": {
+      "trade_id": "20251205_000616",
+      "symbol": "XRPUSDT",
+      "signal": "SELL",
+      "entry_price": 2.1028,
+      "position_size": 100.0,
+      "original_position_size": 100.0,
+      "position_value": 210.27999999999997,
+      "stop_loss": 2.13,
+      "take_profit_1": 2.07,
+      "take_profit_2": 2.05,
+      "confidence": 6,
+      "timestamp": "2025-12-05T00:06:16.464151",
+      "status": "OPEN",
+      "max_profit_reached": 0.34999999999998366,
+      "max_loss_reached": -0.31000000000003247,
+      "tp1_partial_closed": false
     }
   },
   "trade_history": [
@@ -116,9 +170,63 @@
       "confidence": 6,
       "timestamp": "2025-12-04T22:38:59.246521",
       "status": "OPEN",
-      "max_profit_reached": 5.7,
+      "max_profit_reached": 7.146000000000004,
       "max_loss_reached": 0.0
+    },
+    {
+      "trade_id": "20251204_235732",
+      "symbol": "BNBUSDT",
+      "signal": "BUY",
+      "entry_price": 905.23,
+      "position_size": 0.1,
+      "original_position_size": 0.1,
+      "position_value": 90.52300000000001,
+      "stop_loss": 895.0,
+      "take_profit_1": 918.0,
+      "take_profit_2": 925.0,
+      "confidence": 6,
+      "timestamp": "2025-12-04T23:57:32.232104",
+      "status": "OPEN",
+      "max_profit_reached": 0.19199999999999592,
+      "max_loss_reached": -0.050999999999999095,
+      "tp1_partial_closed": false
+    },
+    {
+      "trade_id": "20251204_235927",
+      "symbol": "ADAUSDT",
+      "signal": "BUY",
+      "entry_price": 0.4404,
+      "position_size": 100.0,
+      "original_position_size": 100.0,
+      "position_value": 44.04,
+      "stop_loss": 0.428,
+      "take_profit_1": 0.465,
+      "take_profit_2": 0.48,
+      "confidence": 6,
+      "timestamp": "2025-12-04T23:59:27.555615",
+      "status": "OPEN",
+      "max_profit_reached": 0.20999999999999908,
+      "max_loss_reached": -0.02000000000000335,
+      "tp1_partial_closed": false
+    },
+    {
+      "trade_id": "20251205_000616",
+      "symbol": "XRPUSDT",
+      "signal": "SELL",
+      "entry_price": 2.1028,
+      "position_size": 100.0,
+      "original_position_size": 100.0,
+      "position_value": 210.27999999999997,
+      "stop_loss": 2.13,
+      "take_profit_1": 2.07,
+      "take_profit_2": 2.05,
+      "confidence": 6,
+      "timestamp": "2025-12-05T00:06:16.464151",
+      "status": "OPEN",
+      "max_profit_reached": 0.34999999999998366,
+      "max_loss_reached": -0.31000000000003247,
+      "tp1_partial_closed": false
     }
   ],
-  "last_update": "2025-12-04T23:17:13.866521"
+  "last_update": "2025-12-05T00:17:03.145189"
 }

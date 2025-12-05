@@ -410,10 +410,15 @@ class RealPaperTradingSystem:
             else:  # SELL
                 # CORRIGIDO: Para SELL (SHORT) parcial
                 pnl_partial = (entry_price - current_price) * size_to_close
-                # Devolver margem proporcional + lucro/prejuízo
-                self.current_balance += entry_price * size_to_close  # Devolver margem reservada proporcional
-                self.current_balance -= current_price * size_to_close  # Pagar compra de volta proporcional
-                # Resultado líquido: +pnl_partial
+                # Na abertura: reservamos margem = entry_price * size_to_close (deduzida do saldo)
+                # No fechamento: devolvemos margem e pagamos compra de volta
+                # saldo_final = saldo_atual + margem_reservada - preco_compra_volta
+                # = saldo_atual + entry_price * size_to_close - current_price * size_to_close
+                # = saldo_atual + (entry_price - current_price) * size_to_close
+                # = saldo_atual + pnl_partial
+                margin_reserved = entry_price * size_to_close
+                buy_back_cost = current_price * size_to_close
+                self.current_balance += margin_reserved - buy_back_cost
             
             # Registrar fechamento parcial no histórico
             partial_close_entry = {
@@ -466,20 +471,18 @@ class RealPaperTradingSystem:
                 self.current_balance += current_price * position_size
             else:  # SELL
                 # CORRIGIDO: Para SELL (SHORT)
-                # Na abertura: reservamos margem (deduzimos position_value do saldo)
-                # No fechamento: compramos de volta ao preço atual
+                # Na abertura: reservamos margem = entry_price * position_size (deduzida do saldo)
+                # No fechamento: devolvemos margem e pagamos compra de volta
                 # Lucro = (preço de venda - preço de compra) * quantidade
                 pnl = (entry_price - current_price) * position_size
-                # Devolver margem reservada + lucro/prejuízo
-                # Margem reservada = entry_price * position_size (foi deduzida na abertura)
-                # Preço de compra de volta = current_price * position_size
-                # Saldo final = saldo_atual + margem_reservada - preco_compra_volta + pnl
-                # Simplificando: saldo_atual + entry_price * position_size - current_price * position_size
-                # Como pnl = (entry_price - current_price) * position_size:
-                # saldo_final = saldo_atual + pnl
-                self.current_balance += entry_price * position_size  # Devolver margem reservada
-                self.current_balance -= current_price * position_size  # Pagar compra de volta
-                # Resultado líquido: saldo_atual + (entry_price - current_price) * position_size = saldo_atual + pnl
+                # Lógica correta:
+                # saldo_final = saldo_atual + margem_reservada - preco_compra_volta
+                # = saldo_atual + entry_price * position_size - current_price * position_size
+                # = saldo_atual + (entry_price - current_price) * position_size
+                # = saldo_atual + pnl
+                margin_reserved = entry_price * position_size
+                buy_back_cost = current_price * position_size
+                self.current_balance += margin_reserved - buy_back_cost
             
             # Calcular P&L total (incluindo fechamento parcial anterior se houver)
             total_pnl = pnl

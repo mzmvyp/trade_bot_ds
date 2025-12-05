@@ -363,23 +363,43 @@ async def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any
             "fib_100": float(period_low)
         }
         
-        # Determinar tendência melhorada (usando EMA conforme sugestão)
+        # Determinar tendência melhorada (usando EMA + ADX conforme correção)
+        # CORRIGIDO: Considerar ADX para determinar força da tendência
+        # ADX > 25 = tendência forte, ADX <= 25 = tendência fraca
+        adx_value = float(adx) if not np.isnan(adx) else 25
+        
         if ema_200_value:
             if current_price > ema_20 > ema_50 > ema_200_value:
-                trend = "strong_bullish"
+                # EMA alinhada bullish: verificar ADX para determinar força
+                if adx_value > 25:
+                    trend = "strong_bullish"  # Tendência forte confirmada
+                else:
+                    trend = "bullish"  # Alinhamento bullish mas ADX fraco
             elif current_price > ema_20 > ema_50:
                 trend = "bullish"
             elif current_price < ema_20 < ema_50 < ema_200_value:
-                trend = "strong_bearish"
+                # EMA alinhada bearish: verificar ADX para determinar força
+                if adx_value > 25:
+                    trend = "strong_bearish"  # Tendência forte confirmada
+                else:
+                    trend = "bearish"  # Alinhamento bearish mas ADX fraco
             elif current_price < ema_20 < ema_50:
                 trend = "bearish"
             else:
                 trend = "neutral"
         else:
             if current_price > ema_20 > ema_50:
-                trend = "bullish"
+                # Sem EMA200, verificar ADX para classificar força
+                if adx_value > 25:
+                    trend = "strong_bullish"
+                else:
+                    trend = "bullish"
             elif current_price < ema_20 < ema_50:
-                trend = "bearish"
+                # Sem EMA200, verificar ADX para classificar força
+                if adx_value > 25:
+                    trend = "strong_bearish"
+                else:
+                    trend = "bearish"
             else:
                 trend = "neutral"
         
@@ -945,7 +965,9 @@ async def prepare_analysis_for_llm(symbol: str) -> Dict[str, Any]:
         support = technical_indicators.get("support", current_price * 0.95)
         resistance = technical_indicators.get("resistance", current_price * 1.05)
         fib_levels = technical_indicators.get("fibonacci_levels", {})
-        poc_price = technical_indicators.get("volume_profile", {}).get("poc_price", current_price)
+        # CORRIGIDO: Proteção adicional contra None em volume_profile
+        volume_profile_data = technical_indicators.get("volume_profile") or {}
+        poc_price = volume_profile_data.get("poc_price", current_price)
         
         # Calcular distâncias
         distance_to_support = ((current_price - support) / current_price) * 100

@@ -27,11 +27,18 @@ class Settings(BaseSettings):
     max_daily_trades: int = 5  # Máximo 5 trades por dia
     base_risk_percentage: float = 0.02  # 2% base de risco
     
-    # Top 3 criptomoedas para análise (BTC, ETH, SOL)
+    # Top 10 criptomoedas para análise
     top_crypto_pairs: list = [
         "BTCUSDT",   # Bitcoin
         "ETHUSDT",   # Ethereum
-        "SOLUSDT"    # Solana
+        "SOLUSDT",   # Solana
+        "BNBUSDT",   # Binance Coin
+        "ADAUSDT",   # Cardano
+        "XRPUSDT",   # Ripple
+        "DOGEUSDT",  # Dogecoin
+        "AVAXUSDT",  # Avalanche
+        "DOTUSDT",   # Polkadot
+        "LINKUSDT"   # Chainlink
     ]
     
     

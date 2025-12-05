@@ -95,13 +95,13 @@ async def main():
                 print("Considere executar o trade com cautela.")
         
         elif args.mode == 'monitor':
-            # Monitoramento contínuo do Top 3 (BTC, ETH, SOL)
+            # Monitoramento contínuo do Top 10
             from config import settings
             from real_paper_trading import real_paper_trading
             
-            symbols = settings.top_crypto_pairs[:3]  # Apenas BTC, ETH, SOL
+            symbols = settings.top_crypto_pairs[:10]  # Top 10 criptomoedas
             
-            print(f"\n[MONITOR] Monitoramento continuo do Top 3")
+            print(f"\n[MONITOR] Monitoramento continuo do Top 10")
             print(f"Pares: {symbols}")
             print(f"Intervalo: {args.interval}s")
             print("="*60)
@@ -146,12 +146,12 @@ async def main():
                     await asyncio.sleep(30)
         
         elif args.mode == 'top5':
-            # Top 3 criptomoedas (BTC, ETH, SOL)
+            # Top 10 criptomoedas
             from config import settings
-            symbols = settings.top_crypto_pairs[:3]  # Apenas BTC, ETH, SOL
+            symbols = settings.top_crypto_pairs[:10]  # Top 10 criptomoedas
             
-            print(f"\n[TOP5] Analisando Top 5 criptomoedas...")
-            print("BTC + 4 maiores por market cap")
+            print(f"\n[TOP10] Analisando Top 10 criptomoedas...")
+            print("Top 10 por market cap")
             print("="*60)
             
             # Verificar posições ativas
