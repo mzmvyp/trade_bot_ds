@@ -1534,12 +1534,17 @@ def validate_risk_and_position(
         risk_percentage = (risk_per_trade / entry_price) * 100
         
         # Circuit Breaker 1: Risco máximo por trade
-        if risk_percentage > 3:  # Máximo 3% de risco por trade
+        # MODIFICADO: Aumentado para 5% para permitir mais flexibilidade em moedas menores
+        max_risk_per_trade = 5.0  # Máximo 5% de risco por trade (era 3%)
+        if risk_percentage > max_risk_per_trade:
             return {
                 "can_execute": False,
-                "reason": f"Risco muito alto: {risk_percentage:.2f}% (máximo 3%)",
+                "reason": f"Risco muito alto: {risk_percentage:.2f}% (máximo {max_risk_per_trade}%)",
                 "risk_level": "high"
             }
+        elif risk_percentage > 3.0:
+            # Risco entre 3% e 5%: permitir mas reduzir tamanho da posição
+            logger.warning(f"[RISCO] Risco elevado ({risk_percentage:.2f}%), reduzindo tamanho de posição")
         
         # Circuit Breaker 2: Verificar drawdown atual
         # MODIFICADO: Para paper trading, permitir drawdown maior (40%) para não bloquear recuperação
@@ -1577,15 +1582,25 @@ def validate_risk_and_position(
         base_risk = account_balance * 0.02  # 2% base
         confidence_multiplier = confidence / 10  # 0.1 a 1.0
         
-        # MODIFICADO: Reduzir tamanho da posição se drawdown estiver alto (15-30%)
+        # MODIFICADO: Reduzir tamanho da posição se drawdown estiver alto (15-40%)
         drawdown_multiplier = 1.0
         if current_drawdown > 0.15:
             # Reduzir tamanho da posição proporcionalmente ao drawdown
-            # Drawdown 15% = 1.0, Drawdown 30% = 0.5
-            drawdown_multiplier = max(0.5, 1.0 - ((current_drawdown - 0.15) / 0.15))
+            # Drawdown 15% = 1.0, Drawdown 40% = 0.1
+            drawdown_reduction_range = 0.40 - 0.15
+            if drawdown_reduction_range > 0:
+                reduction_factor = (current_drawdown - 0.15) / drawdown_reduction_range
+                drawdown_multiplier = max(0.1, 1.0 - reduction_factor)
             logger.info(f"[RISCO] Drawdown {current_drawdown:.2%} - Aplicando multiplicador: {drawdown_multiplier:.2f}")
         
-        max_risk_amount = base_risk * confidence_multiplier * drawdown_multiplier
+        # MODIFICADO: Reduzir tamanho da posição se risco estiver entre 3% e 5%
+        risk_multiplier = 1.0
+        if 3.0 < risk_percentage <= 5.0:
+            # Reduzir proporcionalmente: 3% = 1.0, 5% = 0.5
+            risk_multiplier = 1.0 - ((risk_percentage - 3.0) / 2.0) * 0.5
+            logger.info(f"[RISCO] Risco {risk_percentage:.2f}%, reduzindo tamanho em {100 - risk_multiplier*100:.0f}%")
+        
+        max_risk_amount = base_risk * confidence_multiplier * drawdown_multiplier * risk_multiplier
         
         position_size = max_risk_amount / risk_per_trade
         

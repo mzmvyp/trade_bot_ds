@@ -1,0 +1,101 @@
+{
+  "symbol": "DOTUSDT",
+  "timestamp": "2025-12-05T17:23:34.952651",
+  "prompt_sent": "\nAnalise os dados e forneça um sinal de trading.\n\n## DADOS DE MERCADO\n\n- Símbolo: DOTUSDT\n- Preço: $2.11\n- Variação 24h: -7.57%\n- Posição no range: 14%\n\n## ANÁLISE DE TENDÊNCIA\n\n- Tendência primária: bearish\n- Força (ADX): moderate\n- Momentum: oversold\n- Alinhamento timeframes: strong_bearish_alignment\n- Score confluência: -3/5\n\n## INDICADORES\n\n- RSI: 27.6 (oversold)\n- MACD: bearish - accelerating_down\n- Bollinger: lower_band\n- EMAs: mixed\n\n## NÍVEIS CHAVE\n\n- Suporte: $2.09 (+1.09%)\n- Resistência: $2.35 (+11.12%)\n- POC Volume: $2.26\n\n## VOLUME E FLUXO\n\n- Pressão orderbook: neutral\n- OBV: bearish\n\n## SENTIMENTO\n\n- Geral: neutral\n- Funding: neutral\n\n## VOLATILIDADE\n\n- Nível: extreme\n- Stop sugerido: 2.37%\n- TP1 sugerido: 3.16%\n- TP2 sugerido: 4.75%\n\n## SINAIS CONFLITANTES\n\n- RSI oversold but strong bearish trend\n\n## SCORE AGREGADO\n\n- Fatores bullish: 2\n- Fatores bearish: 3\n- Bias geral: -1/10 (neutral)\n- Ação recomendada: WAIT\n\n---\n\n## IMPORTANTE: ESCALA DE CONFIANÇA (0-10)\n\nA confiança deve ser um número inteiro de 1 a 10, onde:\n\n- **10**: Sinal extremamente forte, múltiplas confluências, alta probabilidade de sucesso\n- **9**: Sinal muito forte, confluências claras, boa probabilidade\n- **8**: Sinal forte, confluências presentes, probabilidade acima da média\n- **7**: Sinal moderado-forte, algumas confluências, probabilidade razoável (MÍNIMO PARA EXECUÇÃO)\n- **6**: Sinal moderado, confluências limitadas, probabilidade média (NÃO SERÁ EXECUTADO)\n- **5**: Sinal fraco, poucas confluências, probabilidade baixa (NÃO SERÁ EXECUTADO)\n- **4 ou menos**: Sinal muito fraco ou ambíguo (NÃO SERÁ EXECUTADO)\n\n**CRÍTICO**: Apenas sinais com confiança >= 7 serão executados pelo sistema. \nSe você não tiver confiança suficiente (>= 7), retorne \"NO_SIGNAL\" ao invés de um sinal fraco.\n\n**Como calcular a confiança:**\n- Considere a força da tendência (ADX, alinhamento EMAs)\n- Considere a confluência de indicadores (RSI, MACD, Bollinger)\n- Considere o alinhamento multi-timeframe\n- Considere a clareza dos níveis de suporte/resistência\n- Considere sinais conflitantes (reduz confiança)\n- Considere a volatilidade (alta volatilidade pode reduzir confiança)\n\n---\n\nRESPONDA APENAS COM JSON:\n\n```json\n{\n    \"signal\": \"BUY\" ou \"SELL\" ou \"NO_SIGNAL\",\n    \"entry_price\": <número>,\n    \"stop_loss\": <número>,\n    \"take_profit_1\": <número>,\n    \"take_profit_2\": <número>,\n    \"confidence\": <1-10> (APENAS >= 7 será executado),\n    \"reasoning\": \"<justificativa detalhada incluindo cálculo da confiança>\"\n}\n```\n",
+  "analysis_data_sent": {
+    "symbol": "DOTUSDT",
+    "timestamp": "2025-12-05T17:23:23.464414",
+    "price_context": {
+      "current": 2.112,
+      "change_24h_pct": -7.571,
+      "high_24h": 2.306,
+      "low_24h": 2.08,
+      "position_in_range_pct": 14.159292035398243
+    },
+    "trend_analysis": {
+      "primary_trend": "bearish",
+      "trend_strength_adx": 42.99753324449079,
+      "trend_strength_interpretation": "moderate",
+      "momentum": "oversold",
+      "timeframe_alignment": {
+        "5m": "bullish",
+        "15m": "bearish",
+        "1h": "bearish",
+        "4h": "bearish",
+        "1d": "bearish"
+      },
+      "confluence_score": -3,
+      "confluence_interpretation": "strong_bearish_alignment"
+    },
+    "key_indicators": {
+      "rsi": {
+        "value": 27.566436264347477,
+        "zone": "oversold",
+        "action_hint": "potential_buy"
+      },
+      "macd": {
+        "histogram": -0.012707638470360674,
+        "crossover": "bearish",
+        "momentum_direction": "accelerating_down"
+      },
+      "bollinger": {
+        "position": 0.0893048042967195,
+        "zone": "lower_band",
+        "squeeze_detected": false
+      },
+      "ema_structure": {
+        "price_vs_ema20": "below",
+        "price_vs_ema50": "below",
+        "price_vs_ema200": "below",
+        "ema_alignment": "mixed"
+      },
+      "obv_trend": "bearish"
+    },
+    "key_levels": {
+      "immediate_support": 2.0889722683051413,
+      "immediate_resistance": 2.346827731694861,
+      "fib_382": 2.230684,
+      "fib_50": 2.1790000000000003,
+      "fib_618": 2.127316,
+      "volume_poc": 2.259684210526316,
+      "distance_to_support_pct": 1.0903282052489978,
+      "distance_to_resistance_pct": 11.118737296158182
+    },
+    "volume_flow": {
+      "volume_24h": 51180744.6,
+      "volume_trend": "stable",
+      "obv_trend": "bearish",
+      "orderbook_imbalance": 0.1347772332876145,
+      "orderbook_bias": "neutral",
+      "cvd_direction": "positive"
+    },
+    "sentiment": {
+      "overall": "neutral",
+      "confidence": 0.8999999999999999,
+      "funding_rate": -0.00035282,
+      "funding_interpretation": "neutral",
+      "open_interest_trend": "stable"
+    },
+    "volatility": {
+      "atr_value": 0.033407156207875224,
+      "atr_pct": 1.5817782295395464,
+      "level": "extreme",
+      "suggested_stop_pct": 2.3726673443093196,
+      "suggested_tp1_pct": 3.1635564590790928,
+      "suggested_tp2_pct": 4.745334688618639
+    },
+    "conflicting_signals": [
+      "RSI oversold but strong bearish trend"
+    ],
+    "aggregated_scores": {
+      "bullish_factors_count": 2,
+      "bearish_factors_count": 3,
+      "neutral_factors_count": 3,
+      "overall_bias": -1,
+      "overall_bias_interpretation": "neutral",
+      "recommended_action": "WAIT"
+    }
+  },
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": null,\n    \"stop_loss\": null,\n    \"take_profit_1\": null,\n    \"take_profit_2\": null,\n    \"confidence\": 4,\n    \"reasoning\": \"A análise apresenta múltiplos sinais conflitantes que reduzem drasticamente a confiança abaixo do limiar de execução (>=7). A tendência primária é bearish com alinhamento multi-timeframe forte, ADX moderado, MACD acelerando para baixo e OBV bearish, indicando forte pressão de venda. No entanto, o RSI está em 27.6 (oversold) e o preço está próximo do suporte em $2.09, sugerindo possível exaustão de venda. A posição no range é de apenas 14%, indicando que o ativo está próximo de mínimas. A volatilidade extrema aumenta o risco. O score de confluência é -3/5 e o bias geral é -1/10 (neutral), com a ação recomendada sendo WAIT. A confiança calculada é 4 devido à forte divergência entre a tendência bearish e os indicadores de oversold, falta de clareza na reversão, e alta volatilidade que torna os níveis menos confiáveis.\"\n}\n```",
+  "response_type": "str"
+}

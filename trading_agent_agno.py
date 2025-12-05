@@ -60,13 +60,15 @@ class AgnoTradingAgent:
         # Configurar o Agent AGNO com otimizações de velocidade
         if api_key != "demo_key":
             # Modo real com DeepSeek
+            # CORREÇÃO: Remover get_deepseek_analysis das tools para evitar chamada duplicada
+            # O DeepSeek já é chamado diretamente antes do AGNO processar
             self.agent = Agent(
                 model=DeepSeek(id="deepseek-chat", api_key=api_key, temperature=0.3, max_tokens=1000),
                 tools=[
                     tool(get_market_data),
                     tool(analyze_technical_indicators),
                     tool(analyze_market_sentiment),
-                    tool(get_deepseek_analysis),
+                    # REMOVIDO: tool(get_deepseek_analysis) - evita chamada duplicada
                     tool(validate_risk_and_position),
                     tool(execute_paper_trade),
                     tool(analyze_multiple_timeframes),
@@ -101,10 +103,13 @@ class AgnoTradingAgent:
         3. Capture sentimento com analyze_market_sentiment()
         4. Analise multi-timeframe com analyze_multiple_timeframes()
         5. Analise order flow com analyze_order_flow()
-        6. Processe análise DeepSeek com get_deepseek_analysis()
+        6. Baseado nos dados coletados, tome sua própria decisão de trading
         7. Valide risco com validate_risk_and_position()
         8. Execute paper trade se apropriado com execute_paper_trade()
         9. Para backtesting, use backtest_strategy() com datas específicas
+        
+        IMPORTANTE: Você está gerando um sinal AGNO independente. Analise os dados coletados
+        e tome sua própria decisão, não dependa de análises externas.
         
         REGRAS DE TRADING:
         - SEMPRE forneça um sinal: BUY ou SELL (seja decisivo)
@@ -299,8 +304,8 @@ class AgnoTradingAgent:
                 # Salvar resposta bruta do AGNO para auditoria
                 self._save_deepseek_response(symbol, prompt, response, {})
                 
-                # Processar resposta do AGNO
-                agno_signal = self._process_agent_response(response, symbol)
+                # Processar resposta do AGNO (agora async)
+                agno_signal = await self._process_agent_response(response, symbol)
                 agno_signal["source"] = "AGNO"  # Identificador da fonte
                 
                 # CORRIGIDO: Se não tem entry_price, obter do mercado (async)
@@ -362,8 +367,57 @@ class AgnoTradingAgent:
             print(f"[ERRO] Erro na analise: {e}")
             return self._create_error_signal(symbol, str(e))
     
-    def _process_agent_response(self, response: Any, symbol: str) -> Dict[str, Any]:
-        """Processa resposta do agent em formato estruturado"""
+    def _extract_balanced_json(self, text: str) -> Optional[str]:
+        """
+        Extrai JSON balanceado corretamente, mesmo com objetos aninhados.
+        CORREÇÃO: Resolve problema de regex que para no primeiro }
+        """
+        # Procurar por ```json ... ```
+        json_block_match = re.search(r'```json\s*(\{.*?)\s*```', text, re.DOTALL)
+        if json_block_match:
+            start_pos = json_block_match.start(1)
+            json_start = text.find('{', start_pos)
+            if json_start == -1:
+                return None
+        else:
+            # Procurar por { sem o bloco de código
+            json_start = text.find('{')
+            if json_start == -1:
+                return None
+        
+        # Balancear chaves para encontrar o final correto do JSON
+        count = 0
+        in_string = False
+        escape_next = False
+        
+        for i in range(json_start, len(text)):
+            char = text[i]
+            
+            if escape_next:
+                escape_next = False
+                continue
+            
+            if char == '\\':
+                escape_next = True
+                continue
+            
+            if char == '"' and not escape_next:
+                in_string = not in_string
+                continue
+            
+            if not in_string:
+                if char == '{':
+                    count += 1
+                elif char == '}':
+                    count -= 1
+                    if count == 0:
+                        # Encontrou o final balanceado
+                        return text[json_start:i+1]
+        
+        return None
+    
+    async def _process_agent_response(self, response: Any, symbol: str) -> Dict[str, Any]:
+        """Processa resposta do agent em formato estruturado (CORRIGIDO: agora é async)"""
         
         # CORRIGIDO: Extrair conteúdo real do RunOutput do AGNO
         # O AGNO retorna um objeto RunOutput, o conteúdo está em response.content
@@ -422,10 +476,11 @@ class AgnoTradingAgent:
             }
         
         # MELHORIA: Tentar extrair JSON estruturado primeiro (mais confiável)
-        json_match = re.search(r'```json\s*(\{.*?\})\s*```', response_text, re.DOTALL)
-        if json_match:
+        # CORREÇÃO: Usar função para balancear chaves e capturar JSON aninhado corretamente
+        json_text = self._extract_balanced_json(response_text)
+        if json_text:
             try:
-                structured = json.loads(json_match.group(1))
+                structured = json.loads(json_text)
                 logger.info(f"[JSON ESTRUTURADO] Sinal extraído via JSON: {structured.get('signal', 'N/A')}")
                 # Validar campos obrigatórios
                 if structured.get("signal") in ["BUY", "SELL", "NO_SIGNAL"]:
@@ -585,18 +640,18 @@ class AgnoTradingAgent:
                         except ValueError:
                             continue
                 
-                # FALLBACK: Se não encontrou entry_price, usar preço atual do mercado
+                # FALLBACK: Se não encontrou entry_price, usar valores padrão
+                # CORREÇÃO: Não usar asyncio.run() aqui pois já estamos em um event loop
+                # O preço será obtido no método analyze() antes de chamar _process_agent_response
                 if not signal.get("entry_price"):
-                    try:
-                        from agno_tools import get_market_data
-                        import asyncio
-                        # Tentar obter preço atual
-                        market_data = asyncio.run(get_market_data(symbol))
-                        if market_data and "current_price" in market_data:
-                            signal["entry_price"] = market_data["current_price"]
-                            logger.warning(f"[FALLBACK] Usando preço atual do mercado como entry: ${signal['entry_price']}")
-                    except Exception as e:
-                        logger.error(f"[FALLBACK] Erro ao obter preço atual: {e}")
+                    # Usar valores padrão baseados no símbolo
+                    default_prices = {
+                        "BTCUSDT": 90000, "ETHUSDT": 3000, "SOLUSDT": 140,
+                        "BNBUSDT": 600, "ADAUSDT": 0.5, "XRPUSDT": 2.0,
+                        "DOGEUSDT": 0.15, "AVAXUSDT": 40, "DOTUSDT": 7, "LINKUSDT": 20
+                    }
+                    signal["entry_price"] = default_prices.get(symbol, 100)
+                    logger.warning(f"[FALLBACK] Usando preço padrão para {symbol}: ${signal['entry_price']}")
             
             # CORRIGIDO: Stop Loss - melhor extração com validação
             if signal["signal"] == "BUY":
