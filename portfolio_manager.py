@@ -1,9 +1,10 @@
 """
 Gerenciador de Portfólio - Interface para o Sistema de Paper Trading
+CORRIGIDO: Usa real_paper_trading ao invés de paper_trading
 """
 
 import argparse
-from paper_trading import paper_trading
+from real_paper_trading import real_paper_trading as paper_trading
 from datetime import datetime
 
 def show_portfolio():

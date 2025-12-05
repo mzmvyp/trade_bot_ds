@@ -24,13 +24,13 @@ st.set_page_config(
 st.title("📊 Dashboard de Paper Trading")
 st.markdown("---")
 
-# Função para carregar dados do portfólio
-@st.cache_data(ttl=5)
+# Função para carregar dados do portfólio (CORRIGIDO: cache reduzido para 2s)
+@st.cache_data(ttl=2)
 def load_portfolio_data():
     """Carrega dados do portfólio"""
     try:
         if os.path.exists("portfolio/state.json"):
-            with open("portfolio/state.json", "r") as f:
+            with open("portfolio/state.json", "r", encoding='utf-8') as f:
                 return json.load(f)
     except Exception as e:
         st.error(f"Erro ao carregar dados: {e}")

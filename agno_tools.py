@@ -5,7 +5,7 @@ Updated with logging, constants, and improved error handling
 import json
 import pandas as pd
 import numpy as np
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from datetime import datetime
 import requests
 import talib
@@ -18,59 +18,27 @@ logger = get_logger(__name__)
 
 # Análise de sentimento baseada apenas em dados de mercado (Twitter removido)
 
-def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
+async def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
     """
-    Obtém dados de mercado da Binance para análise (with improved logging & error handling).
+    Obtém dados de mercado da Binance para análise (CORRIGIDO: agora async usando BinanceClient).
     """
     try:
-        base_url = "https://fapi.binance.com"
-        timeout = API_TIMEOUT
-
+        from binance_client import BinanceClient
+        
         logger.debug(f"Fetching market data for {symbol}")
 
-        # Ticker 24h
-        ticker_response = requests.get(
-            f"{base_url}/fapi/v1/ticker/24hr",
-            params={'symbol': symbol},
-            timeout=timeout
-        )
-        ticker_response.raise_for_status()
-        ticker = ticker_response.json()
-
-        # Klines para indicadores técnicos
-        klines_response = requests.get(
-            f"{base_url}/fapi/v1/klines",
-            params={
-                'symbol': symbol,
-                'interval': '1h',
-                'limit': DEFAULT_KLINES_LIMIT
-            },
-            timeout=timeout
-        )
-        klines_response.raise_for_status()
-        klines = klines_response.json()
-
-        # Funding rate
-        funding_response = requests.get(
-            f"{base_url}/fapi/v1/premiumIndex",
-            params={'symbol': symbol},
-            timeout=timeout
-        )
-        funding_response.raise_for_status()
-        funding = funding_response.json()
-
-        # Open interest
-        oi_response = requests.get(
-            f"{base_url}/fapi/v1/openInterest",
-            params={'symbol': symbol},
-            timeout=timeout
-        )
-        oi_response.raise_for_status()
-        open_interest = oi_response.json()
-
-        # CORRIGIDO: Não incluir recent_klines no retorno para evitar erros de decodificação
-        # Os klines são muito grandes e causam problemas ao enviar para DeepSeek
-        # Manter apenas a contagem
+        async with BinanceClient() as client:
+            # Obter ticker 24h
+            ticker = await client.get_ticker_24hr(symbol)
+            
+            # Obter klines (apenas contagem, não os dados completos)
+            klines_df = await client.get_klines(symbol, '1h', limit=DEFAULT_KLINES_LIMIT)
+            
+            # Obter funding rate
+            funding = await client.get_funding_rate(symbol)
+            
+            # Obter open interest
+            open_interest = await client.get_open_interest(symbol)
 
         result = {
             "symbol": symbol,
@@ -81,7 +49,7 @@ def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
             "low_24h": float(ticker['lowPrice']),
             "funding_rate": float(funding.get('lastFundingRate', 0)),
             "open_interest": float(open_interest.get('openInterest', 0)),
-            "klines_count": len(klines),
+            "klines_count": len(klines_df),
             # REMOVIDO: "recent_klines" - muito grande e causa erros de decodificação
             "timestamp": datetime.now().isoformat()
         }
@@ -89,27 +57,6 @@ def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
         logger.info(f"Market data fetched for {symbol}: ${result['current_price']:.2f}")
         return result
 
-    except requests.HTTPError as e:
-        logger.error(f"HTTP error fetching market data for {symbol}: {e}")
-        return {
-            "error": f"HTTP error: {str(e)}",
-            "symbol": symbol,
-            "timestamp": datetime.now().isoformat()
-        }
-    except requests.Timeout:
-        logger.error(f"Timeout fetching market data for {symbol}")
-        return {
-            "error": "Request timeout",
-            "symbol": symbol,
-            "timestamp": datetime.now().isoformat()
-        }
-    except (KeyError, ValueError) as e:
-        logger.error(f"Data parsing error for {symbol}: {e}")
-        return {
-            "error": f"Data parsing error: {str(e)}",
-            "symbol": symbol,
-            "timestamp": datetime.now().isoformat()
-        }
     except Exception as e:
         logger.exception(f"Unexpected error fetching market data for {symbol}: {e}")
         return {
@@ -174,36 +121,31 @@ def _analyze_market_structure(df: pd.DataFrame) -> Dict[str, Any]:
             "error": str(e)
         }
 
-def analyze_multiple_timeframes(symbol: str) -> Dict[str, Any]:
+async def analyze_multiple_timeframes(symbol: str) -> Dict[str, Any]:
     """
     Análise multi-timeframe para maior precisão.
+    CORRIGIDO: Agora async usando BinanceClient.
     """
     try:
+        from binance_client import BinanceClient
+        
         timeframes = ['5m', '15m', '1h', '4h', '1d']
         analyses = {}
         
-        for tf in timeframes:
-            try:
-                # Obter dados para timeframe específico
-                base_url = "https://fapi.binance.com"
-                response = requests.get(f"{base_url}/fapi/v1/klines", params={
-                    'symbol': symbol,
-                    'interval': tf,
-                    'limit': 100
-                }, timeout=5)
-                
-                if response.status_code == 200:
-                    klines = response.json()
-                    if len(klines) >= 20:
-                        # Análise básica do timeframe
-                        df = pd.DataFrame(klines, columns=[
-                            'timestamp', 'open', 'high', 'low', 'close', 'volume',
-                            'close_time', 'quote_volume', 'trades', 'taker_buy_base_volume',
-                            'taker_buy_quote_volume', 'ignore'
-                        ])
+        async with BinanceClient() as client:
+            for tf in timeframes:
+                try:
+                    # Obter dados para timeframe específico usando BinanceClient
+                    klines_df = await client.get_klines(symbol, tf, limit=100)
+                    
+                    if not klines_df.empty and len(klines_df) >= 20:
+                        # Resetar índice para ter timestamp como coluna
+                        df = klines_df.reset_index()
                         
+                        # Garantir colunas numéricas
                         for col in ['open', 'high', 'low', 'close', 'volume']:
-                            df[col] = pd.to_numeric(df[col])
+                            if col in df.columns:
+                                df[col] = pd.to_numeric(df[col], errors='coerce')
                         
                         # Calcular tendência simples
                         close_prices = df['close'].values
@@ -219,12 +161,12 @@ def analyze_multiple_timeframes(symbol: str) -> Dict[str, Any]:
                         
                         analyses[tf] = {
                             "trend": trend,
-                            "current_price": current_price,
-                            "sma_20": sma_20
+                            "current_price": float(current_price),
+                            "sma_20": float(sma_20)
                         }
-            except Exception as e:
-                print(f"⚠️ Erro no timeframe {tf}: {e}")
-                continue
+                except Exception as e:
+                    logger.warning(f"Erro no timeframe {tf}: {e}")
+                    continue
         
         # Calcular confluência
         bullish_timeframes = sum(1 for tf in analyses.values() if tf['trend'] == 'bullish')
@@ -254,47 +196,42 @@ def analyze_multiple_timeframes(symbol: str) -> Dict[str, Any]:
             "symbol": symbol
         }
 
-def analyze_order_flow(symbol: str) -> Dict[str, Any]:
+async def analyze_order_flow(symbol: str) -> Dict[str, Any]:
     """
     Análise de fluxo de ordens e delta.
+    CORRIGIDO: Agora async usando BinanceClient.
     """
     try:
-        base_url = "https://fapi.binance.com"
+        from binance_client import BinanceClient
+        import aiohttp
         
-        # Obter orderbook
-        orderbook_response = requests.get(f"{base_url}/fapi/v1/depth", params={
-            'symbol': symbol,
-            'limit': 20
-        }, timeout=5)
-        
-        if orderbook_response.status_code != 200:
-            return {"error": "Erro ao obter orderbook"}
-        
-        orderbook = orderbook_response.json()
-        
-        # Calcular imbalance
-        bid_volume = sum([float(b[1]) for b in orderbook['bids'][:20]])
-        ask_volume = sum([float(a[1]) for a in orderbook['asks'][:20]])
-        
-        total_volume = bid_volume + ask_volume
-        imbalance = (bid_volume - ask_volume) / total_volume if total_volume > 0 else 0
-        
-        # Obter trades recentes para CVD
-        trades_response = requests.get(f"{base_url}/fapi/v1/aggTrades", params={
-            'symbol': symbol,
-            'limit': 100
-        }, timeout=5)
-        
-        buy_volume = 0
-        sell_volume = 0
-        
-        if trades_response.status_code == 200:
-            trades = trades_response.json()
-            for trade in trades:
-                if trade['m']:  # isBuyerMaker
-                    sell_volume += float(trade['q'])
-                else:
-                    buy_volume += float(trade['q'])
+        async with BinanceClient() as client:
+            # Obter orderbook
+            orderbook = await client.get_orderbook(symbol, limit=20)
+            
+            # Calcular imbalance
+            bid_volume = sum([float(b[1]) for b in orderbook['bids'][:20]])
+            ask_volume = sum([float(a[1]) for a in orderbook['asks'][:20]])
+            
+            total_volume = bid_volume + ask_volume
+            imbalance = (bid_volume - ask_volume) / total_volume if total_volume > 0 else 0
+            
+            # Obter trades recentes para CVD (usando API direta pois não temos método no client)
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    f"{client.base_url}/fapi/v1/aggTrades",
+                    params={'symbol': symbol, 'limit': 100},
+                    timeout=aiohttp.ClientTimeout(total=5)
+                ) as trades_response:
+                    buy_volume = 0
+                    sell_volume = 0
+                    if trades_response.status == 200:
+                        trades = await trades_response.json()
+                        for trade in trades:
+                            if trade['m']:  # isBuyerMaker
+                                sell_volume += float(trade['q'])
+                            else:
+                                buy_volume += float(trade['q'])
         
         cvd = buy_volume - sell_volume
         
@@ -311,53 +248,43 @@ def analyze_order_flow(symbol: str) -> Dict[str, Any]:
         }
         
     except Exception as e:
+        logger.exception(f"Erro na análise de order flow: {e}")
         return {
             "error": f"Erro na análise de order flow: {str(e)}",
             "symbol": symbol
         }
 
-def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any]:
+async def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any]:
     """
     Analisa indicadores técnicos REAIS usando TA-Lib.
     MELHORADO: Inclui EMA, OBV, Volume Profile e Fibonacci conforme sugestões Claude/DeepSeek.
+    CORRIGIDO: Agora async usando BinanceClient.
     """
     try:
-        # CORRIGIDO: Obter klines diretamente da API (não do market_data que não tem mais recent_klines)
-        base_url = "https://fapi.binance.com"
-        klines_response = requests.get(
-            f"{base_url}/fapi/v1/klines",
-            params={
-                'symbol': symbol,
-                'interval': '1h',
-                'limit': 200  # Aumentado para ter dados suficientes para EMA 200
-            },
-            timeout=10
-        )
+        from binance_client import BinanceClient
         
-        if klines_response.status_code != 200:
-            return {
-                "error": f"Erro ao obter klines: {klines_response.status_code}",
-                "symbol": symbol
-            }
+        # CORRIGIDO: Obter klines usando BinanceClient async
+        async with BinanceClient() as client:
+            klines_df = await client.get_klines(symbol, '1h', limit=200)  # Aumentado para ter dados suficientes para EMA 200
         
-        klines = klines_response.json()
-        
-        if len(klines) < 50:  # Mínimo para indicadores confiáveis
+        if klines_df.empty or len(klines_df) < 50:  # Mínimo para indicadores confiáveis
             return {
                 "error": "Dados insuficientes para análise técnica (mínimo 50 candles)",
                 "symbol": symbol
             }
         
-        # Converter klines para DataFrame
-        df = pd.DataFrame(klines, columns=[
-            'timestamp', 'open', 'high', 'low', 'close', 'volume',
-            'close_time', 'quote_volume', 'trades', 'taker_buy_base_volume',
-            'taker_buy_quote_volume', 'ignore'
-        ])
+        # BinanceClient já retorna DataFrame com índice timestamp e colunas numéricas
+        # Resetar índice para ter timestamp como coluna
+        df = klines_df.reset_index()
         
-        # Converter para numérico
+        # Garantir que temos as colunas necessárias
+        if 'timestamp' not in df.columns:
+            df['timestamp'] = df.index if hasattr(df.index, 'values') else range(len(df))
+        
+        # Converter para numérico (já deve estar, mas garantir)
         for col in ['open', 'high', 'low', 'close', 'volume']:
-            df[col] = pd.to_numeric(df[col])
+            if col in df.columns:
+                df[col] = pd.to_numeric(df[col], errors='coerce')
         
         # Calcular indicadores técnicos REAIS
         close_prices = df['close'].values
@@ -509,12 +436,13 @@ def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any]:
             "timestamp": datetime.now().isoformat()
         }
 
-def analyze_market_sentiment(symbol: str = "BTCUSDT") -> Dict[str, Any]:
+async def analyze_market_sentiment(symbol: str = "BTCUSDT") -> Dict[str, Any]:
     """
     Análise de sentimento baseada em dados de mercado (preço, volume, funding rate).
+    CORRIGIDO: Agora async.
     """
     try:
-        market_data = get_market_data(symbol)
+        market_data = await get_market_data(symbol)
         if "error" in market_data:
             return market_data
         
@@ -617,104 +545,654 @@ def analyze_market_sentiment(symbol: str = "BTCUSDT") -> Dict[str, Any]:
         }
 
 
-def get_deepseek_analysis(
-    market_data: Dict[str, Any],
-    technical_indicators: Dict[str, Any],
-    sentiment: Dict[str, Any]
-) -> Dict[str, Any]:
-    """
-    Análise real usando DeepSeek API através do AGNO Agent.
-    Esta função prepara os dados estruturados para o AGNO Agent processar com DeepSeek.
-    """
+# ============================================================================
+# FUNÇÕES AUXILIARES PARA INTERPRETAÇÃO DE DADOS
+# ============================================================================
+
+def _classify_rsi(rsi: float) -> Dict[str, str]:
+    """Classifica RSI em zona e hint de ação"""
     try:
-        # CORRIGIDO: Remover klines grandes para evitar erro de decodificação
-        market_data_clean = market_data.copy()
-        if "recent_klines" in market_data_clean:
-            # Manter apenas contagem, não os dados completos
-            market_data_clean["klines_count"] = market_data_clean.get("klines_count", 0)
-            del market_data_clean["recent_klines"]
+        if rsi < 30:
+            return {"zone": "oversold", "action_hint": "potential_buy"}
+        elif rsi < 40:
+            return {"zone": "approaching_oversold", "action_hint": "potential_buy"}
+        elif rsi < 60:
+            return {"zone": "neutral", "action_hint": "wait"}
+        elif rsi < 70:
+            return {"zone": "approaching_overbought", "action_hint": "potential_sell"}
+        else:
+            return {"zone": "overbought", "action_hint": "potential_sell"}
+    except:
+        return {"zone": "neutral", "action_hint": "wait"}
+
+def _interpret_adx(adx: float) -> str:
+    """Interpreta força da tendência baseado no ADX"""
+    try:
+        if adx < 20:
+            return "no_trend"
+        elif adx < 25:
+            return "weak"
+        elif adx < 50:
+            return "moderate"
+        else:
+            return "strong"
+    except:
+        return "no_trend"
+
+def _interpret_macd_momentum(histogram: float, prev_histogram: Optional[float] = None) -> str:
+    """Determina direção do momentum do MACD"""
+    try:
+        if prev_histogram is None:
+            if histogram > 0:
+                return "accelerating_up"
+            else:
+                return "accelerating_down"
         
-        # Preparar dados estruturados para análise
-        analysis_data = {
-            "market_data": market_data_clean,
-            "technical_indicators": technical_indicators,
-            "sentiment": sentiment,
-            "timestamp": datetime.now().isoformat()
-        }
+        if histogram > 0 and histogram > prev_histogram:
+            return "accelerating_up"
+        elif histogram > 0 and histogram < prev_histogram:
+            return "decelerating_up"
+        elif histogram < 0 and histogram < prev_histogram:
+            return "accelerating_down"
+        else:
+            return "decelerating_down"
+    except:
+        return "neutral"
+
+def _classify_bollinger_position(position: float) -> str:
+    """Classifica posição nas Bollinger Bands"""
+    try:
+        if position < 0.2:
+            return "lower_band"
+        elif position < 0.4:
+            return "below_middle"
+        elif position < 0.6:
+            return "middle"
+        elif position < 0.8:
+            return "above_middle"
+        else:
+            return "upper_band"
+    except:
+        return "middle"
+
+def _detect_ema_alignment(ema20: float, ema50: float, ema200: Optional[float], price: float) -> str:
+    """Detecta alinhamento das EMAs"""
+    try:
+        if ema200 is None:
+            if price > ema20 > ema50:
+                return "bullish_stack"
+            elif price < ema20 < ema50:
+                return "bearish_stack"
+            else:
+                return "mixed"
+        else:
+            if price > ema20 > ema50 > ema200:
+                return "bullish_stack"
+            elif price < ema20 < ema50 < ema200:
+                return "bearish_stack"
+            else:
+                return "mixed"
+    except:
+        return "mixed"
+
+def _interpret_funding_rate(rate: float) -> str:
+    """Interpreta funding rate"""
+    try:
+        if rate > 0.01:
+            return "crowded_long"
+        elif rate > 0.005:
+            return "slightly_long"
+        elif rate > -0.005:
+            return "neutral"
+        elif rate > -0.01:
+            return "slightly_short"
+        else:
+            return "crowded_short"
+    except:
+        return "neutral"
+
+def _classify_orderbook_imbalance(imbalance: float) -> str:
+    """Classifica pressão do orderbook"""
+    try:
+        if imbalance > 0.5:
+            return "strong_buy_pressure"
+        elif imbalance > 0.2:
+            return "buy_pressure"
+        elif imbalance > -0.2:
+            return "neutral"
+        elif imbalance > -0.5:
+            return "sell_pressure"
+        else:
+            return "strong_sell_pressure"
+    except:
+        return "neutral"
+
+def _calculate_suggested_stops(atr: float, price: float, signal_type: str = "BUY") -> Dict[str, float]:
+    """Calcula stop loss e take profits sugeridos baseado em ATR"""
+    try:
+        atr_pct = (atr / price) * 100
         
-        # Criar prompt estruturado para o AGNO Agent processar com DeepSeek
-        prompt = f"""
-        Analise os dados de mercado e forneça um sinal de trading:
-        
-        DADOS DE MERCADO:
-        - Símbolo: {market_data.get('symbol', 'N/A')}
-        - Preço atual: ${market_data.get('current_price', 0):.2f}
-        - Variação 24h: {market_data.get('price_change_24h', 0):.2f}%
-        - Volume 24h: ${market_data.get('volume_24h', 0):.0f}
-        - Funding Rate: {market_data.get('funding_rate', 0):.4f}
-        - Open Interest: ${market_data.get('open_interest', 0):.0f}
-        
-        INDICADORES TÉCNICOS:
-        - RSI: {technical_indicators.get('indicators', {}).get('rsi', 50):.2f}
-        - MACD: {technical_indicators.get('indicators', {}).get('macd', 0):.2f} (Signal: {technical_indicators.get('indicators', {}).get('macd_signal', 0):.2f})
-        - MACD Crossover: {technical_indicators.get('indicators', {}).get('macd_crossover', 'neutral')}
-        - ADX: {technical_indicators.get('indicators', {}).get('adx', 25):.2f}
-        - ATR: {technical_indicators.get('indicators', {}).get('atr', 0):.2f}
-        - EMA 20: ${technical_indicators.get('indicators', {}).get('ema_20', 0):.2f}
-        - EMA 50: ${technical_indicators.get('indicators', {}).get('ema_50', 0):.2f}
-        - EMA 200: ${technical_indicators.get('indicators', {}).get('ema_200', 0) or 'N/A'}
-        - OBV: {technical_indicators.get('indicators', {}).get('obv', 0):.0f} (Trend: {technical_indicators.get('indicators', {}).get('obv_trend', 'neutral')})
-        - Tendência: {technical_indicators.get('trend', 'neutral')}
-        - Momentum: {technical_indicators.get('momentum', 'neutral')}
-        - Suporte: ${technical_indicators.get('support', 0):.2f}
-        - Resistência: ${technical_indicators.get('resistance', 0):.2f}
-        
-        VOLUME PROFILE:
-        - POC (Point of Control): ${technical_indicators.get('volume_profile', {}).get('poc_price', 0):.2f}
-        - Zonas de Alto Volume: {technical_indicators.get('volume_profile', {}).get('high_volume_zones', [])}
-        
-        FIBONACCI LEVELS:
-        {technical_indicators.get('fibonacci_levels', {})}
-        
-        ESTRUTURA DE MERCADO:
-        - Estrutura: {technical_indicators.get('market_structure', {}).get('structure', 'N/A')}
-        - Força: {technical_indicators.get('market_structure', {}).get('strength', 'N/A')}
-        - Nível Suporte: ${technical_indicators.get('market_structure', {}).get('support_level', 0):.2f}
-        - Nível Resistência: ${technical_indicators.get('market_structure', {}).get('resistance_level', 0):.2f}
-        
-        SENTIMENTO:
-        - Sentimento geral: {sentiment.get('sentiment', 'neutral')}
-        - Confiança: {sentiment.get('confidence', 0.5):.2f}
-        - Fatores: {sentiment.get('factors', {})}
-        
-        Forneça uma análise detalhada e um sinal de trading com:
-        1. SINAL FINAL: BUY ou SELL (seja decisivo e claro)
-        2. Entrada: [preço específico]
-        3. Stop Loss: [preço específico]
-        4. Take Profit 1: [preço específico]
-        5. Take Profit 2: [preço específico]
-        6. Confiança: [1-10]
-        7. Justificativa técnica detalhada considerando:
-           - RSI e momentum
-           - MACD crossover
-           - EMA 20/50/200 e tendência
-           - Volume Profile e POC
-           - Fibonacci levels
-           - OBV e fluxo de volume
-           - Estrutura de mercado (suporte/resistência)
-        
-        IMPORTANTE: Sempre termine sua resposta com "SINAL FINAL: [BUY/SELL]" para garantir extração correta.
-        """
+        if signal_type == "BUY":
+            stop_pct = 1.5 * atr_pct
+            tp1_pct = 2.0 * atr_pct
+            tp2_pct = 3.0 * atr_pct
+        else:  # SELL
+            stop_pct = 1.5 * atr_pct
+            tp1_pct = 2.0 * atr_pct
+            tp2_pct = 3.0 * atr_pct
         
         return {
-            "analysis_data": analysis_data,
+            "suggested_stop_pct": stop_pct,
+            "suggested_tp1_pct": tp1_pct,
+            "suggested_tp2_pct": tp2_pct
+        }
+    except:
+        return {
+            "suggested_stop_pct": 2.0,
+            "suggested_tp1_pct": 2.5,
+            "suggested_tp2_pct": 5.0
+        }
+
+def _identify_conflicting_signals(data: Dict) -> List[str]:
+    """Identifica sinais que se contradizem"""
+    conflicts = []
+    try:
+        trend = data.get("trend_analysis", {}).get("primary_trend", "neutral")
+        momentum = data.get("trend_analysis", {}).get("momentum", "neutral")
+        rsi_zone = data.get("key_indicators", {}).get("rsi", {}).get("zone", "neutral")
+        macd_crossover = data.get("key_indicators", {}).get("macd", {}).get("crossover", "neutral")
+        
+        # RSI oversold mas tendência bearish
+        if rsi_zone == "oversold" and "bearish" in trend:
+            conflicts.append("RSI oversold but strong bearish trend")
+        
+        # RSI overbought mas tendência bullish
+        if rsi_zone == "overbought" and "bullish" in trend:
+            conflicts.append("RSI overbought but strong bullish trend")
+        
+        # MACD bearish mas momentum bullish
+        if macd_crossover == "bearish" and "bullish" in momentum:
+            conflicts.append("MACD bearish crossover but bullish momentum")
+        
+        # MACD bullish mas momentum bearish
+        if macd_crossover == "bullish" and "bearish" in momentum:
+            conflicts.append("MACD bullish crossover but bearish momentum")
+        
+        # Tendência bullish mas orderbook com sell pressure
+        orderbook_bias = data.get("volume_flow", {}).get("orderbook_bias", "neutral")
+        if "bullish" in trend and "sell" in orderbook_bias:
+            conflicts.append("Bullish trend but sell pressure in orderbook")
+        
+        # Tendência bearish mas orderbook com buy pressure
+        if "bearish" in trend and "buy" in orderbook_bias:
+            conflicts.append("Bearish trend but buy pressure in orderbook")
+        
+    except Exception as e:
+        logger.warning(f"Erro ao identificar sinais conflitantes: {e}")
+    
+    return conflicts
+
+def _calculate_overall_bias(data: Dict) -> Dict[str, Any]:
+    """Calcula score agregado de -10 a +10 com interpretação"""
+    try:
+        bullish_count = 0
+        bearish_count = 0
+        neutral_count = 0
+        
+        # Analisar tendência
+        trend = data.get("trend_analysis", {}).get("primary_trend", "neutral")
+        if "strong_bullish" in trend:
+            bullish_count += 3
+        elif "bullish" in trend:
+            bullish_count += 2
+        elif "strong_bearish" in trend:
+            bearish_count += 3
+        elif "bearish" in trend:
+            bearish_count += 2
+        else:
+            neutral_count += 1
+        
+        # Analisar momentum
+        momentum = data.get("trend_analysis", {}).get("momentum", "neutral")
+        if momentum == "overbought":
+            bearish_count += 1
+        elif momentum == "oversold":
+            bullish_count += 1
+        elif "bullish" in momentum:
+            bullish_count += 1
+        elif "bearish" in momentum:
+            bearish_count += 1
+        else:
+            neutral_count += 1
+        
+        # Analisar RSI
+        rsi_hint = data.get("key_indicators", {}).get("rsi", {}).get("action_hint", "wait")
+        if "buy" in rsi_hint:
+            bullish_count += 1
+        elif "sell" in rsi_hint:
+            bearish_count += 1
+        else:
+            neutral_count += 1
+        
+        # Analisar MACD
+        macd_crossover = data.get("key_indicators", {}).get("macd", {}).get("crossover", "neutral")
+        if macd_crossover == "bullish":
+            bullish_count += 1
+        elif macd_crossover == "bearish":
+            bearish_count += 1
+        else:
+            neutral_count += 1
+        
+        # Analisar EMA alignment
+        ema_alignment = data.get("key_indicators", {}).get("ema_structure", {}).get("ema_alignment", "mixed")
+        if "bullish" in ema_alignment:
+            bullish_count += 1
+        elif "bearish" in ema_alignment:
+            bearish_count += 1
+        else:
+            neutral_count += 1
+        
+        # Analisar orderbook
+        orderbook_bias = data.get("volume_flow", {}).get("orderbook_bias", "neutral")
+        if "buy" in orderbook_bias:
+            bullish_count += 1
+        elif "sell" in orderbook_bias:
+            bearish_count += 1
+        else:
+            neutral_count += 1
+        
+        # Analisar sentimento
+        sentiment = data.get("sentiment", {}).get("overall", "neutral")
+        if "very_positive" in sentiment:
+            bullish_count += 2
+        elif "positive" in sentiment:
+            bullish_count += 1
+        elif "very_negative" in sentiment:
+            bearish_count += 2
+        elif "negative" in sentiment:
+            bearish_count += 1
+        else:
+            neutral_count += 1
+        
+        # Calcular bias geral (-10 a +10)
+        overall_bias = bullish_count - bearish_count
+        overall_bias = max(-10, min(10, overall_bias))
+        
+        # Interpretar bias
+        if overall_bias >= 7:
+            interpretation = "strong_buy"
+            recommended_action = "BUY"
+        elif overall_bias >= 3:
+            interpretation = "buy"
+            recommended_action = "BUY"
+        elif overall_bias <= -7:
+            interpretation = "strong_sell"
+            recommended_action = "SELL"
+        elif overall_bias <= -3:
+            interpretation = "sell"
+            recommended_action = "SELL"
+        else:
+            interpretation = "neutral"
+            recommended_action = "WAIT"
+        
+        return {
+            "bullish_factors_count": bullish_count,
+            "bearish_factors_count": bearish_count,
+            "neutral_factors_count": neutral_count,
+            "overall_bias": overall_bias,
+            "overall_bias_interpretation": interpretation,
+            "recommended_action": recommended_action
+        }
+    except Exception as e:
+        logger.warning(f"Erro ao calcular bias geral: {e}")
+        return {
+            "bullish_factors_count": 0,
+            "bearish_factors_count": 0,
+            "neutral_factors_count": 0,
+            "overall_bias": 0,
+            "overall_bias_interpretation": "neutral",
+            "recommended_action": "WAIT"
+        }
+
+def _interpret_confluence(bullish_count: int, bearish_count: int) -> str:
+    """Interpreta alinhamento de timeframes"""
+    try:
+        if bullish_count >= 4:
+            return "strong_bullish_alignment"
+        elif bullish_count >= 3:
+            return "bullish_alignment"
+        elif bearish_count >= 4:
+            return "strong_bearish_alignment"
+        elif bearish_count >= 3:
+            return "bearish_alignment"
+        else:
+            return "mixed_signals"
+    except:
+        return "mixed_signals"
+
+# ============================================================================
+# FUNÇÃO PRINCIPAL: PREPARAR ANÁLISE PARA LLM
+# ============================================================================
+
+async def prepare_analysis_for_llm(symbol: str) -> Dict[str, Any]:
+    """
+    Prepara dados SUMARIZADOS e INTERPRETADOS para envio ao DeepSeek.
+    
+    REGRAS:
+    - Payload máximo: 5KB
+    - NUNCA incluir arrays de klines
+    - SEMPRE interpretar valores numéricos em categorias
+    - Incluir scores agregados pré-calculados
+    
+    Returns:
+        Dict estruturado e compacto para a LLM
+    """
+    try:
+        # Coletar todos os dados necessários (async)
+        market_data = await get_market_data(symbol)
+        technical_indicators = await analyze_technical_indicators(symbol)
+        sentiment = await analyze_market_sentiment(symbol)
+        multi_timeframe = await analyze_multiple_timeframes(symbol)
+        order_flow = await analyze_order_flow(symbol)
+        
+        # Verificar erros
+        if "error" in market_data or "error" in technical_indicators:
+            logger.error(f"Erro ao coletar dados para {symbol}")
+            return {"error": "Erro ao coletar dados de mercado"}
+        
+        # Extrair valores principais
+        current_price = market_data.get("current_price", 0)
+        price_change_24h = market_data.get("price_change_24h", 0)
+        high_24h = market_data.get("high_24h", current_price)
+        low_24h = market_data.get("low_24h", current_price)
+        position_in_range = ((current_price - low_24h) / (high_24h - low_24h) * 100) if (high_24h - low_24h) > 0 else 50
+        
+        # Extrair indicadores técnicos
+        indicators = technical_indicators.get("indicators", {})
+        rsi_value = indicators.get("rsi", 50)
+        macd_hist = indicators.get("macd_histogram", 0)
+        macd_crossover = indicators.get("macd_crossover", "neutral")
+        adx_value = indicators.get("adx", 25)
+        atr_value = indicators.get("atr", current_price * 0.01)
+        bb_position = indicators.get("bb_position", 0.5)
+        ema_20 = indicators.get("ema_20", current_price)
+        ema_50 = indicators.get("ema_50", current_price)
+        ema_200 = indicators.get("ema_200")
+        obv_trend = indicators.get("obv_trend", "neutral")
+        
+        # Extrair níveis
+        support = technical_indicators.get("support", current_price * 0.95)
+        resistance = technical_indicators.get("resistance", current_price * 1.05)
+        fib_levels = technical_indicators.get("fibonacci_levels", {})
+        poc_price = technical_indicators.get("volume_profile", {}).get("poc_price", current_price)
+        
+        # Calcular distâncias
+        distance_to_support = ((current_price - support) / current_price) * 100
+        distance_to_resistance = ((resistance - current_price) / current_price) * 100
+        
+        # Interpretar dados
+        rsi_classification = _classify_rsi(rsi_value)
+        adx_interpretation = _interpret_adx(adx_value)
+        macd_momentum = _interpret_macd_momentum(macd_hist)
+        bb_zone = _classify_bollinger_position(bb_position)
+        ema_alignment = _detect_ema_alignment(ema_20, ema_50, ema_200, current_price)
+        funding_interpretation = _interpret_funding_rate(market_data.get("funding_rate", 0))
+        orderbook_bias = _classify_orderbook_imbalance(order_flow.get("orderbook_imbalance", 0))
+        suggested_stops = _calculate_suggested_stops(atr_value, current_price)
+        
+        # Analisar timeframes
+        timeframe_alignment = {}
+        confluence_bullish = multi_timeframe.get("bullish_count", 0)
+        confluence_bearish = multi_timeframe.get("bearish_count", 0)
+        confluence_score = confluence_bullish - confluence_bearish
+        confluence_interpretation = _interpret_confluence(confluence_bullish, confluence_bearish)
+        
+        for tf in ["5m", "15m", "1h", "4h", "1d"]:
+            tf_data = multi_timeframe.get("timeframes", {}).get(tf, {})
+            timeframe_alignment[tf] = tf_data.get("trend", "neutral")
+        
+        # Determinar tendência primária
+        primary_trend = technical_indicators.get("trend", "neutral")
+        momentum = technical_indicators.get("momentum", "neutral")
+        
+        # Classificar volatilidade
+        atr_pct = (atr_value / current_price) * 100
+        if atr_pct > 0.05:
+            volatility_level = "extreme"
+        elif atr_pct > 0.03:
+            volatility_level = "high"
+        elif atr_pct > 0.015:
+            volatility_level = "normal"
+        else:
+            volatility_level = "low"
+        
+        # Volume trend
+        volume_24h = market_data.get("volume_24h", 0)
+        volume_trend = "stable"  # Simplificado - poderia comparar com médias
+        
+        # Open interest trend
+        oi_trend = "stable"  # Simplificado
+        
+        # Construir estrutura de análise
+        analysis = {
+            "symbol": symbol,
+            "timestamp": datetime.now().isoformat(),
+            
+            "price_context": {
+                "current": current_price,
+                "change_24h_pct": price_change_24h,
+                "high_24h": high_24h,
+                "low_24h": low_24h,
+                "position_in_range_pct": position_in_range
+            },
+            
+            "trend_analysis": {
+                "primary_trend": primary_trend,
+                "trend_strength_adx": adx_value,
+                "trend_strength_interpretation": adx_interpretation,
+                "momentum": momentum,
+                "timeframe_alignment": timeframe_alignment,
+                "confluence_score": confluence_score,
+                "confluence_interpretation": confluence_interpretation
+            },
+            
+            "key_indicators": {
+                "rsi": {
+                    "value": rsi_value,
+                    "zone": rsi_classification["zone"],
+                    "action_hint": rsi_classification["action_hint"]
+                },
+                "macd": {
+                    "histogram": macd_hist,
+                    "crossover": macd_crossover,
+                    "momentum_direction": macd_momentum
+                },
+                "bollinger": {
+                    "position": bb_position,
+                    "zone": bb_zone,
+                    "squeeze_detected": False  # Simplificado
+                },
+                "ema_structure": {
+                    "price_vs_ema20": "above" if current_price > ema_20 else "below",
+                    "price_vs_ema50": "above" if current_price > ema_50 else "below",
+                    "price_vs_ema200": "above" if ema_200 and current_price > ema_200 else "below" if ema_200 else "N/A",
+                    "ema_alignment": ema_alignment
+                },
+                "obv_trend": obv_trend
+            },
+            
+            "key_levels": {
+                "immediate_support": support,
+                "immediate_resistance": resistance,
+                "fib_382": fib_levels.get("fib_38.2", support),
+                "fib_50": fib_levels.get("fib_50", current_price),
+                "fib_618": fib_levels.get("fib_61.8", resistance),
+                "volume_poc": poc_price,
+                "distance_to_support_pct": distance_to_support,
+                "distance_to_resistance_pct": distance_to_resistance
+            },
+            
+            "volume_flow": {
+                "volume_24h": volume_24h,
+                "volume_trend": volume_trend,
+                "obv_trend": obv_trend,
+                "orderbook_imbalance": order_flow.get("orderbook_imbalance", 0),
+                "orderbook_bias": orderbook_bias,
+                "cvd_direction": "positive" if order_flow.get("cvd", 0) > 0 else "negative"
+            },
+            
+            "sentiment": {
+                "overall": sentiment.get("sentiment", "neutral"),
+                "confidence": sentiment.get("confidence", 0.5),
+                "funding_rate": market_data.get("funding_rate", 0),
+                "funding_interpretation": funding_interpretation,
+                "open_interest_trend": oi_trend
+            },
+            
+            "volatility": {
+                "atr_value": atr_value,
+                "atr_pct": atr_pct,
+                "level": volatility_level,
+                "suggested_stop_pct": suggested_stops["suggested_stop_pct"],
+                "suggested_tp1_pct": suggested_stops["suggested_tp1_pct"],
+                "suggested_tp2_pct": suggested_stops["suggested_tp2_pct"]
+            },
+            
+            "conflicting_signals": [],  # Será preenchido depois
+            "aggregated_scores": {}  # Será preenchido depois
+        }
+        
+        # Identificar sinais conflitantes
+        analysis["conflicting_signals"] = _identify_conflicting_signals(analysis)
+        
+        # Calcular scores agregados
+        analysis["aggregated_scores"] = _calculate_overall_bias(analysis)
+        
+        # Validar tamanho do payload
+        payload_size = len(json.dumps(analysis))
+        if payload_size > 10000:  # 10KB (com margem de segurança)
+            logger.warning(f"Payload muito grande: {payload_size} bytes para {symbol}")
+        
+        return analysis
+        
+    except Exception as e:
+        logger.exception(f"Erro ao preparar análise para LLM: {e}")
+        return {
+            "error": f"Erro ao preparar análise: {str(e)}",
+            "symbol": symbol,
+            "timestamp": datetime.now().isoformat()
+        }
+
+def _create_analysis_prompt(analysis: Dict[str, Any]) -> str:
+    """Cria prompt estruturado para o DeepSeek"""
+    try:
+        conflicting = analysis.get("conflicting_signals", [])
+        conflicting_text = "\n".join([f"- {s}" for s in conflicting]) if conflicting else "- Nenhum conflito identificado"
+        
+        return f"""
+Analise os dados e forneça um sinal de trading.
+
+## DADOS DE MERCADO
+
+- Símbolo: {analysis['symbol']}
+- Preço: ${analysis['price_context']['current']:,.2f}
+- Variação 24h: {analysis['price_context']['change_24h_pct']:+.2f}%
+- Posição no range: {analysis['price_context']['position_in_range_pct']:.0f}%
+
+## ANÁLISE DE TENDÊNCIA
+
+- Tendência primária: {analysis['trend_analysis']['primary_trend']}
+- Força (ADX): {analysis['trend_analysis']['trend_strength_interpretation']}
+- Momentum: {analysis['trend_analysis']['momentum']}
+- Alinhamento timeframes: {analysis['trend_analysis']['confluence_interpretation']}
+- Score confluência: {analysis['trend_analysis']['confluence_score']}/5
+
+## INDICADORES
+
+- RSI: {analysis['key_indicators']['rsi']['value']:.1f} ({analysis['key_indicators']['rsi']['zone']})
+- MACD: {analysis['key_indicators']['macd']['crossover']} - {analysis['key_indicators']['macd']['momentum_direction']}
+- Bollinger: {analysis['key_indicators']['bollinger']['zone']}
+- EMAs: {analysis['key_indicators']['ema_structure']['ema_alignment']}
+
+## NÍVEIS CHAVE
+
+- Suporte: ${analysis['key_levels']['immediate_support']:,.2f} ({analysis['key_levels']['distance_to_support_pct']:+.2f}%)
+- Resistência: ${analysis['key_levels']['immediate_resistance']:,.2f} ({analysis['key_levels']['distance_to_resistance_pct']:+.2f}%)
+- POC Volume: ${analysis['key_levels']['volume_poc']:,.2f}
+
+## VOLUME E FLUXO
+
+- Pressão orderbook: {analysis['volume_flow']['orderbook_bias']}
+- OBV: {analysis['volume_flow']['obv_trend']}
+
+## SENTIMENTO
+
+- Geral: {analysis['sentiment']['overall']}
+- Funding: {analysis['sentiment']['funding_interpretation']}
+
+## VOLATILIDADE
+
+- Nível: {analysis['volatility']['level']}
+- Stop sugerido: {analysis['volatility']['suggested_stop_pct']:.2f}%
+- TP1 sugerido: {analysis['volatility']['suggested_tp1_pct']:.2f}%
+- TP2 sugerido: {analysis['volatility']['suggested_tp2_pct']:.2f}%
+
+## SINAIS CONFLITANTES
+
+{conflicting_text}
+
+## SCORE AGREGADO
+
+- Fatores bullish: {analysis['aggregated_scores']['bullish_factors_count']}
+- Fatores bearish: {analysis['aggregated_scores']['bearish_factors_count']}
+- Bias geral: {analysis['aggregated_scores']['overall_bias']}/10 ({analysis['aggregated_scores']['overall_bias_interpretation']})
+- Ação recomendada: {analysis['aggregated_scores']['recommended_action']}
+
+---
+
+RESPONDA APENAS COM JSON:
+
+```json
+{{
+    "signal": "BUY" ou "SELL" ou "NO_SIGNAL",
+    "entry_price": <número>,
+    "stop_loss": <número>,
+    "take_profit_1": <número>,
+    "take_profit_2": <número>,
+    "confidence": <1-10>,
+    "reasoning": "<justificativa>"
+}}
+```
+"""
+    except Exception as e:
+        logger.exception(f"Erro ao criar prompt: {e}")
+        return "Erro ao criar prompt de análise."
+
+async def get_deepseek_analysis(symbol: str) -> Dict[str, Any]:
+    """
+    Prepara análise otimizada para o DeepSeek.
+    CORRIGIDO: Agora usa prepare_analysis_for_llm() que sumariza dados.
+    NÃO recebe mais dados brutos - coleta internamente e sumariza.
+    """
+    try:
+        # Usar a nova função que já sumariza tudo
+        analysis = await prepare_analysis_for_llm(symbol)
+        
+        if "error" in analysis:
+            return analysis
+        
+        # Criar prompt estruturado
+        prompt = _create_analysis_prompt(analysis)
+        
+        return {
+            "analysis_data": analysis,
             "deepseek_prompt": prompt,
             "needs_agent_processing": True,
-            "message": "Dados preparados para análise DeepSeek - AGNO Agent deve processar com DeepSeek",
             "timestamp": datetime.now().isoformat()
         }
         
     except Exception as e:
+        logger.exception(f"Erro na preparação para DeepSeek: {e}")
         return {
             "error": f"Erro na preparação para DeepSeek: {str(e)}",
             "timestamp": datetime.now().isoformat()
@@ -723,10 +1201,11 @@ def get_deepseek_analysis(
 def _calculate_current_drawdown() -> float:
     """
     Calcula o drawdown atual baseado no histórico de trades.
+    CORRIGIDO: Usa real_paper_trading ao invés de paper_trading.
     """
     try:
-        from paper_trading import paper_trading
-        summary = paper_trading.get_portfolio_summary()
+        from real_paper_trading import real_paper_trading
+        summary = real_paper_trading.get_portfolio_summary()
         return max(0, (summary['initial_balance'] - summary['total_portfolio_value']) / summary['initial_balance'])
     except:
         return 0.0
@@ -734,10 +1213,11 @@ def _calculate_current_drawdown() -> float:
 def _calculate_total_exposure() -> float:
     """
     Calcula a exposição total atual.
+    CORRIGIDO: Usa real_paper_trading ao invés de paper_trading.
     """
     try:
-        from paper_trading import paper_trading
-        summary = paper_trading.get_portfolio_summary()
+        from real_paper_trading import real_paper_trading
+        summary = real_paper_trading.get_portfolio_summary()
         return summary['open_positions_value']
     except:
         return 0.0
@@ -745,11 +1225,12 @@ def _calculate_total_exposure() -> float:
 def _get_daily_trades_count() -> int:
     """
     Retorna o número de trades executados hoje.
+    CORRIGIDO: Usa real_paper_trading ao invés de paper_trading.
     """
     try:
-        from paper_trading import paper_trading
+        from real_paper_trading import real_paper_trading
         today = datetime.now().date()
-        trades = paper_trading.get_trade_history()
+        trades = real_paper_trading.get_trade_history()
         daily_trades = [t for t in trades if datetime.fromisoformat(t['timestamp']).date() == today]
         return len(daily_trades)
     except:

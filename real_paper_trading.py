@@ -32,6 +32,10 @@ class RealPaperTradingSystem:
         self.is_monitoring = False
         self.monitor_task = None
         
+        # CORREÇÃO: Adicionar lock para evitar race condition no monitoramento
+        import threading
+        self._monitoring_lock = threading.Lock()
+        
         # Criar diretórios
         Path("paper_trades").mkdir(exist_ok=True)
         Path("portfolio").mkdir(exist_ok=True)
@@ -44,12 +48,17 @@ class RealPaperTradingSystem:
         """Carrega estado anterior do sistema"""
         try:
             if os.path.exists("portfolio/state.json"):
-                with open("portfolio/state.json", "r") as f:
+                with open("portfolio/state.json", "r", encoding='utf-8') as f:
                     state = json.load(f)
                     self.current_balance = state.get("current_balance", self.initial_balance)
                     self.positions = state.get("positions", {})
                     self.trade_history = state.get("trade_history", [])
                     logger.info(f"Estado carregado: {len(self.positions)} posições abertas, saldo ${self.current_balance:.2f}")
+                    
+                    # CRÍTICO: Iniciar monitoramento se houver posições abertas
+                    if len(self.positions) > 0 and not self.is_monitoring:
+                        logger.warning(f"[CRITICO] Posicoes abertas encontradas mas monitoramento nao esta ativo. Iniciando monitoramento...")
+                        self.start_monitoring()
         except (json.JSONDecodeError, KeyError) as e:
             logger.error(f"Erro ao decodificar state.json: {e}")
         except IOError as e:
@@ -197,6 +206,7 @@ class RealPaperTradingSystem:
                 "signal": signal_type,
                 "entry_price": entry_price,
                 "position_size": position_size,
+                "original_position_size": position_size,  # Guardar tamanho original para cálculos de fechamento parcial
                 "position_value": position_value,
                 "stop_loss": stop_loss,
                 "take_profit_1": take_profit_1,
@@ -205,15 +215,20 @@ class RealPaperTradingSystem:
                 "timestamp": datetime.now().isoformat(),
                 "status": "OPEN",
                 "max_profit_reached": 0.0,
-                "max_loss_reached": 0.0
+                "max_loss_reached": 0.0,
+                "tp1_partial_closed": False  # Flag para indicar se TP1 já foi parcialmente fechado
             }
             
             # Executar trade
             if signal_type == "BUY":
+                # Para BUY: deduzir valor da posição do saldo
                 self.current_balance -= position_value
                 self.positions[symbol] = trade
             elif signal_type == "SELL":
-                self.current_balance += position_value
+                # CORRIGIDO: Para SELL (SHORT), precisamos RESERVAR margem (não receber dinheiro)
+                # Em uma posição SHORT, você "empresta" o ativo e vende, mas precisa ter margem para cobrir
+                # Deduzir margem do saldo (similar a BUY)
+                self.current_balance -= position_value
                 self.positions[f"{symbol}_SHORT"] = trade
             
             # Adicionar ao histórico
@@ -244,26 +259,28 @@ class RealPaperTradingSystem:
             }
     
     def start_monitoring(self):
-        """Inicia monitoramento automático de posições (CORRIGIDO: race condition fix)"""
-        if not self.is_monitoring:
-            self.is_monitoring = True
+        """Inicia monitoramento automático de posições (CORRIGIDO: race condition fix com lock)"""
+        # CORREÇÃO: Usar lock para evitar race condition
+        with self._monitoring_lock:
+            if not self.is_monitoring:
+                self.is_monitoring = True
 
-            # FIX: Check for running event loop before creating task
-            try:
-                loop = asyncio.get_running_loop()
-                self.monitor_task = loop.create_task(self._monitor_positions())
-                logger.info("[MONITOR] Monitoramento automatico iniciado (async context)")
-            except RuntimeError:
-                # No event loop running - create one
-                logger.warning("Sem event loop ativo, criando nova thread de monitoramento")
-                import threading
+                # FIX: Check for running event loop before creating task
+                try:
+                    loop = asyncio.get_running_loop()
+                    self.monitor_task = loop.create_task(self._monitor_positions())
+                    logger.info("[MONITOR] Monitoramento automatico iniciado (async context)")
+                except RuntimeError:
+                    # No event loop running - create one
+                    logger.warning("Sem event loop ativo, criando nova thread de monitoramento")
+                    import threading
 
-                def run_monitoring():
-                    asyncio.run(self._monitor_positions())
+                    def run_monitoring():
+                        asyncio.run(self._monitor_positions())
 
-                self.monitor_thread = threading.Thread(target=run_monitoring, daemon=True)
-                self.monitor_thread.start()
-                logger.info("[MONITOR] Monitoramento automatico iniciado (thread separada)")
+                    self.monitor_thread = threading.Thread(target=run_monitoring, daemon=True)
+                    self.monitor_thread.start()
+                    logger.info("[MONITOR] Monitoramento automatico iniciado (thread separada)")
     
     def stop_monitoring(self):
         """Para monitoramento automático"""
@@ -275,13 +292,22 @@ class RealPaperTradingSystem:
     
     async def _monitor_positions(self):
         """Monitora posições abertas e executa stop loss/take profit"""
+        logger.warning(f"[MONITOR] Iniciando monitoramento de {len(self.positions)} posicoes")
         while self.is_monitoring and self.positions:
             try:
                 for symbol, position in list(self.positions.items()):
                     current_price = await self.get_current_price(symbol.replace("_SHORT", ""))
                     
                     if current_price is None:
+                        logger.warning(f"[MONITOR] Nao foi possivel obter preco para {symbol}")
                         continue
+                    
+                    # Log detalhado a cada verificação (INFO para visibilidade)
+                    clean_symbol = symbol.replace("_SHORT", "")
+                    entry_price = position.get("entry_price", 0)
+                    tp1 = position.get("take_profit_1", 0)
+                    signal_type = position.get("signal", "UNKNOWN")
+                    logger.info(f"[MONITOR] {clean_symbol} ({signal_type}): Preco ${current_price:.2f} | Entry ${entry_price:.2f} | TP1 ${tp1:.2f}")
                     
                     # Calcular P&L atual
                     entry_price = position["entry_price"]
@@ -295,11 +321,15 @@ class RealPaperTradingSystem:
                         pnl_percent = ((entry_price - current_price) / entry_price) * 100
                         pnl_amount = (entry_price - current_price) * position_size
                     
-                    # Atualizar máximo lucro/prejuízo
+                    # Atualizar máximo lucro/prejuízo e SALVAR estado
                     if pnl_amount > position.get("max_profit_reached", 0):
                         position["max_profit_reached"] = pnl_amount
+                        # Salvar estado quando atinge novo máximo
+                        self._save_state()
                     if pnl_amount < position.get("max_loss_reached", 0):
                         position["max_loss_reached"] = pnl_amount
+                        # Salvar estado quando atinge novo mínimo
+                        self._save_state()
                     
                     # Verificar stop loss
                     if position.get("stop_loss"):
@@ -313,28 +343,28 @@ class RealPaperTradingSystem:
                             await self._close_position_auto(symbol, current_price, "STOP_LOSS")
                             continue
 
-                    # Verificar take profit 1
-                    if position.get("take_profit_1"):
+                    # Verificar take profit 1 (CORRIGIDO: fechar apenas 50% da posição)
+                    if position.get("take_profit_1") and not position.get("tp1_partial_closed", False):
                         tp1 = position["take_profit_1"]
                         if signal_type == "BUY" and current_price >= tp1:
                             # Verificar se o preço REAL atingiu o take profit
-                            logger.info(f"[TAKE PROFIT 1] Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
-                            await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_1")
+                            logger.warning(f"[TAKE PROFIT 1] Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
+                            await self._close_position_partial(symbol, current_price, "TAKE_PROFIT_1", partial_percent=0.5)
                             continue
                         elif signal_type == "SELL" and current_price <= tp1:
-                            logger.info(f"[TAKE PROFIT 1] Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
-                            await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_1")
+                            logger.warning(f"[TAKE PROFIT 1] Take Profit 1 atingido para {symbol}: ${current_price:.2f} (TP: ${tp1:.2f})")
+                            await self._close_position_partial(symbol, current_price, "TAKE_PROFIT_1", partial_percent=0.5)
                             continue
 
-                    # Verificar take profit 2
-                    if position.get("take_profit_2"):
+                    # Verificar take profit 2 (fechar 50% restante quando TP2 for atingido)
+                    if position.get("take_profit_2") and position.get("tp1_partial_closed", False):
                         tp2 = position["take_profit_2"]
                         if signal_type == "BUY" and current_price >= tp2:
-                            logger.info(f"[TAKE PROFIT 2] Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f})")
+                            logger.warning(f"[TAKE PROFIT 2] Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f}) - Fechando 50% restante")
                             await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_2")
                             continue
                         elif signal_type == "SELL" and current_price <= tp2:
-                            logger.info(f"[TAKE PROFIT 2] Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f})")
+                            logger.warning(f"[TAKE PROFIT 2] Take Profit 2 atingido para {symbol}: ${current_price:.2f} (TP: ${tp2:.2f}) - Fechando 50% restante")
                             await self._close_position_auto(symbol, current_price, "TAKE_PROFIT_2")
                             continue
                     
@@ -351,8 +381,77 @@ class RealPaperTradingSystem:
                 logger.exception(f"❌ Erro no monitoramento: {e}")
                 await asyncio.sleep(10)
     
+    async def _close_position_partial(self, symbol: str, current_price: float, reason: str, partial_percent: float = 0.5):
+        """
+        Fecha parcialmente uma posição (ex: 50% no TP1, 50% restante no TP2)
+        
+        Args:
+            symbol: Símbolo da posição
+            current_price: Preço atual para fechamento
+            reason: Motivo do fechamento (TAKE_PROFIT_1, TAKE_PROFIT_2, STOP_LOSS)
+            partial_percent: Porcentagem da posição a fechar (0.5 = 50%)
+        """
+        try:
+            position = self.positions[symbol]
+            entry_price = position["entry_price"]
+            original_position_size = position.get("original_position_size", position["position_size"])
+            current_position_size = position["position_size"]
+            signal_type = position["signal"]
+            
+            # Calcular quantidade a fechar
+            size_to_close = current_position_size * partial_percent
+            size_remaining = current_position_size - size_to_close
+            
+            # Calcular P&L da parte fechada
+            if signal_type == "BUY":
+                pnl_partial = (current_price - entry_price) * size_to_close
+                # Recuperamos o valor da posição vendida
+                self.current_balance += current_price * size_to_close
+            else:  # SELL
+                # CORRIGIDO: Para SELL (SHORT) parcial
+                pnl_partial = (entry_price - current_price) * size_to_close
+                # Devolver margem proporcional + lucro/prejuízo
+                self.current_balance += entry_price * size_to_close  # Devolver margem reservada proporcional
+                self.current_balance -= current_price * size_to_close  # Pagar compra de volta proporcional
+                # Resultado líquido: +pnl_partial
+            
+            # Registrar fechamento parcial no histórico
+            partial_close_entry = {
+                "trade_id": f"{position.get('trade_id')}_partial_{reason}",
+                "symbol": symbol.replace("_SHORT", ""),
+                "signal": signal_type,
+                "entry_price": entry_price,
+                "close_price": current_price,
+                "position_size": size_to_close,
+                "pnl": pnl_partial,
+                "status": "CLOSED_PARTIAL",
+                "close_timestamp": datetime.now().isoformat(),
+                "close_reason": reason,
+                "partial_percent": partial_percent * 100
+            }
+            self.trade_history.append(partial_close_entry)
+            
+            # Atualizar posição: reduzir tamanho e marcar que TP1 foi parcialmente fechado
+            position["position_size"] = size_remaining
+            position["position_value"] = size_remaining * entry_price  # Valor baseado no entry original
+            position["tp1_partial_closed"] = True
+            position["partial_close_price"] = current_price
+            position["partial_close_pnl"] = pnl_partial
+            
+            # Salvar estado
+            self._save_state()
+            
+            # Log de fechamento parcial
+            logger.warning(f"[FECHADO PARCIAL] {reason}: {symbol} - {partial_percent*100:.0f}% fechado a ${current_price:.2f} | P&L: ${pnl_partial:.2f} | Restante: {size_remaining:.6f}")
+            self._log_trade_close(f"{symbol}_partial", current_price, pnl_partial, f"{reason}_PARTIAL")
+
+        except KeyError as e:
+            logger.error(f"Posição não encontrada: {symbol} - {e}")
+        except Exception as e:
+            logger.exception(f"❌ Erro ao fechar parcialmente posição {symbol}: {e}")
+    
     async def _close_position_auto(self, symbol: str, current_price: float, reason: str):
-        """Fecha posição automaticamente"""
+        """Fecha posição automaticamente (100% - usado para TP2 final ou Stop Loss)"""
         try:
             position = self.positions[symbol]
             entry_price = position["entry_price"]
@@ -366,28 +465,41 @@ class RealPaperTradingSystem:
                 # Recuperamos o valor da posição vendida (que foi pago na abertura)
                 self.current_balance += current_price * position_size
             else:  # SELL
-                # Para SELL: compramos de volta ao preço atual
+                # CORRIGIDO: Para SELL (SHORT)
+                # Na abertura: reservamos margem (deduzimos position_value do saldo)
+                # No fechamento: compramos de volta ao preço atual
                 # Lucro = (preço de venda - preço de compra) * quantidade
                 pnl = (entry_price - current_price) * position_size
-                # Na abertura SELL: recebemos entry_price * position_size (linha 216)
-                # No fechamento SELL: precisamos devolver current_price * position_size
-                # O P&L já está calculado acima, então ajustamos o saldo:
-                # saldo_atual = saldo_atual - (valor que precisamos devolver)
-                # saldo_atual = saldo_atual - current_price * position_size
-                # Mas o P&L = (entry_price - current_price) * position_size
-                # Então: saldo_atual = saldo_atual - current_price * position_size
-                # Como já recebemos entry_price * position_size na abertura:
-                # saldo_final = saldo_atual - current_price * position_size
-                # saldo_final = saldo_atual - (entry_price - entry_price + current_price) * position_size
-                # saldo_final = saldo_atual - entry_price * position_size + entry_price * position_size - current_price * position_size
-                # saldo_final = saldo_atual - entry_price * position_size + pnl
-                # Como saldo_atual já inclui entry_price * position_size da abertura:
-                # saldo_final = saldo_atual - current_price * position_size
-                self.current_balance -= current_price * position_size
+                # Devolver margem reservada + lucro/prejuízo
+                # Margem reservada = entry_price * position_size (foi deduzida na abertura)
+                # Preço de compra de volta = current_price * position_size
+                # Saldo final = saldo_atual + margem_reservada - preco_compra_volta + pnl
+                # Simplificando: saldo_atual + entry_price * position_size - current_price * position_size
+                # Como pnl = (entry_price - current_price) * position_size:
+                # saldo_final = saldo_atual + pnl
+                self.current_balance += entry_price * position_size  # Devolver margem reservada
+                self.current_balance -= current_price * position_size  # Pagar compra de volta
+                # Resultado líquido: saldo_atual + (entry_price - current_price) * position_size = saldo_atual + pnl
             
-            # Atualizar trade
+            # Calcular P&L total (incluindo fechamento parcial anterior se houver)
+            total_pnl = pnl
+            if position.get("partial_close_pnl"):
+                total_pnl += position["partial_close_pnl"]
+            
+            # Atualizar trade no histórico ANTES de remover
+            # Encontrar trade no histórico e atualizar
+            for trade in self.trade_history:
+                if trade.get("trade_id") == position.get("trade_id") and trade.get("status") != "CLOSED":
+                    trade["close_price"] = current_price
+                    trade["pnl"] = total_pnl  # P&L total incluindo parcial
+                    trade["status"] = "CLOSED"
+                    trade["close_timestamp"] = datetime.now().isoformat()
+                    trade["close_reason"] = reason
+                    break
+            
+            # Atualizar posição
             position["close_price"] = current_price
-            position["pnl"] = pnl
+            position["pnl"] = total_pnl
             position["status"] = "CLOSED"
             position["close_timestamp"] = datetime.now().isoformat()
             position["close_reason"] = reason
@@ -395,12 +507,12 @@ class RealPaperTradingSystem:
             # Remover da posição ativa
             del self.positions[symbol]
             
-            # Salvar estado
+            # Salvar estado IMEDIATAMENTE (CRÍTICO)
             self._save_state()
             
             # Log de fechamento
-            logger.info(f"🎯 {reason}: {symbol} fechado a ${current_price:.2f} | P&L: ${pnl:.2f}")
-            self._log_trade_close(symbol, current_price, pnl, reason)
+            logger.warning(f"[FECHADO] {reason}: {symbol} fechado a ${current_price:.2f} | P&L Total: ${total_pnl:.2f}")
+            self._log_trade_close(symbol, current_price, total_pnl, reason)
 
         except KeyError as e:
             logger.error(f"Posição não encontrada: {symbol} - {e}")

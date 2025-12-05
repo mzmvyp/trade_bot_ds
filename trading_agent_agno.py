@@ -12,6 +12,9 @@ import os
 import re
 from dotenv import load_dotenv
 
+# CORREÇÃO: Importar logger
+from logger import get_logger
+
 # Carregar variáveis de ambiente
 load_dotenv()
 
@@ -27,6 +30,9 @@ from agno_tools import (
     analyze_order_flow,
     backtest_strategy
 )
+
+# CORREÇÃO: Criar instância do logger
+logger = get_logger(__name__)
 
 class AgnoTradingAgent:
     """
@@ -111,6 +117,20 @@ class AgnoTradingAgent:
         - Analise estrutura de mercado (suporte/resistência)
         - Considere múltiplos timeframes
         
+        FORMATO DE RESPOSTA OBRIGATÓRIO:
+        Sempre termine sua análise com um bloco JSON estruturado:
+        
+        ```json
+        {
+            "signal": "BUY" ou "SELL" ou "NO_SIGNAL",
+            "entry_price": 95000.00,
+            "stop_loss": 93000.00,
+            "take_profit_1": 97000.00,
+            "take_profit_2": 99000.00,
+            "confidence": 7
+        }
+        ```
+        
         Seja detalhado na análise mas objetivo na decisão.
         """
     
@@ -167,21 +187,21 @@ class AgnoTradingAgent:
         prompt = f"""
         Execute uma analise completa para {symbol} seguindo o processo definido:
         
-        1. Colete dados de mercado usando get_market_data("{symbol}")
-        2. Analise indicadores tecnicos com analyze_technical_indicators("{symbol}")
-        3. Capture sentimento com analyze_market_sentiment("{symbol}")
-        4. Obtenha analise DeepSeek usando get_deepseek_analysis() com os dados coletados
-        5. Valide o risco com validate_risk_and_position() 
-        6. Se apropriado, execute paper trade com execute_paper_trade()
+        1. Obtenha analise DeepSeek usando get_deepseek_analysis("{symbol}")
+           - Esta funcao ja coleta, processa e sumariza todos os dados necessarios
+           - Retorna dados interpretados e otimizados (sem arrays de klines)
         
-        IMPORTANTE: Forneca APENAS UM sinal: BUY ou SELL (nao ambos).
-        Se o mercado estiver neutro ou sem oportunidade clara, retorne NO_SIGNAL.
+        2. Analise o resultado e decida: BUY, SELL ou NO_SIGNAL
         
-        Forneca:
-        - Analise detalhada de cada componente
-        - Sinal final com justificativa (BUY, SELL ou NO_SIGNAL)
-        - Niveis de entrada, stop loss e take profit (se BUY ou SELL)
-        - Avisos e consideracoes de risco
+        3. Valide o risco com validate_risk_and_position() 
+        
+        4. Se apropriado, execute paper trade com execute_paper_trade()
+        
+        IMPORTANTE: 
+        - Forneca APENAS UM sinal: BUY ou SELL (nao ambos)
+        - Se o mercado estiver neutro ou sem oportunidade clara, retorne NO_SIGNAL
+        - Retorne APENAS o JSON estruturado com signal, entry_price, stop_loss, 
+          take_profit_1, take_profit_2, confidence e reasoning
         
         Seja detalhado mas objetivo.
         """
@@ -222,6 +242,31 @@ class AgnoTradingAgent:
         
         # Tentar extrair sinal estruturado
         response_text = str(response)
+        
+        # MELHORIA: Tentar extrair JSON estruturado primeiro (mais confiável)
+        json_match = re.search(r'```json\s*(\{.*?\})\s*```', response_text, re.DOTALL)
+        if json_match:
+            try:
+                structured = json.loads(json_match.group(1))
+                logger.info(f"[JSON ESTRUTURADO] Sinal extraído via JSON: {structured.get('signal', 'N/A')}")
+                # Validar campos obrigatórios
+                if structured.get("signal") in ["BUY", "SELL", "NO_SIGNAL"]:
+                    signal.update({
+                        "signal": structured.get("signal", "NO_SIGNAL"),
+                        "entry_price": structured.get("entry_price"),
+                        "stop_loss": structured.get("stop_loss"),
+                        "take_profit_1": structured.get("take_profit_1"),
+                        "take_profit_2": structured.get("take_profit_2"),
+                        "confidence": structured.get("confidence", 5)
+                    })
+                    # Validar se tem entrada para BUY/SELL
+                    if signal["signal"] in ["BUY", "SELL"] and not signal.get("entry_price"):
+                        logger.warning("[JSON] Sinal BUY/SELL sem entry_price, usando fallback regex")
+                        # Continuar para extração regex
+                    else:
+                        return signal
+            except json.JSONDecodeError as e:
+                logger.warning(f"[JSON] Erro ao decodificar JSON: {e}, usando fallback regex")
         
         # CORRIGIDO: Procurar pelo sinal FINAL (não o primeiro encontrado)
         # Priorizar "SINAL FINAL:" ou "SINAL:" que aparecem no final da análise

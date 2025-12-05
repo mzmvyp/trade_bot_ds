@@ -97,18 +97,26 @@ async def main():
         elif args.mode == 'monitor':
             # Monitoramento contínuo do Top 3 (BTC, ETH, SOL)
             from config import settings
+            from real_paper_trading import real_paper_trading
+            
             symbols = settings.top_crypto_pairs[:3]  # Apenas BTC, ETH, SOL
             
-            print(f"\n[MONITOR] Monitoramento continuo do Top 5")
+            print(f"\n[MONITOR] Monitoramento continuo do Top 3")
             print(f"Pares: {symbols}")
             print(f"Intervalo: {args.interval}s")
             print("="*60)
+            
+            # CRÍTICO: Garantir que monitoramento está ativo se houver posições
+            if len(real_paper_trading.positions) > 0 and not real_paper_trading.is_monitoring:
+                print("\n[CRITICO] Iniciando monitoramento de posicoes abertas...")
+                real_paper_trading.start_monitoring()
             
             while True:
                 try:
                     # Verificar posições ativas
                     active_positions = get_active_positions()
                     print(f"\n[POSICOES] Posicoes ativas: {active_positions if active_positions else 'Nenhuma'}")
+                    print(f"[MONITOR STATUS] Monitoramento ativo: {real_paper_trading.is_monitoring}")
                     
                     # Filtrar apenas símbolos sem posição ativa
                     symbols_to_analyze = [s for s in symbols if s not in active_positions]

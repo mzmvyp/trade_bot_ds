@@ -1,5 +1,5 @@
 {
-  "current_balance": 66.6478204574887,
+  "current_balance": 9223.167820457487,
   "positions": {
     "BTCUSDT_SHORT": {
       "trade_id": "20251204_163109",
@@ -15,23 +15,7 @@
       "timestamp": "2025-12-04T16:31:09.720812",
       "status": "OPEN",
       "max_profit_reached": 0.0,
-      "max_loss_reached": -31.323262839879305
-    },
-    "ETHUSDT": {
-      "trade_id": "20251204_163337",
-      "symbol": "ETHUSDT",
-      "signal": "BUY",
-      "entry_price": 3080.0,
-      "position_size": 3.0,
-      "position_value": 9240.0,
-      "stop_loss": 3040.0,
-      "take_profit_1": 3150.0,
-      "take_profit_2": 3200.0,
-      "confidence": 6,
-      "timestamp": "2025-12-04T16:33:37.540565",
-      "status": "OPEN",
-      "max_profit_reached": 115.38000000000011,
-      "max_loss_reached": 0.0
+      "max_loss_reached": -65.8264997842037
     },
     "SOLUSDT": {
       "trade_id": "20251204_163847",
@@ -46,7 +30,23 @@
       "confidence": 6,
       "timestamp": "2025-12-04T16:38:47.463137",
       "status": "OPEN",
-      "max_profit_reached": 0.0,
+      "max_profit_reached": 43.29000000000053,
+      "max_loss_reached": 0.0
+    },
+    "ETHUSDT": {
+      "trade_id": "20251204_223859",
+      "symbol": "ETHUSDT",
+      "signal": "BUY",
+      "entry_price": 3116.0,
+      "position_size": 0.1,
+      "position_value": 311.6,
+      "stop_loss": 3040.0,
+      "take_profit_1": 3227.0,
+      "take_profit_2": 3300.0,
+      "confidence": 6,
+      "timestamp": "2025-12-04T22:38:59.246521",
+      "status": "OPEN",
+      "max_profit_reached": 5.7,
       "max_loss_reached": 0.0
     }
   },
@@ -79,9 +79,13 @@
       "take_profit_2": 3200.0,
       "confidence": 6,
       "timestamp": "2025-12-04T16:33:37.540565",
-      "status": "OPEN",
+      "status": "CLOSED",
       "max_profit_reached": 115.38000000000011,
-      "max_loss_reached": 0.0
+      "max_loss_reached": 0.0,
+      "close_price": 3156.04,
+      "pnl": 228.1199999999999,
+      "close_timestamp": "2025-12-04T22:24:19.901923",
+      "close_reason": "TAKE_PROFIT_1"
     },
     {
       "trade_id": "20251204_163847",
@@ -98,7 +102,23 @@
       "status": "OPEN",
       "max_profit_reached": 0.0,
       "max_loss_reached": 0.0
+    },
+    {
+      "trade_id": "20251204_223859",
+      "symbol": "ETHUSDT",
+      "signal": "BUY",
+      "entry_price": 3116.0,
+      "position_size": 0.1,
+      "position_value": 311.6,
+      "stop_loss": 3040.0,
+      "take_profit_1": 3227.0,
+      "take_profit_2": 3300.0,
+      "confidence": 6,
+      "timestamp": "2025-12-04T22:38:59.246521",
+      "status": "OPEN",
+      "max_profit_reached": 5.7,
+      "max_loss_reached": 0.0
     }
   ],
-  "last_update": "2025-12-04T16:38:47.464140"
+  "last_update": "2025-12-04T23:17:13.866521"
 }
