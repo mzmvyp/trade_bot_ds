@@ -27,6 +27,13 @@ class Settings(BaseSettings):
     max_daily_trades: int = 5  # Máximo 5 trades por dia
     base_risk_percentage: float = 0.02  # 2% base de risco
     
+    # Configurações de Confiança
+    min_confidence_0_10: int = 7  # Mínimo 7 para escala 0-10
+    min_confidence_0_5: int = 3  # Mínimo 3 para escala 0-5
+    
+    # Configurações de Intervalo de Análise
+    min_analysis_interval_hours: float = 1.0  # Mínimo 1 hora entre análises do mesmo símbolo
+    
     # Top 10 criptomoedas para análise
     top_crypto_pairs: list = [
         "BTCUSDT",   # Bitcoin

@@ -1338,6 +1338,29 @@ def validate_risk_and_position(
         stop_loss = signal.get('stop_loss', 0)
         confidence = signal.get('confidence', 5)
         
+        # CORRIGIDO: Validar confiança antes de executar
+        # Se escala 0-10: executar apenas se confiança >= 7
+        # Se escala 0-5: executar apenas se confiança >= 3
+        from config import settings
+        
+        if confidence > 5:
+            # Escala 0-10
+            min_confidence = settings.min_confidence_0_10
+            confidence_scale = "0-10"
+        else:
+            # Escala 0-5
+            min_confidence = settings.min_confidence_0_5
+            confidence_scale = "0-5"
+        
+        if confidence < min_confidence:
+            return {
+                "can_execute": False,
+                "reason": f"Confianca muito baixa: {confidence}/{confidence_scale} (minimo {min_confidence})",
+                "risk_level": "medium",
+                "confidence": confidence,
+                "min_confidence": min_confidence
+            }
+        
         if not entry_price or not stop_loss:
             return {
                 "can_execute": False,

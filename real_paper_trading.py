@@ -632,7 +632,7 @@ class RealPaperTradingSystem:
         self.positions = {}
         self.trade_history = []
         self._save_state()
-        logger.info("🔄 Portfólio resetado para estado inicial")
+        logger.info("Portfolio resetado para estado inicial")
     
     def export_performance_report(self) -> str:
         """Exporta relatório de performance REAL"""

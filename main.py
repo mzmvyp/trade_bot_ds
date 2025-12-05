@@ -111,10 +111,21 @@ async def main():
                 print("\n[CRITICO] Iniciando monitoramento de posicoes abertas...")
                 real_paper_trading.start_monitoring()
             
+            # Rastrear posições anteriores para detectar fechamentos
+            previous_positions = set()
+            
             while True:
                 try:
                     # Verificar posições ativas
                     active_positions = get_active_positions()
+                    active_positions_set = set(active_positions)
+                    
+                    # Detectar posições fechadas (estavam ativas antes, mas não estão mais)
+                    closed_positions = previous_positions - active_positions_set
+                    if closed_positions:
+                        print(f"\n[POSICAO FECHADA] Detectado fechamento: {closed_positions}")
+                        print("[GERANDO NOVO SINAL] Analisando para gerar novo sinal...")
+                    
                     print(f"\n[POSICOES] Posicoes ativas: {active_positions if active_positions else 'Nenhuma'}")
                     print(f"[MONITOR STATUS] Monitoramento ativo: {real_paper_trading.is_monitoring}")
                     
@@ -134,6 +145,9 @@ async def main():
                                 print(f"[ERRO] Erro em {symbol}: {e}")
 
                             await asyncio.sleep(3)  # Pausa entre análises
+                    
+                    # Atualizar rastreamento de posições
+                    previous_positions = active_positions_set
                     
                     print(f"\n[AGUARDANDO] Aguardando {args.interval}s...")
                     await asyncio.sleep(args.interval)

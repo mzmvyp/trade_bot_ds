@@ -152,6 +152,8 @@ class AgnoTradingAgent:
         try:
             import json
             import os
+            from datetime import timedelta
+            
             if os.path.exists("portfolio/state.json"):
                 with open("portfolio/state.json", "r", encoding='utf-8') as f:
                     state = json.load(f)
@@ -182,6 +184,49 @@ class AgnoTradingAgent:
         except Exception as e:
             # Se houver erro, continuar com análise
             logger.warning(f"Erro ao verificar posicoes existentes: {e}")
+        
+        # CORRIGIDO: Verificar última análise (1 hora) antes de enviar para DeepSeek
+        try:
+            import json
+            import os
+            from config import settings
+            
+            # Verificar última análise do símbolo
+            last_analysis_file = f"signals/agno_{symbol}_last_analysis.json"
+            if os.path.exists(last_analysis_file):
+                with open(last_analysis_file, "r", encoding='utf-8') as f:
+                    last_analysis = json.load(f)
+                    last_timestamp_str = last_analysis.get("timestamp")
+                    if last_timestamp_str:
+                        # Parse timestamp (suporta com e sem timezone)
+                        try:
+                            last_timestamp = datetime.fromisoformat(last_timestamp_str.replace('Z', '+00:00'))
+                        except ValueError:
+                            # Tentar sem timezone
+                            last_timestamp = datetime.fromisoformat(last_timestamp_str)
+                        
+                        # Se não tem timezone, assumir local
+                        if last_timestamp.tzinfo is None:
+                            last_timestamp = last_timestamp.replace(tzinfo=datetime.now().astimezone().tzinfo)
+                        
+                        now = datetime.now(last_timestamp.tzinfo)
+                        time_since_last = now - last_timestamp
+                        hours_since_last = time_since_last.total_seconds() / 3600
+                        min_interval = settings.min_analysis_interval_hours
+                        
+                        if hours_since_last < min_interval:
+                            remaining_minutes = int((min_interval - hours_since_last) * 60)
+                            print(f"[AVISO] Ultima analise de {symbol} foi ha {int(hours_since_last*60)} minutos. Aguardando {min_interval}h (restam {remaining_minutes} minutos).")
+                            return {
+                                "symbol": symbol,
+                                "signal": "NO_SIGNAL",
+                                "confidence": 0,
+                                "reason": f"Ultima analise ha {int(hours_since_last*60)} minutos (minimo {min_interval}h)",
+                                "timestamp": datetime.now().isoformat()
+                            }
+        except Exception as e:
+            # Se houver erro, continuar com análise (não bloquear)
+            logger.warning(f"Erro ao verificar ultima analise: {e}")
         
         # Prompt para o agent
         prompt = f"""
@@ -220,6 +265,21 @@ class AgnoTradingAgent:
             
             # Salvar sinal
             self._save_signal(signal)
+            
+            # CORRIGIDO: Salvar timestamp da última análise
+            try:
+                import json
+                import os
+                last_analysis_file = f"signals/agno_{symbol}_last_analysis.json"
+                with open(last_analysis_file, "w", encoding='utf-8') as f:
+                    json.dump({
+                        "symbol": symbol,
+                        "timestamp": datetime.now().isoformat(),
+                        "signal": signal.get("signal", "NO_SIGNAL"),
+                        "confidence": signal.get("confidence", 0)
+                    }, f, indent=2)
+            except Exception as e:
+                logger.warning(f"Erro ao salvar ultima analise: {e}")
             
             # Imprimir resumo
             self._print_summary(signal)
