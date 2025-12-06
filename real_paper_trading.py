@@ -70,11 +70,21 @@ class RealPaperTradingSystem:
                                 pos["source"] = "LEGACY"  # Posições antigas sem identificação
                             migration_needed = True
                             logger.info(f"[MIGRACAO] Adicionado campo 'source' para posição {pos_key}: {pos['source']}")
-                    
+
+                    # MIGRAÇÃO: Converter pnl para pnl_percent em trades antigos
+                    for trade in self.trade_history:
+                        if trade.get("pnl") is not None and trade.get("pnl_percent") is None:
+                            entry = trade.get("entry_price", 1)
+                            size = trade.get("position_size", 1)
+                            if entry > 0 and size > 0:
+                                trade["pnl_percent"] = (trade["pnl"] / (entry * size)) * 100
+                                migration_needed = True
+                                logger.info(f"[MIGRACAO] Trade {trade.get('trade_id')}: pnl=${trade['pnl']:.2f} -> pnl_percent={trade['pnl_percent']:.2f}%")
+
                     # Salvar estado após migração se necessário
                     if migration_needed:
                         self._save_state()
-                        logger.info("[MIGRACAO] Estado salvo após migração de campos 'source'")
+                        logger.info("[MIGRACAO] Estado salvo após migração de campos 'source' e pnl_percent")
                     
                     # CRÍTICO: Iniciar monitoramento se houver posições abertas
                     if len(self.positions) > 0 and not self.is_monitoring:
@@ -481,14 +491,18 @@ class RealPaperTradingSystem:
             # Calcular quantidade a fechar
             size_to_close = current_position_size * partial_percent
             size_remaining = current_position_size - size_to_close
-            
-            # MODIFICADO: Calcular P&L apenas em PORCENTAGEM
+
+            # Calcular P&L da parte fechada em %
             if signal_type == "BUY":
-                pnl_percent = ((current_price - entry_price) / entry_price) * 100
+                pnl_percent_this_part = ((current_price - entry_price) / entry_price) * 100
             else:  # SELL (SHORT)
-                pnl_percent = ((entry_price - current_price) / entry_price) * 100
-            
-            # Registrar fechamento parcial no histórico (apenas %)
+                pnl_percent_this_part = ((entry_price - current_price) / entry_price) * 100
+
+            # P&L proporcional: multiplicar pelo peso da parte fechada
+            # Se fechou 50%, o impacto no P&L total é 50% do pnl_percent
+            weighted_pnl_percent = pnl_percent_this_part * partial_percent
+
+            # Registrar fechamento parcial no histórico
             partial_close_entry = {
                 "trade_id": f"{position.get('trade_id')}_partial_{reason}",
                 "symbol": symbol,
@@ -496,26 +510,28 @@ class RealPaperTradingSystem:
                 "signal": signal_type,
                 "entry_price": entry_price,
                 "close_price": current_price,
-                "pnl_percent": pnl_percent,
+                "position_size_closed": size_to_close,
+                "partial_percent": partial_percent * 100,
+                "pnl_percent": weighted_pnl_percent,  # P&L ponderado
+                "pnl_percent_raw": pnl_percent_this_part,  # P&L bruto para referência
                 "status": "CLOSED_PARTIAL",
                 "close_timestamp": datetime.now().isoformat(),
-                "close_reason": reason,
-                "partial_percent": partial_percent * 100
+                "close_reason": reason
             }
             self.trade_history.append(partial_close_entry)
-            
+
             # Atualizar posição: reduzir tamanho e marcar que TP1 foi parcialmente fechado
             position["position_size"] = size_remaining
             position["tp1_partial_closed"] = True
             position["partial_close_price"] = current_price
-            position["partial_close_pnl_percent"] = pnl_percent
+            position["partial_close_pnl_percent"] = weighted_pnl_percent  # Guardar P&L ponderado
             
             # Salvar estado
             self._save_state()
-            
+
             # Log de fechamento parcial (apenas %)
-            logger.warning(f"[FECHADO PARCIAL] {reason}: {symbol} - {partial_percent*100:.0f}% fechado a ${current_price:.2f} | P&L: {pnl_percent:+.2f}%")
-            self._log_trade_close(f"{symbol}_partial", current_price, pnl_percent, f"{reason}_PARTIAL")
+            logger.warning(f"[FECHADO PARCIAL] {reason}: {symbol} - {partial_percent*100:.0f}% fechado a ${current_price:.2f} | P&L parte: {pnl_percent_this_part:+.2f}% | P&L ponderado: {weighted_pnl_percent:+.2f}%")
+            self._log_trade_close(f"{symbol}_partial", current_price, weighted_pnl_percent, f"{reason}_PARTIAL")
 
         except KeyError as e:
             logger.error(f"Posição não encontrada: {symbol} - {e}")
@@ -523,24 +539,30 @@ class RealPaperTradingSystem:
             logger.exception(f"❌ Erro ao fechar parcialmente posição {symbol}: {e}")
     
     async def _close_position_auto(self, position_key: str, current_price: float, reason: str):
-        """Fecha posição automaticamente (100% - usado para TP2 final ou Stop Loss)"""
+        """Fecha posição automaticamente com cálculo de P&L total incluindo partes anteriores"""
         try:
             position = self.positions[position_key]
             symbol = position.get("symbol", position_key.split("_")[0])  # Extrair símbolo da posição ou da chave
             entry_price = position["entry_price"]
-            position_size = position["position_size"]
             signal_type = position["signal"]
-            
-            # MODIFICADO: Calcular P&L apenas em PORCENTAGEM
+
+            # P&L da parte atual
             if signal_type == "BUY":
-                pnl_percent = ((current_price - entry_price) / entry_price) * 100
-            else:  # SELL (SHORT)
-                pnl_percent = ((entry_price - current_price) / entry_price) * 100
-            
-            # Calcular P&L total em % (incluindo fechamento parcial anterior se houver)
-            total_pnl_percent = pnl_percent
-            if position.get("partial_close_pnl_percent"):
-                total_pnl_percent += position["partial_close_pnl_percent"]
+                current_pnl_percent = ((current_price - entry_price) / entry_price) * 100
+            else:
+                current_pnl_percent = ((entry_price - current_price) / entry_price) * 100
+
+            # Se teve fechamento parcial anterior, calcular P&L ponderado
+            if position.get("tp1_partial_closed") and position.get("partial_close_pnl_percent") is not None:
+                # P&L da primeira parte (já ponderado por 50%)
+                first_part_pnl = position["partial_close_pnl_percent"]
+                # P&L da segunda parte (ponderado por 50% restante)
+                second_part_pnl = current_pnl_percent * 0.5  # 50% restante
+                # P&L total
+                total_pnl_percent = first_part_pnl + second_part_pnl
+            else:
+                # Fechamento total (sem parcial anterior)
+                total_pnl_percent = current_pnl_percent
             
             # Atualizar trade no histórico ANTES de remover
             for trade in self.trade_history:
@@ -564,10 +586,10 @@ class RealPaperTradingSystem:
             
             # Salvar estado IMEDIATAMENTE (CRÍTICO)
             self._save_state()
-            
+
             # Log de fechamento (apenas %)
             source = position.get("source", "UNKNOWN")
-            logger.warning(f"[FECHADO] {reason}: {symbol} {source} fechado a ${current_price:.2f} | P&L: {total_pnl_percent:+.2f}%")
+            logger.warning(f"[FECHADO] {reason}: {symbol} {source} fechado a ${current_price:.2f} | P&L Total: {total_pnl_percent:+.2f}%")
             self._log_trade_close(symbol, current_price, total_pnl_percent, reason)
 
         except KeyError as e:

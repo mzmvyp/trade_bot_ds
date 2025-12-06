@@ -137,7 +137,7 @@ async def analyze_multiple_timeframes(symbol: str) -> Dict[str, Any]:
         
         async with BinanceClient() as client:
             for tf in timeframes:
-            try:
+                try:
                     # Obter dados para timeframe específico usando BinanceClient
                     klines_df = await client.get_klines(symbol, tf, limit=100)
                     
@@ -167,9 +167,9 @@ async def analyze_multiple_timeframes(symbol: str) -> Dict[str, Any]:
                             "current_price": float(current_price),
                             "sma_20": float(sma_20)
                         }
-            except Exception as e:
+                except Exception as e:
                     logger.warning(f"Erro no timeframe {tf}: {e}")
-                continue
+                    continue
         
         # Calcular confluência
         bullish_timeframes = sum(1 for tf in analyses.values() if tf['trend'] == 'bullish')
@@ -209,16 +209,16 @@ async def analyze_order_flow(symbol: str) -> Dict[str, Any]:
         import aiohttp
         
         async with BinanceClient() as client:
-        # Obter orderbook
+            # Obter orderbook
             orderbook = await client.get_orderbook(symbol, limit=20)
-        
-        # Calcular imbalance
-        bid_volume = sum([float(b[1]) for b in orderbook['bids'][:20]])
-        ask_volume = sum([float(a[1]) for a in orderbook['asks'][:20]])
-        
-        total_volume = bid_volume + ask_volume
-        imbalance = (bid_volume - ask_volume) / total_volume if total_volume > 0 else 0
-        
+
+            # Calcular imbalance
+            bid_volume = sum([float(b[1]) for b in orderbook['bids'][:20]])
+            ask_volume = sum([float(a[1]) for a in orderbook['asks'][:20]])
+
+            total_volume = bid_volume + ask_volume
+            imbalance = (bid_volume - ask_volume) / total_volume if total_volume > 0 else 0
+
             # Obter trades recentes para CVD (usando API direta pois não temos método no client)
             async with aiohttp.ClientSession() as session:
                 async with session.get(
@@ -226,29 +226,29 @@ async def analyze_order_flow(symbol: str) -> Dict[str, Any]:
                     params={'symbol': symbol, 'limit': 100},
                     timeout=aiohttp.ClientTimeout(total=5)
                 ) as trades_response:
-        buy_volume = 0
-        sell_volume = 0
+                    buy_volume = 0
+                    sell_volume = 0
                     if trades_response.status == 200:
                         trades = await trades_response.json()
-            for trade in trades:
-                if trade['m']:  # isBuyerMaker
-                    sell_volume += float(trade['q'])
-                else:
-                    buy_volume += float(trade['q'])
-        
-        cvd = buy_volume - sell_volume
-        
-        return {
-            "symbol": symbol,
-            "orderbook_imbalance": imbalance,
-            "bid_volume": bid_volume,
-            "ask_volume": ask_volume,
-            "cvd": cvd,
-            "buy_volume": buy_volume,
-            "sell_volume": sell_volume,
-            "buy_pressure": buy_volume > sell_volume * 1.2,
-            "timestamp": datetime.now().isoformat()
-        }
+                        for trade in trades:
+                            if trade['m']:  # isBuyerMaker
+                                sell_volume += float(trade['q'])
+                            else:
+                                buy_volume += float(trade['q'])
+
+            cvd = buy_volume - sell_volume
+
+            return {
+                "symbol": symbol,
+                "orderbook_imbalance": imbalance,
+                "bid_volume": bid_volume,
+                "ask_volume": ask_volume,
+                "cvd": cvd,
+                "buy_volume": buy_volume,
+                "sell_volume": sell_volume,
+                "buy_pressure": buy_volume > sell_volume * 1.2,
+                "timestamp": datetime.now().isoformat()
+            }
         
     except Exception as e:
         logger.exception(f"Erro na análise de order flow: {e}")
@@ -403,7 +403,7 @@ async def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any
                 else:
                     trend = "bullish"  # Alinhamento bullish mas ADX fraco
             elif current_price > ema_20 > ema_50:
-            trend = "bullish"
+                trend = "bullish"
             elif current_price < ema_20 < ema_50 < ema_200_value:
                 # EMA alinhada bearish: verificar ADX para determinar força
                 if adx_value > 25:
@@ -426,9 +426,9 @@ async def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any
                 if adx_value > 25:
                     trend = "strong_bearish"
                 else:
-            trend = "bearish"
-        else:
-            trend = "neutral"
+                    trend = "bearish"
+            else:
+                trend = "neutral"
         
         # Determinar momentum melhorado
         if rsi > 70:
@@ -1332,10 +1332,10 @@ async def get_deepseek_analysis(symbol: str) -> Dict[str, Any]:
         api_key = os.getenv("DEEPSEEK_API_KEY")
         if not api_key:
             logger.warning("DEEPSEEK_API_KEY não encontrada, retornando apenas prompt")
-        return {
+            return {
                 "analysis_data": analysis,
-            "deepseek_prompt": prompt,
-            "needs_agent_processing": True,
+                "deepseek_prompt": prompt,
+                "needs_agent_processing": True,
                 "timestamp": datetime.now().isoformat()
             }
         
