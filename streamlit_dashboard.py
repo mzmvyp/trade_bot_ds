@@ -24,6 +24,20 @@ st.set_page_config(
 st.title("📊 Dashboard de Paper Trading")
 st.markdown("---")
 
+# Função helper para obter P&L em % (suporta campo pnl antigo)
+def get_pnl_percent(trade):
+    """Obtém P&L em % do trade, com fallback para campo pnl antigo"""
+    pnl_percent = trade.get("pnl_percent")
+    if pnl_percent is None and trade.get("pnl") is not None:
+        # Converter pnl absoluto para % aproximado
+        entry = trade.get("entry_price", 1)
+        size = trade.get("position_size", 1)
+        if entry > 0 and size > 0:
+            pnl_percent = (trade["pnl"] / (entry * size)) * 100
+        else:
+            pnl_percent = 0
+    return pnl_percent if pnl_percent is not None else 0
+
 # Função para carregar dados do portfólio (CORRIGIDO: cache reduzido para 2s)
 @st.cache_data(ttl=2)
 def load_portfolio_data():
@@ -130,7 +144,7 @@ if portfolio_data:
     
     # Calcular P&L acumulado em % (soma de todos os trades fechados)
     closed_trades = [t for t in trade_history if t.get("status") in ["CLOSED", "CLOSED_PARTIAL"]]
-    realized_pnl_percent = sum([t.get("pnl_percent", 0) for t in closed_trades])
+    realized_pnl_percent = sum([get_pnl_percent(t) for t in closed_trades])
     
     # Calcular P&L médio não realizado (posições abertas)
     open_positions = portfolio_data.get("positions", {})
@@ -196,10 +210,10 @@ if portfolio_data:
         # Calcular estatísticas (apenas %)
         closed_trades = [t for t in trade_history if t.get("status") in ["CLOSED", "CLOSED_PARTIAL"]]
         open_trades = [t for t in trade_history if t.get("status") == "OPEN"]
-        winning_trades = len([t for t in closed_trades if t.get("pnl_percent", 0) > 0])
-        losing_trades = len([t for t in closed_trades if t.get("pnl_percent", 0) < 0])
+        winning_trades = len([t for t in closed_trades if get_pnl_percent(t) > 0])
+        losing_trades = len([t for t in closed_trades if get_pnl_percent(t) < 0])
         win_rate = (winning_trades / len(closed_trades) * 100) if closed_trades else 0
-        total_pnl_percent = sum([t.get("pnl_percent", 0) for t in closed_trades])
+        total_pnl_percent = sum([get_pnl_percent(t) for t in closed_trades])
         
         # Métricas de performance
         col1, col2, col3, col4, col5 = st.columns(5)
@@ -237,7 +251,7 @@ if portfolio_data:
                 tp1_diff = ((take_profit_1 - entry_price) / entry_price * 100) if entry_price > 0 else 0
                 tp2_diff = ((take_profit_2 - entry_price) / entry_price * 100) if entry_price > 0 else 0
                 
-                pnl_percent = trade.get('pnl_percent', 0)
+                pnl_percent = get_pnl_percent(trade)
                 closed_list.append({
                     "Data": trade.get("timestamp", "N/A")[:16],
                     "Símbolo": trade.get("symbol", "N/A"),
@@ -386,7 +400,7 @@ if portfolio_data:
             # Preparar dados para tabela
             history_list = []
             for trade in trade_history:
-                pnl_percent = trade.get('pnl_percent', 0)
+                pnl_percent = get_pnl_percent(trade)
                 history_list.append({
                     "ID": trade.get("trade_id", "N/A"),
                     "Símbolo": trade.get("symbol", "N/A"),
@@ -408,9 +422,9 @@ if portfolio_data:
         if len(closed_trades) > 0:
             # Estatísticas dos trades fechados
             st.subheader("📊 Estatísticas dos Trades")
-            
+
             # Filtrar apenas trades com P&L válido (em %)
-            pnl_percent_values = [t.get("pnl_percent", 0) for t in closed_trades if t.get("pnl_percent") is not None]
+            pnl_percent_values = [get_pnl_percent(t) for t in closed_trades if get_pnl_percent(t) != 0]
             
             col1, col2 = st.columns(2)
             
