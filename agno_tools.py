@@ -24,7 +24,7 @@ async def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
     """
     try:
         from binance_client import BinanceClient
-        
+
         logger.debug(f"Fetching market data for {symbol}")
 
         async with BinanceClient() as client:
@@ -137,7 +137,7 @@ async def analyze_multiple_timeframes(symbol: str) -> Dict[str, Any]:
         
         async with BinanceClient() as client:
             for tf in timeframes:
-                try:
+            try:
                     # Obter dados para timeframe específico usando BinanceClient
                     klines_df = await client.get_klines(symbol, tf, limit=100)
                     
@@ -167,9 +167,9 @@ async def analyze_multiple_timeframes(symbol: str) -> Dict[str, Any]:
                             "current_price": float(current_price),
                             "sma_20": float(sma_20)
                         }
-                except Exception as e:
+            except Exception as e:
                     logger.warning(f"Erro no timeframe {tf}: {e}")
-                    continue
+                continue
         
         # Calcular confluência
         bullish_timeframes = sum(1 for tf in analyses.values() if tf['trend'] == 'bullish')
@@ -209,16 +209,16 @@ async def analyze_order_flow(symbol: str) -> Dict[str, Any]:
         import aiohttp
         
         async with BinanceClient() as client:
-            # Obter orderbook
+        # Obter orderbook
             orderbook = await client.get_orderbook(symbol, limit=20)
-            
-            # Calcular imbalance
-            bid_volume = sum([float(b[1]) for b in orderbook['bids'][:20]])
-            ask_volume = sum([float(a[1]) for a in orderbook['asks'][:20]])
-            
-            total_volume = bid_volume + ask_volume
-            imbalance = (bid_volume - ask_volume) / total_volume if total_volume > 0 else 0
-            
+        
+        # Calcular imbalance
+        bid_volume = sum([float(b[1]) for b in orderbook['bids'][:20]])
+        ask_volume = sum([float(a[1]) for a in orderbook['asks'][:20]])
+        
+        total_volume = bid_volume + ask_volume
+        imbalance = (bid_volume - ask_volume) / total_volume if total_volume > 0 else 0
+        
             # Obter trades recentes para CVD (usando API direta pois não temos método no client)
             async with aiohttp.ClientSession() as session:
                 async with session.get(
@@ -226,15 +226,15 @@ async def analyze_order_flow(symbol: str) -> Dict[str, Any]:
                     params={'symbol': symbol, 'limit': 100},
                     timeout=aiohttp.ClientTimeout(total=5)
                 ) as trades_response:
-                    buy_volume = 0
-                    sell_volume = 0
+        buy_volume = 0
+        sell_volume = 0
                     if trades_response.status == 200:
                         trades = await trades_response.json()
-                        for trade in trades:
-                            if trade['m']:  # isBuyerMaker
-                                sell_volume += float(trade['q'])
-                            else:
-                                buy_volume += float(trade['q'])
+            for trade in trades:
+                if trade['m']:  # isBuyerMaker
+                    sell_volume += float(trade['q'])
+                else:
+                    buy_volume += float(trade['q'])
         
         cvd = buy_volume - sell_volume
         
@@ -403,7 +403,7 @@ async def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any
                 else:
                     trend = "bullish"  # Alinhamento bullish mas ADX fraco
             elif current_price > ema_20 > ema_50:
-                trend = "bullish"
+            trend = "bullish"
             elif current_price < ema_20 < ema_50 < ema_200_value:
                 # EMA alinhada bearish: verificar ADX para determinar força
                 if adx_value > 25:
@@ -426,9 +426,9 @@ async def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any
                 if adx_value > 25:
                     trend = "strong_bearish"
                 else:
-                    trend = "bearish"
-            else:
-                trend = "neutral"
+            trend = "bearish"
+        else:
+            trend = "neutral"
         
         # Determinar momentum melhorado
         if rsi > 70:
@@ -1001,8 +1001,8 @@ async def prepare_analysis_for_llm(symbol: str) -> Dict[str, Any]:
             return {
                 "error": f"Erro ao coletar dados de mercado: {error_summary}",
                 "symbol": symbol,
-                "timestamp": datetime.now().isoformat()
-            }
+            "timestamp": datetime.now().isoformat()
+        }
         
         # Extrair valores principais
         current_price = market_data.get("current_price", 0)
@@ -1332,10 +1332,10 @@ async def get_deepseek_analysis(symbol: str) -> Dict[str, Any]:
         api_key = os.getenv("DEEPSEEK_API_KEY")
         if not api_key:
             logger.warning("DEEPSEEK_API_KEY não encontrada, retornando apenas prompt")
-            return {
+        return {
                 "analysis_data": analysis,
-                "deepseek_prompt": prompt,
-                "needs_agent_processing": True,
+            "deepseek_prompt": prompt,
+            "needs_agent_processing": True,
                 "timestamp": datetime.now().isoformat()
             }
         
@@ -1398,26 +1398,33 @@ async def get_deepseek_analysis(symbol: str) -> Dict[str, Any]:
 def _calculate_current_drawdown() -> float:
     """
     Calcula o drawdown atual baseado no histórico de trades.
-    CORRIGIDO: Usa real_paper_trading ao invés de paper_trading.
+    MODIFICADO: Sistema em modo P&L - calcula drawdown baseado em P&L acumulado.
     """
     try:
         from real_paper_trading import real_paper_trading
         summary = real_paper_trading.get_portfolio_summary()
-        return max(0, (summary['initial_balance'] - summary['total_portfolio_value']) / summary['initial_balance'])
-    except:
+        # Em modo P&L, drawdown é baseado em P&L negativo acumulado
+        # Se P&L total for negativo, isso representa um drawdown
+        total_pnl_percent = summary.get('total_pnl_percent', 0)
+        # Drawdown é o valor negativo do P&L (se negativo) ou 0
+        # Converter para proporção (0.0 a 1.0)
+        if total_pnl_percent < 0:
+            # P&L negativo = drawdown, converter para proporção
+            # Ex: -20% P&L = 0.20 drawdown
+            return abs(total_pnl_percent) / 100.0
+        return 0.0
+    except Exception as e:
+        logger.warning(f"Erro ao calcular drawdown: {e}")
         return 0.0
 
 def _calculate_total_exposure() -> float:
     """
     Calcula a exposição total atual.
-    CORRIGIDO: Usa real_paper_trading ao invés de paper_trading.
+    MODIFICADO: Sistema em modo P&L - não calcula exposição em valores, apenas retorna 0.
+    Esta função não é mais usada, mas mantida para compatibilidade.
     """
-    try:
-        from real_paper_trading import real_paper_trading
-        summary = real_paper_trading.get_portfolio_summary()
-        return summary['open_positions_value']
-    except:
-        return 0.0
+    # MODIFICADO: Em modo P&L, não há cálculo de exposição baseado em capital
+    return 0.0
 
 def _get_daily_trades_count() -> int:
     """
@@ -1436,13 +1443,19 @@ def _get_daily_trades_count() -> int:
 def validate_risk_and_position(
     signal: Dict[str, Any],
     symbol: str,
-    account_balance: float = 10000.0
+    account_balance: float = None
 ) -> Dict[str, Any]:
     """
     Valida risco e calcula tamanho de posição apropriado com circuit breakers.
     CORRIGIDO: Verifica se já existe posição aberta para o símbolo.
+    MODIFICADO: Usa saldo atual do portfólio se account_balance não for fornecido.
     """
     try:
+        # MODIFICADO: Não precisamos mais de account_balance (sistema em modo P&L)
+        # Usar valor padrão apenas para cálculos internos, mas não será usado
+        if account_balance is None:
+            account_balance = 10000.0  # Valor padrão (não usado no modo P&L)
+        
         if signal.get('signal') == 'HOLD' or signal.get('signal') == 'NO_SIGNAL':
             return {
                 "can_execute": False,
@@ -1560,14 +1573,9 @@ def validate_risk_and_position(
             # Drawdown entre 15% e 40%: permitir mas reduzir tamanho da posição
             logger.warning(f"[RISCO] Drawdown elevado ({current_drawdown:.2%}), reduzindo tamanho de posição")
         
-        # Circuit Breaker 3: Verificar exposição total
-        total_exposure = _calculate_total_exposure()
-        if total_exposure > account_balance * 0.1:  # Máximo 10% de exposição total
-            return {
-                "can_execute": False,
-                "reason": f"Exposição total muito alta: {total_exposure:.2f} (máximo 10% do saldo)",
-                "risk_level": "high"
-            }
+        # REMOVIDO: Circuit Breaker 3 - Verificação de capital/exposição
+        # Sistema agora foca apenas em P&L, sem restrições de capital
+        logger.info(f"[P&L MODE] Sistema em modo P&L - sem restrições de capital")
         
         # Circuit Breaker 4: Verificar limite diário de trades
         daily_trades = _get_daily_trades_count()
@@ -1578,42 +1586,32 @@ def validate_risk_and_position(
                 "risk_level": "medium"
             }
         
-        # Calcular tamanho da posição baseado na confiança
-        base_risk = account_balance * 0.02  # 2% base
-        confidence_multiplier = confidence / 10  # 0.1 a 1.0
+        # MODIFICADO: Tamanho de posição fixo baseado em unidades (não em capital)
+        # Sistema foca apenas em P&L, não em capital
+        # Usar tamanho padrão de 1 unidade ou calcular baseado em stop loss para ter P&L significativo
+        if stop_loss:
+            # Calcular tamanho para que o risco seja $100 (valor fixo para P&L tracking)
+            risk_per_unit = abs(entry_price - stop_loss)
+            if risk_per_unit > 0:
+                position_size = 100.0 / risk_per_unit  # $100 de risco por trade
+            else:
+                position_size = 1.0  # Fallback: 1 unidade
+        else:
+            position_size = 1.0  # 1 unidade padrão
         
-        # MODIFICADO: Reduzir tamanho da posição se drawdown estiver alto (15-40%)
-        drawdown_multiplier = 1.0
-        if current_drawdown > 0.15:
-            # Reduzir tamanho da posição proporcionalmente ao drawdown
-            # Drawdown 15% = 1.0, Drawdown 40% = 0.1
-            drawdown_reduction_range = 0.40 - 0.15
-            if drawdown_reduction_range > 0:
-                reduction_factor = (current_drawdown - 0.15) / drawdown_reduction_range
-                drawdown_multiplier = max(0.1, 1.0 - reduction_factor)
-            logger.info(f"[RISCO] Drawdown {current_drawdown:.2%} - Aplicando multiplicador: {drawdown_multiplier:.2f}")
+        # Calcular P&L potencial
+        position_value = position_size * entry_price
+        max_risk_amount = abs(entry_price - stop_loss) * position_size if stop_loss else 0
         
-        # MODIFICADO: Reduzir tamanho da posição se risco estiver entre 3% e 5%
-        risk_multiplier = 1.0
-        if 3.0 < risk_percentage <= 5.0:
-            # Reduzir proporcionalmente: 3% = 1.0, 5% = 0.5
-            risk_multiplier = 1.0 - ((risk_percentage - 3.0) / 2.0) * 0.5
-            logger.info(f"[RISCO] Risco {risk_percentage:.2f}%, reduzindo tamanho em {100 - risk_multiplier*100:.0f}%")
-        
-        max_risk_amount = base_risk * confidence_multiplier * drawdown_multiplier * risk_multiplier
-        
-        position_size = max_risk_amount / risk_per_trade
+        logger.info(f"[P&L MODE] Tamanho posição: {position_size:.6f} unidades, Valor: ${position_value:.2f}, Risco: ${max_risk_amount:.2f}")
         
         return {
             "can_execute": True,
             "recommended_position_size": position_size,
             "position_value": position_size * entry_price,
             "max_risk_amount": max_risk_amount,
-            "risk_percentage": risk_percentage,
             "risk_level": "acceptable",
-            "confidence_multiplier": confidence_multiplier,
             "current_drawdown": current_drawdown,
-            "total_exposure": total_exposure,
             "daily_trades": daily_trades
         }
     except Exception as e:
@@ -1713,25 +1711,53 @@ def execute_paper_trade(
         result = real_paper_trading.execute_trade(signal, position_size)
         
         if result["success"]:
-            # Obter resumo do portfólio
-            portfolio_summary = real_paper_trading.get_portfolio_summary()
-            
-            return {
-                "success": True,
-                "trade_id": result["trade_id"],
-                "message": result["message"],
-                "file": result["file"],
-                "portfolio_summary": {
-                    "current_balance": f"${portfolio_summary['current_balance']:.2f}",
-                    "total_return": f"{portfolio_summary['total_return_percent']:.2f}%",
-                    "open_positions": portfolio_summary['open_positions_count'],
-                    "total_trades": portfolio_summary['total_trades']
+            # Obter resumo do portfólio (modo P&L)
+            try:
+                portfolio_summary = real_paper_trading.get_portfolio_summary()
+                
+                # Verificar se retornou erro
+                if "error" in portfolio_summary:
+                    logger.warning(f"Erro ao obter resumo do portfólio: {portfolio_summary.get('error')}")
+                    # Continuar mesmo com erro, usando valores padrão
+                    portfolio_summary = {}
+                
+                return {
+                    "success": True,
+                    "trade_id": result["trade_id"],
+                    "message": result["message"],
+                    "file": result["file"],
+                    "portfolio_summary": {
+                        "total_pnl_percent": f"{portfolio_summary.get('total_pnl_percent', 0):+.2f}%",
+                        "open_positions": portfolio_summary.get('open_positions_count', 0),
+                        "total_trades": portfolio_summary.get('total_trades', 0)
+                    }
                 }
-            }
+            except KeyError as ke:
+                # Erro específico de chave faltando no portfolio_summary
+                logger.error(f"Chave faltando no portfolio_summary: {ke}")
+                return {
+                    "success": True,  # Trade foi executado com sucesso, apenas erro no resumo
+                    "trade_id": result["trade_id"],
+                    "message": result["message"],
+                    "file": result["file"],
+                    "portfolio_summary": {
+                        "total_pnl_percent": "0.00%",
+                        "open_positions": 0,
+                        "total_trades": 0
+                    }
+                }
         else:
             return result
             
+    except KeyError as e:
+        # Erro específico de chave faltando - pode ser current_balance ou outra chave
+        logger.error(f"Erro de chave faltando ao executar paper trade: {e}")
+        return {
+            "success": False,
+            "error": f"Erro ao executar paper trade: Chave faltando - {str(e)}"
+        }
     except Exception as e:
+        logger.exception(f"Erro inesperado ao executar paper trade: {e}")
         return {
             "success": False,
             "error": f"Erro ao executar paper trade: {str(e)}"

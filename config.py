@@ -21,9 +21,9 @@ class Settings(BaseSettings):
     trading_symbol: str = "BTCUSDT"
     
     # Configurações de Risk Management
-    max_risk_per_trade: float = 0.03  # Máximo 3% de risco por trade
-    max_drawdown: float = 0.15  # Máximo 15% de drawdown
-    max_exposure: float = 0.10  # Máximo 10% de exposição total
+    max_risk_per_trade: float = 0.05  # Máximo 5% de risco por trade (aumentado para paper trading)
+    max_drawdown: float = 0.40  # Máximo 40% de drawdown (aumentado para paper trading)
+    max_exposure: float = 0.80  # Máximo 80% de exposição total (aumentado para paper trading)
     max_daily_trades: int = 5  # Máximo 5 trades por dia
     base_risk_percentage: float = 0.02  # 2% base de risco
     

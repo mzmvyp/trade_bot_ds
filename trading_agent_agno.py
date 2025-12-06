@@ -289,7 +289,8 @@ class AgnoTradingAgent:
                         validation = validate_risk_and_position(deepseek_signal, symbol)
                         if validation.get("can_execute"):
                             logger.info(f"[DEEPSEEK] Validando e executando sinal {deepseek_signal.get('signal')} para {symbol}")
-                            execution_result = execute_paper_trade(deepseek_signal, validation.get("position_size"))
+                            position_size = validation.get("recommended_position_size", validation.get("position_size"))
+                            execution_result = execute_paper_trade(deepseek_signal, position_size)
                             if execution_result.get("success"):
                                 logger.info(f"[DEEPSEEK] Trade executado com sucesso: {execution_result.get('message', '')}")
                             else:
@@ -332,7 +333,8 @@ class AgnoTradingAgent:
                     validation = validate_risk_and_position(agno_signal, symbol)
                     if validation.get("can_execute"):
                         logger.info(f"[AGNO] Validando e executando sinal {agno_signal.get('signal')} para {symbol}")
-                        execution_result = execute_paper_trade(agno_signal, validation.get("position_size"))
+                        position_size = validation.get("recommended_position_size", validation.get("position_size"))
+                        execution_result = execute_paper_trade(agno_signal, position_size)
                         if execution_result.get("success"):
                             logger.info(f"[AGNO] Trade executado com sucesso: {execution_result.get('message', '')}")
                         else:
