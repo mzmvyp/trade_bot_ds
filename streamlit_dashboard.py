@@ -12,6 +12,8 @@ import os
 from pathlib import Path
 import requests
 import glob
+import asyncio
+from real_paper_trading import RealPaperTradingSystem
 
 # Configurar página
 st.set_page_config(
@@ -38,6 +40,21 @@ def get_pnl_percent(trade):
         else:
             pnl_percent = 0
     return pnl_percent if pnl_percent is not None else 0
+
+@st.cache_data(ttl=5)
+def get_current_price(symbol):
+    """Obtém o preço atual do símbolo via Binance API"""
+    try:
+        url = f"https://api.binance.com/api/v3/ticker/price?symbol={symbol}"
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            return float(data['price'])
+        else:
+            return None
+    except Exception as e:
+        st.error(f"Erro ao obter preço de {symbol}: {e}")
+        return None
 
 # Função para carregar dados do portfólio (CORRIGIDO: cache reduzido para 2s)
 @st.cache_data(ttl=2)
@@ -418,51 +435,67 @@ if portfolio_data:
     
     with tab2:
         st.header("💰 Posições Abertas")
-        
+
         positions = portfolio_data.get("positions", {})
-        
+
         if positions:
-            # Preparar dados para tabela com P&L atual
-            positions_list = []
             market_prices = get_market_prices()
-            
+
+            # Exibir posições em cards com botões de fechar
             for position_key, position in positions.items():
-                # Extrair símbolo limpo e fonte
+                # Extrair dados da posição
                 symbol = position.get("symbol", position_key.split("_")[0])
                 source = position.get("source", "UNKNOWN")
                 entry_price = position.get('entry_price', 0)
                 position_size = position.get('position_size', 0)
-                stop_loss = position.get('stop_loss', 0)
-                take_profit_1 = position.get('take_profit_1', 0)
-                take_profit_2 = position.get('take_profit_2', 0)
                 signal_type = position.get("signal", "BUY")
-                
+                confidence = position.get('confidence', 0)
+
                 # Obter preço atual e calcular P&L
                 current_price = market_prices.get(symbol, entry_price)
                 if signal_type == "BUY":
-                    pnl = (current_price - entry_price) * position_size
                     pnl_percent = ((current_price - entry_price) / entry_price * 100) if entry_price > 0 else 0
                 else:  # SELL
-                    pnl = (entry_price - current_price) * position_size
                     pnl_percent = ((entry_price - current_price) / entry_price * 100) if entry_price > 0 else 0
-                
-                # Calcular diferenças percentuais
-                sl_diff = ((stop_loss - entry_price) / entry_price * 100) if entry_price > 0 else 0
-                tp1_diff = ((take_profit_1 - entry_price) / entry_price * 100) if entry_price > 0 else 0
-                tp2_diff = ((take_profit_2 - entry_price) / entry_price * 100) if entry_price > 0 else 0
-                
-                positions_list.append({
-                    "Fonte": source,
-                    "Símbolo": symbol,
-                    "Tipo": signal_type,
-                    "Preço Atual": f"${current_price:,.2f}",
-                    "Preço Entrada": f"${entry_price:,.2f}",
-                    "P&L": f"{pnl_percent:+.2f}%",
-                    "Confiança": f"{position.get('confidence', 0)}/10"
-                })
-            
-            df_positions = pd.DataFrame(positions_list)
-            st.dataframe(df_positions, use_container_width=True, hide_index=True)
+
+                # Cor do P&L
+                pnl_color = "green" if pnl_percent > 0 else "red" if pnl_percent < 0 else "gray"
+
+                # Card da posição
+                with st.container():
+                    col1, col2 = st.columns([4, 1])
+
+                    with col1:
+                        st.markdown(f"""
+                        **{symbol}** ({source}) - {signal_type}
+                        - **Entrada:** ${entry_price:,.2f}
+                        - **Atual:** ${current_price:,.2f}
+                        - **P&L:** :{pnl_color}[{pnl_percent:+.2f}%]
+                        - **Confiança:** {confidence}/10
+                        """)
+
+                    with col2:
+                        # Botão para fechar posição
+                        if st.button(f"❌ Fechar", key=f"close_{position_key}"):
+                            # Obter preço atualizado
+                            fresh_price = get_current_price(symbol)
+                            if fresh_price:
+                                # Criar instância do sistema e fechar posição
+                                try:
+                                    trading_system = RealPaperTradingSystem()
+                                    result = asyncio.run(trading_system.close_position_manual(position_key, fresh_price))
+
+                                    if result.get("success"):
+                                        st.success(result.get("message"))
+                                        st.rerun()
+                                    else:
+                                        st.error(result.get("error"))
+                                except Exception as e:
+                                    st.error(f"Erro ao fechar posição: {e}")
+                            else:
+                                st.error(f"Não foi possível obter preço atual de {symbol}")
+
+                    st.markdown("---")
         else:
             st.info("ℹ️ Nenhuma posição aberta no momento.")
     
@@ -763,6 +796,51 @@ if portfolio_data:
         - ⚪ **Aguardando** - Sem posição, aguardando próxima análise
         - 🔴 **Sem oportunidade** - Ambas fontes com confiança baixa
         ''')
+
+        # Seção de Fechamento Rápido
+        st.markdown("---")
+        st.subheader("⚡ Fechamento Rápido")
+        st.markdown("Feche posições abertas com um clique (usa preço atual de mercado)")
+
+        if positions:
+            # Organizar posições em grid 3 colunas
+            position_keys = list(positions.keys())
+            cols_per_row = 3
+
+            for i in range(0, len(position_keys), cols_per_row):
+                cols = st.columns(cols_per_row)
+
+                for j in range(cols_per_row):
+                    idx = i + j
+                    if idx < len(position_keys):
+                        position_key = position_keys[idx]
+                        position = positions[position_key]
+
+                        symbol = position.get("symbol", position_key.split("_")[0])
+                        source = position.get("source", "UNKNOWN")
+                        signal_type = position.get("signal", "?")
+
+                        with cols[j]:
+                            button_label = f"❌ {symbol} ({source})"
+                            if st.button(button_label, key=f"quick_close_{position_key}"):
+                                # Obter preço atualizado
+                                fresh_price = get_current_price(symbol)
+                                if fresh_price:
+                                    try:
+                                        trading_system = RealPaperTradingSystem()
+                                        result = asyncio.run(trading_system.close_position_manual(position_key, fresh_price))
+
+                                        if result.get("success"):
+                                            st.success(f"✅ {symbol} fechado!")
+                                            st.rerun()
+                                        else:
+                                            st.error(result.get("error"))
+                                    except Exception as e:
+                                        st.error(f"Erro: {e}")
+                                else:
+                                    st.error(f"Erro ao obter preço de {symbol}")
+        else:
+            st.info("Nenhuma posição aberta para fechar.")
 
         # Estatísticas rápidas
         st.markdown("---")
