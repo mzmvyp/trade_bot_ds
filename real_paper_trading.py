@@ -81,6 +81,13 @@ class RealPaperTradingSystem:
                                 migration_needed = True
                                 logger.info(f"[MIGRACAO] Trade {trade.get('trade_id')}: pnl=${trade['pnl']:.2f} -> pnl_percent={trade['pnl_percent']:.2f}%")
 
+                    # MIGRAÇÃO: Adicionar operation_type para posições antigas
+                    for pos_key, pos in self.positions.items():
+                        if "operation_type" not in pos:
+                            pos["operation_type"] = "SWING_TRADE"  # Default para posições antigas
+                            migration_needed = True
+                            logger.info(f"[MIGRACAO] Adicionado operation_type=SWING_TRADE para {pos_key}")
+
                     # Salvar estado após migração se necessário
                     if migration_needed:
                         self._save_state()

@@ -13,7 +13,7 @@ from pathlib import Path
 import requests
 import glob
 import asyncio
-from real_paper_trading import RealPaperTradingSystem
+from real_paper_trading import real_paper_trading  # Usar instância global
 
 # Configurar página
 st.set_page_config(
@@ -490,10 +490,9 @@ if portfolio_data:
                             # Obter preço atualizado
                             fresh_price = get_current_price(symbol)
                             if fresh_price:
-                                # Criar instância do sistema e fechar posição
+                                # Usar instância global do sistema de trading
                                 try:
-                                    trading_system = RealPaperTradingSystem()
-                                    result = asyncio.run(trading_system.close_position_manual(position_key, fresh_price))
+                                    result = asyncio.run(real_paper_trading.close_position_manual(position_key, fresh_price))
 
                                     if result.get("success"):
                                         st.success(result.get("message"))
@@ -837,8 +836,7 @@ if portfolio_data:
                                 fresh_price = get_current_price(symbol)
                                 if fresh_price:
                                     try:
-                                        trading_system = RealPaperTradingSystem()
-                                        result = asyncio.run(trading_system.close_position_manual(position_key, fresh_price))
+                                        result = asyncio.run(real_paper_trading.close_position_manual(position_key, fresh_price))
 
                                         if result.get("success"):
                                             st.success(f"✅ {symbol} fechado!")
