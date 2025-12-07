@@ -18,6 +18,204 @@ logger = get_logger(__name__)
 
 # Análise de sentimento baseada apenas em dados de mercado (Twitter removido)
 
+def classify_market_condition(analysis: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Classifica as condições de mercado e recomenda o tipo de operação ideal.
+
+    Retorna:
+        - operation_type: SCALP, DAY_TRADE, SWING_TRADE, POSITION_TRADE
+        - confidence: 1-10
+        - reasoning: explicação
+        - parameters: stops e targets sugeridos
+    """
+    try:
+        # Extrair indicadores relevantes
+        volatility = analysis.get("volatility", {})
+        trend = analysis.get("trend_analysis", {})
+        volume = analysis.get("volume_flow", {})
+        indicators = analysis.get("key_indicators", {})
+
+        # 1. VOLATILIDADE
+        volatility_level = volatility.get("level", "MEDIUM")
+        atr_pct = volatility.get("atr_percent", 2.0)
+
+        # 2. FORÇA DA TENDÊNCIA
+        adx_value = trend.get("adx_value", 20)
+        trend_strength = trend.get("trend_strength_interpretation", "WEAK")
+        primary_trend = trend.get("primary_trend", "NEUTRAL")
+        confluence_score = trend.get("confluence_score", 0)
+
+        # 3. MOMENTUM
+        rsi = indicators.get("rsi", {}).get("value", 50)
+        macd_momentum = indicators.get("macd", {}).get("momentum_direction", "neutral")
+
+        # 4. VOLUME
+        volume_trend = volume.get("obv_trend", "neutral")
+        orderbook_bias = volume.get("orderbook_bias", "neutral")
+
+        # ===== LÓGICA DE CLASSIFICAÇÃO =====
+
+        scores = {
+            "SCALP": 0,
+            "DAY_TRADE": 0,
+            "SWING_TRADE": 0,
+            "POSITION_TRADE": 0
+        }
+
+        # --- Regras de Volatilidade ---
+        if volatility_level == "HIGH" or atr_pct > 3.0:
+            scores["SCALP"] += 3
+            scores["DAY_TRADE"] += 2
+        elif volatility_level == "MEDIUM" or 1.5 <= atr_pct <= 3.0:
+            scores["DAY_TRADE"] += 3
+            scores["SWING_TRADE"] += 2
+        else:  # LOW
+            scores["SWING_TRADE"] += 3
+            scores["POSITION_TRADE"] += 3
+
+        # --- Regras de Tendência ---
+        if adx_value < 20 or trend_strength == "WEAK":
+            # Tendência fraca = melhor para scalp (range trading)
+            scores["SCALP"] += 3
+            scores["DAY_TRADE"] += 1
+        elif 20 <= adx_value < 35 or trend_strength == "MODERATE":
+            # Tendência moderada = day trade ou swing
+            scores["DAY_TRADE"] += 3
+            scores["SWING_TRADE"] += 2
+        elif 35 <= adx_value < 50 or trend_strength == "STRONG":
+            # Tendência forte = swing trade
+            scores["SWING_TRADE"] += 4
+            scores["DAY_TRADE"] += 1
+        else:  # adx >= 50, VERY_STRONG
+            # Tendência muito forte = position trade
+            scores["POSITION_TRADE"] += 4
+            scores["SWING_TRADE"] += 2
+
+        # --- Regras de Confluência ---
+        if confluence_score >= 4:
+            # Alta confluência entre timeframes = operações maiores
+            scores["SWING_TRADE"] += 2
+            scores["POSITION_TRADE"] += 2
+        elif confluence_score <= 2:
+            # Baixa confluência = operações curtas
+            scores["SCALP"] += 2
+            scores["DAY_TRADE"] += 1
+
+        # --- Regras de Momentum ---
+        if 40 <= rsi <= 60:
+            # RSI neutro = range trading
+            scores["SCALP"] += 2
+        elif rsi < 30 or rsi > 70:
+            # RSI extremo = possível reversão, swing
+            scores["SWING_TRADE"] += 2
+
+        # --- Regras de Volume ---
+        if volume_trend in ["increasing", "strong_increasing"]:
+            # Volume crescente confirma tendência
+            scores["SWING_TRADE"] += 1
+            scores["POSITION_TRADE"] += 1
+
+        # --- Tendência Primária ---
+        if primary_trend == "NEUTRAL" or primary_trend == "SIDEWAYS":
+            scores["SCALP"] += 2
+            scores["DAY_TRADE"] += 1
+        elif primary_trend in ["BULLISH", "BEARISH"]:
+            scores["SWING_TRADE"] += 1
+        elif primary_trend in ["STRONG_BULLISH", "STRONG_BEARISH"]:
+            scores["POSITION_TRADE"] += 2
+
+        # ===== DETERMINAR VENCEDOR =====
+
+        best_type = max(scores, key=scores.get)
+        best_score = scores[best_type]
+        total_score = sum(scores.values())
+
+        # Calcular confiança (quanto mais dominante, mais confiante)
+        if total_score > 0:
+            dominance = best_score / total_score
+            confidence = min(10, int(dominance * 15) + 3)
+        else:
+            confidence = 5
+
+        # ===== PARÂMETROS POR TIPO =====
+
+        parameters = {
+            "SCALP": {
+                "stop_loss_pct": 0.4,
+                "take_profit_1_pct": 0.6,
+                "take_profit_2_pct": 1.2,
+                "max_duration_hours": 0.5,
+                "min_volume_multiplier": 1.5
+            },
+            "DAY_TRADE": {
+                "stop_loss_pct": 1.2,
+                "take_profit_1_pct": 2.0,
+                "take_profit_2_pct": 3.5,
+                "max_duration_hours": 8,
+                "min_volume_multiplier": 1.2
+            },
+            "SWING_TRADE": {
+                "stop_loss_pct": 2.5,
+                "take_profit_1_pct": 4.0,
+                "take_profit_2_pct": 7.0,
+                "max_duration_hours": 168,  # 7 dias
+                "min_volume_multiplier": 1.0
+            },
+            "POSITION_TRADE": {
+                "stop_loss_pct": 6.0,
+                "take_profit_1_pct": 12.0,
+                "take_profit_2_pct": 20.0,
+                "max_duration_hours": 672,  # 28 dias
+                "min_volume_multiplier": 0.8
+            }
+        }
+
+        # Gerar reasoning
+        reasoning_parts = []
+        if volatility_level == "HIGH":
+            reasoning_parts.append("Alta volatilidade favorece operações curtas")
+        if adx_value > 35:
+            reasoning_parts.append(f"ADX forte ({adx_value}) indica tendência estabelecida")
+        if confluence_score >= 4:
+            reasoning_parts.append("Alta confluência entre timeframes")
+        if primary_trend not in ["NEUTRAL", "SIDEWAYS"]:
+            reasoning_parts.append(f"Tendência {primary_trend} identificada")
+
+        reasoning = ". ".join(reasoning_parts) if reasoning_parts else "Análise baseada em múltiplos fatores"
+
+        return {
+            "operation_type": best_type,
+            "confidence": confidence,
+            "reasoning": reasoning,
+            "parameters": parameters[best_type],
+            "scores": scores,
+            "market_conditions": {
+                "volatility": volatility_level,
+                "trend_strength": trend_strength,
+                "adx": adx_value,
+                "confluence": confluence_score,
+                "rsi": rsi
+            }
+        }
+
+    except Exception as e:
+        logger.exception(f"Erro ao classificar condições de mercado: {e}")
+        # Fallback para swing trade
+        return {
+            "operation_type": "SWING_TRADE",
+            "confidence": 5,
+            "reasoning": "Fallback devido a erro na análise",
+            "parameters": {
+                "stop_loss_pct": 2.5,
+                "take_profit_1_pct": 4.0,
+                "take_profit_2_pct": 7.0,
+                "max_duration_hours": 168,
+                "min_volume_multiplier": 1.0
+            },
+            "scores": {},
+            "market_conditions": {}
+        }
+
 async def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
     """
     Obtém dados de mercado da Binance para análise (CORRIGIDO: agora async usando BinanceClient).
@@ -1199,14 +1397,43 @@ async def prepare_analysis_for_llm(symbol: str) -> Dict[str, Any]:
             "timestamp": datetime.now().isoformat()
         }
 
-def _create_analysis_prompt(analysis: Dict[str, Any]) -> str:
-    """Cria prompt estruturado para o DeepSeek"""
+def _create_analysis_prompt(analysis: Dict[str, Any], market_classification: Dict[str, Any] = None) -> str:
+    """Cria prompt estruturado para o DeepSeek com classificação de mercado"""
     try:
         conflicting = analysis.get("conflicting_signals", [])
         conflicting_text = "\n".join([f"- {s}" for s in conflicting]) if conflicting else "- Nenhum conflito identificado"
-        
+
+        # Classificação de mercado
+        if market_classification:
+            recommended_type = market_classification.get("operation_type", "SWING_TRADE")
+            type_params = market_classification.get("parameters", {})
+            market_conditions = market_classification.get("market_conditions", {})
+            classification_text = f"""
+## CLASSIFICAÇÃO DE MERCADO (Análise Automática)
+
+- **Tipo Recomendado:** {recommended_type}
+- **Confiança:** {market_classification.get('confidence', 5)}/10
+- **Razão:** {market_classification.get('reasoning', 'N/A')}
+
+### Parâmetros Sugeridos para {recommended_type}:
+- Stop Loss: {type_params.get('stop_loss_pct', 2.5):.1f}%
+- Take Profit 1: {type_params.get('take_profit_1_pct', 4.0):.1f}%
+- Take Profit 2: {type_params.get('take_profit_2_pct', 7.0):.1f}%
+
+### Condições de Mercado:
+- Volatilidade: {market_conditions.get('volatility', 'N/A')}
+- Força da Tendência: {market_conditions.get('trend_strength', 'N/A')}
+- ADX: {market_conditions.get('adx', 'N/A')}
+- Confluência: {market_conditions.get('confluence', 'N/A')}/5
+"""
+        else:
+            classification_text = ""
+            recommended_type = "SWING_TRADE"
+
         return f"""
-Analise os dados e forneça um sinal de trading.
+Você é um trader profissional. Analise os dados e forneça um sinal de trading.
+
+{classification_text}
 
 ## DADOS DE MERCADO
 
@@ -1291,17 +1518,42 @@ Se você não tiver confiança suficiente (>= 7), retorne "NO_SIGNAL" ao invés 
 
 ---
 
+## INSTRUÇÕES
+
+1. **ANALISE O TIPO DE OPERAÇÃO RECOMENDADO** ({recommended_type}) e considere se concorda.
+
+2. **VOCÊ PODE DISCORDAR** - Se achar que outro tipo é melhor, indique no campo `operation_type`.
+
+3. **TIPOS DISPONÍVEIS:**
+   - **SCALP**: Operação de 5-30 minutos. Stop 0.3-0.5%, TP 0.5-1.5%. Use quando: alta volatilidade + mercado lateral.
+   - **DAY_TRADE**: Operação de 1-8 horas. Stop 0.8-1.5%, TP 1.5-4%. Use quando: tendência intraday clara.
+   - **SWING_TRADE**: Operação de 1-7 dias. Stop 2-3.5%, TP 3-10%. Use quando: tendência definida + momentum.
+   - **POSITION_TRADE**: Operação de 1-4 semanas. Stop 5-8%, TP 8-30%. Use quando: tendência macro forte.
+
+4. **SEJA DECISIVO** - Forneça BUY ou SELL sempre que houver oportunidade.
+
+5. **AJUSTE OS PARÂMETROS** conforme o tipo de operação escolhido.
+
+6. **CONFIANÇA:**
+   - 7/10 = Sinal válido, executável
+   - 8/10 = Sinal bom com confluências
+   - 9/10 = Sinal forte
+   - 10/10 = Sinal excepcional
+
+---
+
 RESPONDA APENAS COM JSON:
 
 ```json
 {{
     "signal": "BUY" ou "SELL" ou "NO_SIGNAL",
+    "operation_type": "SCALP" ou "DAY_TRADE" ou "SWING_TRADE" ou "POSITION_TRADE",
     "entry_price": <número>,
     "stop_loss": <número>,
     "take_profit_1": <número>,
     "take_profit_2": <número>,
-    "confidence": <1-10> (APENAS >= 7 será executado),
-    "reasoning": "<justificativa detalhada incluindo cálculo da confiança>"
+    "confidence": <1-10>,
+    "reasoning": "<justificativa incluindo por que escolheu esse tipo de operação>"
 }}
 ```
 """
@@ -1321,12 +1573,16 @@ async def get_deepseek_analysis(symbol: str) -> Dict[str, Any]:
         
         # Usar a nova função que já sumariza tudo
         analysis = await prepare_analysis_for_llm(symbol)
-        
+
         if "error" in analysis:
             return analysis
-        
-        # Criar prompt estruturado
-        prompt = _create_analysis_prompt(analysis)
+
+        # NOVO: Classificar condições de mercado primeiro
+        market_classification = classify_market_condition(analysis)
+        logger.info(f"[CLASSIFICAÇÃO] {symbol}: {market_classification['operation_type']} (confiança: {market_classification['confidence']}/10)")
+
+        # Criar prompt estruturado com classificação
+        prompt = _create_analysis_prompt(analysis, market_classification)
         
         # CORRIGIDO: Chamar DeepSeek diretamente ao invés de retornar prompt
         api_key = os.getenv("DEEPSEEK_API_KEY")
@@ -1359,17 +1615,23 @@ async def get_deepseek_analysis(symbol: str) -> Dict[str, Any]:
         if json_match:
             try:
                 signal_json = json.loads(json_match.group(1))
-                logger.info(f"[DEEPSEEK] Sinal extraído: {signal_json.get('signal', 'N/A')} com confiança {signal_json.get('confidence', 0)}")
-                
+
+                # Se DeepSeek não especificou operation_type, usar o recomendado
+                operation_type = signal_json.get("operation_type", market_classification["operation_type"])
+
+                logger.info(f"[DEEPSEEK] {symbol}: {signal_json.get('signal', 'N/A')} ({operation_type}) - Confiança: {signal_json.get('confidence', 0)}/10")
+
                 # Retornar sinal processado
                 return {
                     "signal": signal_json.get("signal", "NO_SIGNAL"),
+                    "operation_type": operation_type,
                     "entry_price": signal_json.get("entry_price"),
                     "stop_loss": signal_json.get("stop_loss"),
                     "take_profit_1": signal_json.get("take_profit_1"),
                     "take_profit_2": signal_json.get("take_profit_2"),
                     "confidence": signal_json.get("confidence", 5),
                     "reasoning": signal_json.get("reasoning", ""),
+                    "market_classification": market_classification,  # Classificação automática
                     "analysis_data": analysis,  # JSON de análise enviado
                     "deepseek_prompt": prompt,  # Prompt de texto enviado
                     "raw_response": response_content,  # Resposta bruta do DeepSeek

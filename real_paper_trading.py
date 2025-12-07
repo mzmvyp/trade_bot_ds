@@ -288,6 +288,7 @@ class RealPaperTradingSystem:
                 "symbol": symbol,
                 "source": signal_source,  # DEEPSEEK ou AGNO
                 "signal": signal_type,
+                "operation_type": signal.get("operation_type", "SWING_TRADE"),  # SCALP, DAY_TRADE, SWING_TRADE, POSITION_TRADE
                 "entry_price": entry_price,
                 "position_size": position_size,
                 "original_position_size": position_size,  # Guardar tamanho original para cálculos de fechamento parcial
@@ -419,7 +420,30 @@ class RealPaperTradingSystem:
                         position["max_loss_reached_percent"] = pnl_percent
                         # Salvar estado quando atinge novo mínimo
                         self._save_state()
-                    
+
+                    # NOVO: Verificar timeout baseado no tipo de operação
+                    operation_type = position.get("operation_type", "SWING_TRADE")
+                    entry_time_str = position.get("timestamp", datetime.now().isoformat())
+                    try:
+                        entry_time = datetime.fromisoformat(entry_time_str)
+                        hours_open = (datetime.now() - entry_time).total_seconds() / 3600
+
+                        max_hours = {
+                            "SCALP": 0.5,        # 30 minutos
+                            "DAY_TRADE": 8,      # 8 horas
+                            "SWING_TRADE": 168,  # 7 dias
+                            "POSITION_TRADE": 672  # 28 dias
+                        }
+
+                        max_duration = max_hours.get(operation_type, 168)
+
+                        if hours_open > max_duration:
+                            logger.warning(f"[TIMEOUT] {clean_symbol} {source}: Posição aberta há {hours_open:.1f}h (máx: {max_duration}h para {operation_type})")
+                            await self._close_position_auto(position_key, current_price, "TIMEOUT")
+                            continue
+                    except Exception as e:
+                        logger.warning(f"Erro ao verificar timeout para {position_key}: {e}")
+
                     # Verificar stop loss
                     if position.get("stop_loss"):
                         sl = position["stop_loss"]

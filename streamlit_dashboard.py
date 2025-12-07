@@ -450,6 +450,16 @@ if portfolio_data:
                 position_size = position.get('position_size', 0)
                 signal_type = position.get("signal", "BUY")
                 confidence = position.get('confidence', 0)
+                operation_type = position.get("operation_type", "SWING_TRADE")
+
+                # Emoji para tipo de operação
+                type_emoji = {
+                    "SCALP": "⚡",
+                    "DAY_TRADE": "☀️",
+                    "SWING_TRADE": "🌊",
+                    "POSITION_TRADE": "🏔️"
+                }
+                type_display = f"{type_emoji.get(operation_type, '📊')} {operation_type.replace('_', ' ')}"
 
                 # Obter preço atual e calcular P&L
                 current_price = market_prices.get(symbol, entry_price)
@@ -467,7 +477,7 @@ if portfolio_data:
 
                     with col1:
                         st.markdown(f"""
-                        **{symbol}** ({source}) - {signal_type}
+                        **{symbol}** ({source}) - {signal_type} | {type_display}
                         - **Entrada:** ${entry_price:,.2f}
                         - **Atual:** ${current_price:,.2f}
                         - **P&L:** :{pnl_color}[{pnl_percent:+.2f}%]
