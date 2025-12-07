@@ -596,7 +596,50 @@ class RealPaperTradingSystem:
             logger.error(f"Posição não encontrada: {position_key} - {e}")
         except Exception as e:
             logger.exception(f"❌ Erro ao fechar posição {position_key}: {e}")
-    
+
+    async def close_position_manual(self, position_key: str, current_price: float) -> Dict[str, Any]:
+        """
+        Fecha uma posição manualmente pelo dashboard.
+
+        Args:
+            position_key: Chave da posição (ex: "BTCUSDT_AGNO")
+            current_price: Preço atual de mercado
+
+        Returns:
+            Dict com status e mensagem
+        """
+        try:
+            # Validar se posição existe
+            if position_key not in self.positions:
+                return {
+                    "success": False,
+                    "error": f"Posição {position_key} não encontrada"
+                }
+
+            position = self.positions[position_key]
+
+            # Validar se está aberta
+            if position.get("status") == "CLOSED":
+                return {
+                    "success": False,
+                    "error": f"Posição {position_key} já está fechada"
+                }
+
+            # Fechar usando a lógica existente
+            await self._close_position_auto(position_key, current_price, "MANUAL")
+
+            return {
+                "success": True,
+                "message": f"Posição {position_key} fechada com sucesso a ${current_price:.2f}"
+            }
+
+        except Exception as e:
+            logger.exception(f"❌ Erro ao fechar posição manualmente {position_key}: {e}")
+            return {
+                "success": False,
+                "error": f"Erro ao fechar posição: {str(e)}"
+            }
+
     def _log_monitoring(self, symbol: str, price: float, pnl_percent: float):
         """Log de monitoramento (apenas %)"""
         logger.debug(f"📊 {symbol}: ${price:.2f} | P&L: {pnl_percent:+.2f}%")
