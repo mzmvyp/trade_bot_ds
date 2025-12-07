@@ -11,6 +11,7 @@ from datetime import datetime
 import os
 from pathlib import Path
 import requests
+import glob
 
 # Configurar página
 st.set_page_config(
@@ -61,6 +62,78 @@ def load_trade_history():
     except Exception as e:
         st.error(f"Erro ao carregar histórico: {e}")
     return []
+
+@st.cache_data(ttl=5)
+def load_last_signals():
+    """Carrega os últimos sinais gerados para cada par/fonte"""
+    signals_by_pair = {}
+
+    # Top 10 pares
+    pairs = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "ADAUSDT",
+             "XRPUSDT", "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "LINKUSDT"]
+
+    for pair in pairs:
+        signals_by_pair[pair] = {
+            "DEEPSEEK": None,
+            "AGNO": None
+        }
+
+    # Buscar arquivos de sinais
+    signal_files = glob.glob("signals/agno_*_*.json")
+
+    # Filtrar apenas arquivos de sinais (não os _last_analysis)
+    signal_files = [f for f in signal_files if "_last_analysis" not in f]
+
+    # Ordenar por data (mais recente primeiro)
+    signal_files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+
+    for filepath in signal_files:
+        try:
+            with open(filepath, "r", encoding='utf-8') as f:
+                signal = json.load(f)
+
+            symbol = signal.get("symbol", "")
+            source = signal.get("source", "UNKNOWN")
+
+            # Apenas processar se for um dos 10 pares
+            if symbol in pairs:
+                # Se ainda não temos sinal para este par/fonte, usar este
+                if source in ["DEEPSEEK", "AGNO"]:
+                    if signals_by_pair[symbol][source] is None:
+                        signals_by_pair[symbol][source] = signal
+
+        except Exception as e:
+            continue
+
+    return signals_by_pair
+
+
+@st.cache_data(ttl=5)
+def load_last_analysis_timestamps():
+    """Carrega timestamps da última análise de cada par"""
+    analysis_times = {}
+
+    pairs = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "ADAUSDT",
+             "XRPUSDT", "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "LINKUSDT"]
+
+    for pair in pairs:
+        analysis_times[pair] = None
+
+        # Verificar arquivo de última análise
+        last_analysis_file = f"signals/agno_{pair}_last_analysis.json"
+        if os.path.exists(last_analysis_file):
+            try:
+                with open(last_analysis_file, "r", encoding='utf-8') as f:
+                    data = json.load(f)
+                    analysis_times[pair] = {
+                        "timestamp": data.get("timestamp"),
+                        "signal": data.get("signal"),
+                        "confidence": data.get("confidence", 0)
+                    }
+            except:
+                pass
+
+    return analysis_times
 
 # Função para obter preços atuais dos principais pares
 @st.cache_data(ttl=10)
@@ -202,7 +275,7 @@ if portfolio_data:
     st.markdown("---")
     
     # Tabs
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📈 Overview", "💰 Posições Abertas", "📜 Histórico", "📉 Análise", "💹 Preços de Mercado"])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📈 Overview", "💰 Posições Abertas", "📜 Histórico", "📉 Análise", "💹 Preços de Mercado", "🔍 Monitor Sistema"])
     
     with tab1:
         st.header("📈 Visão Geral do Portfólio")
@@ -514,6 +587,202 @@ if portfolio_data:
             st.plotly_chart(fig_prices, use_container_width=True)
         else:
             st.warning("⚠️ Não foi possível carregar preços de mercado.")
+
+    # =====================
+    # NOVA ABA: MONITOR DO SISTEMA
+    # =====================
+    with tab6:
+        st.header("🔍 Monitor do Sistema de Sinais")
+        st.markdown("Acompanhe se o sistema está gerando sinais corretamente para todos os 10 pares monitorados.")
+
+        # Top 10 pares
+        monitored_pairs = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "ADAUSDT",
+                          "XRPUSDT", "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "LINKUSDT"]
+
+        # Carregar dados
+        positions = portfolio_data.get("positions", {}) if portfolio_data else {}
+        last_signals = load_last_signals()
+        last_analysis = load_last_analysis_timestamps()
+
+        # Construir tabela de monitoramento
+        monitor_data = []
+
+        for pair in monitored_pairs:
+            row = {
+                "Par": pair,
+                "DEEPSEEK": "—",
+                "AGNO": "—",
+                "Última Análise": "—",
+                "Status": "⚪"
+            }
+
+            # Verificar posição DEEPSEEK aberta
+            deepseek_key = f"{pair}_DEEPSEEK"
+            deepseek_short_key = f"{pair}_DEEPSEEK_SHORT"
+
+            has_deepseek_position = False
+            if deepseek_key in positions and positions[deepseek_key].get("status") == "OPEN":
+                signal_type = positions[deepseek_key].get("signal", "?")
+                confidence = positions[deepseek_key].get("confidence", 0)
+                row["DEEPSEEK"] = f"✅ {signal_type} ({confidence}/10)"
+                has_deepseek_position = True
+            elif deepseek_short_key in positions and positions[deepseek_short_key].get("status") == "OPEN":
+                signal_type = positions[deepseek_short_key].get("signal", "?")
+                confidence = positions[deepseek_short_key].get("confidence", 0)
+                row["DEEPSEEK"] = f"✅ {signal_type} ({confidence}/10)"
+                has_deepseek_position = True
+
+            # Se não tem posição DEEPSEEK, mostrar último sinal
+            if not has_deepseek_position:
+                if last_signals.get(pair, {}).get("DEEPSEEK"):
+                    last_ds = last_signals[pair]["DEEPSEEK"]
+                    signal_type = last_ds.get("signal", "N/A")
+                    confidence = last_ds.get("confidence", 0)
+
+                    if signal_type == "NO_SIGNAL":
+                        row["DEEPSEEK"] = f"⏸️ NO_SIGNAL ({confidence}/10)"
+                    elif confidence < 7:
+                        row["DEEPSEEK"] = f"❌ {signal_type} ({confidence}/10) - Baixa"
+                    else:
+                        row["DEEPSEEK"] = f"⚠️ {signal_type} ({confidence}/10) - Não exec."
+                else:
+                    row["DEEPSEEK"] = "❓ Sem sinal"
+
+            # Verificar posição AGNO aberta
+            agno_key = f"{pair}_AGNO"
+            agno_short_key = f"{pair}_AGNO_SHORT"
+
+            has_agno_position = False
+            if agno_key in positions and positions[agno_key].get("status") == "OPEN":
+                signal_type = positions[agno_key].get("signal", "?")
+                confidence = positions[agno_key].get("confidence", 0)
+                row["AGNO"] = f"✅ {signal_type} ({confidence}/10)"
+                has_agno_position = True
+            elif agno_short_key in positions and positions[agno_short_key].get("status") == "OPEN":
+                signal_type = positions[agno_short_key].get("signal", "?")
+                confidence = positions[agno_short_key].get("confidence", 0)
+                row["AGNO"] = f"✅ {signal_type} ({confidence}/10)"
+                has_agno_position = True
+
+            # Se não tem posição AGNO, mostrar último sinal
+            if not has_agno_position:
+                if last_signals.get(pair, {}).get("AGNO"):
+                    last_ag = last_signals[pair]["AGNO"]
+                    signal_type = last_ag.get("signal", "N/A")
+                    confidence = last_ag.get("confidence", 0)
+
+                    if signal_type == "NO_SIGNAL":
+                        row["AGNO"] = f"⏸️ NO_SIGNAL ({confidence}/10)"
+                    elif confidence < 7:
+                        row["AGNO"] = f"❌ {signal_type} ({confidence}/10) - Baixa"
+                    else:
+                        row["AGNO"] = f"⚠️ {signal_type} ({confidence}/10) - Não exec."
+                else:
+                    row["AGNO"] = "❓ Sem sinal"
+
+            # Verificar posições antigas (UNKNOWN/LEGACY)
+            unknown_key = f"{pair}_SHORT"
+
+            if unknown_key in positions and positions[unknown_key].get("status") == "OPEN":
+                source = positions[unknown_key].get("source", "LEGACY")
+                signal_type = positions[unknown_key].get("signal", "?")
+                confidence = positions[unknown_key].get("confidence", 0)
+                # Adicionar nota sobre posição legada
+                if row["DEEPSEEK"] == "—" or "Sem sinal" in row["DEEPSEEK"]:
+                    row["DEEPSEEK"] = f"🔄 {signal_type} ({confidence}/10) - {source}"
+
+            # Última análise
+            if last_analysis.get(pair):
+                timestamp = last_analysis[pair].get("timestamp", "")
+                if timestamp:
+                    try:
+                        dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+                        if dt.tzinfo is None:
+                            now = datetime.now()
+                        else:
+                            now = datetime.now(dt.tzinfo)
+                        diff = now - dt
+                        minutes = int(diff.total_seconds() / 60)
+
+                        if minutes < 60:
+                            row["Última Análise"] = f"há {minutes}min"
+                        elif minutes < 1440:
+                            hours = minutes // 60
+                            row["Última Análise"] = f"há {hours}h"
+                        else:
+                            days = minutes // 1440
+                            row["Última Análise"] = f"há {days}d"
+                    except:
+                        row["Última Análise"] = timestamp[:16]
+
+            # Status geral
+            if has_deepseek_position and has_agno_position:
+                row["Status"] = "🟢 Completo"
+            elif has_deepseek_position or has_agno_position:
+                row["Status"] = "🟡 Parcial"
+            elif "NO_SIGNAL" in row["DEEPSEEK"] or "NO_SIGNAL" in row["AGNO"]:
+                row["Status"] = "⚪ Aguardando"
+            elif "Baixa" in row["DEEPSEEK"] and "Baixa" in row["AGNO"]:
+                row["Status"] = "🔴 Sem oportunidade"
+            else:
+                row["Status"] = "⚪ Aguardando"
+
+            monitor_data.append(row)
+
+        # Mostrar tabela
+        df_monitor = pd.DataFrame(monitor_data)
+
+        # Estilizar tabela
+        st.dataframe(
+            df_monitor,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Par": st.column_config.TextColumn("Par", width="small"),
+                "DEEPSEEK": st.column_config.TextColumn("🤖 DEEPSEEK", width="medium"),
+                "AGNO": st.column_config.TextColumn("🧠 AGNO", width="medium"),
+                "Última Análise": st.column_config.TextColumn("⏰ Última Análise", width="small"),
+                "Status": st.column_config.TextColumn("📊 Status", width="small"),
+            }
+        )
+
+        # Legenda
+        st.markdown("---")
+        st.markdown('''
+        **Legenda:**
+        - ✅ **Posição aberta** - Trade em andamento
+        - ❌ **Baixa confiança** - Sinal gerado mas não executado (confiança < 7)
+        - ⏸️ **NO_SIGNAL** - Análise feita mas sem oportunidade
+        - ⚠️ **Não executado** - Sinal válido mas não executado (posição existente, etc.)
+        - ❓ **Sem sinal** - Nenhum sinal encontrado para este par
+        - 🔄 **LEGACY** - Posição antiga do sistema anterior
+
+        **Status:**
+        - 🟢 **Completo** - Tem posição DEEPSEEK e AGNO
+        - 🟡 **Parcial** - Tem posição de uma fonte apenas
+        - ⚪ **Aguardando** - Sem posição, aguardando próxima análise
+        - 🔴 **Sem oportunidade** - Ambas fontes com confiança baixa
+        ''')
+
+        # Estatísticas rápidas
+        st.markdown("---")
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            positions_deepseek = sum(1 for row in monitor_data if "✅" in row["DEEPSEEK"])
+            st.metric("🤖 Posições DEEPSEEK", positions_deepseek)
+
+        with col2:
+            positions_agno = sum(1 for row in monitor_data if "✅" in row["AGNO"])
+            st.metric("🧠 Posições AGNO", positions_agno)
+
+        with col3:
+            low_confidence = sum(1 for row in monitor_data if "Baixa" in row["DEEPSEEK"] or "Baixa" in row["AGNO"])
+            st.metric("❌ Baixa Confiança", low_confidence)
+
+        with col4:
+            no_signal = sum(1 for row in monitor_data if "Sem sinal" in row["DEEPSEEK"] or "Sem sinal" in row["AGNO"])
+            st.metric("❓ Sem Sinal", no_signal)
 
 else:
     st.warning("⚠️ Nenhum dado de portfólio encontrado. Execute alguns trades primeiro!")
