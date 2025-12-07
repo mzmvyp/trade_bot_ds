@@ -48,8 +48,24 @@ class Settings(BaseSettings):
         "DOTUSDT",   # Polkadot
         "LINKUSDT"   # Chainlink
     ]
-    
-    
+
+    # ========================================
+    # TIMEOUT POR TIPO DE OPERAÇÃO
+    # ========================================
+    timeout_scalp_hours: float = 0.5        # 30 minutos
+    timeout_day_trade_hours: float = 8.0    # 8 horas
+    timeout_swing_trade_hours: float = 120.0  # 5 dias
+    timeout_position_trade_hours: float = 672.0  # 28 dias
+
+    # ========================================
+    # REAVALIAÇÃO DE SINAIS ATIVOS
+    # ========================================
+    reevaluation_enabled: bool = True
+    reevaluation_interval_hours: float = 2.0  # Reavaliar a cada 2 horas
+    reevaluation_min_time_open_hours: float = 1.0  # Só reavaliar após 1h aberta
+    reevaluation_min_confidence: int = 7  # Confiança mínima para agir na reavaliação
+
+
     class Config:
         env_file = ".env"
         case_sensitive = False
