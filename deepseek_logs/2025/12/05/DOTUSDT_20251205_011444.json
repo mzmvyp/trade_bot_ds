@@ -1,0 +1,7 @@
+{
+  "symbol": "DOTUSDT",
+  "timestamp": "2025-12-05T01:14:44.788553",
+  "prompt_sent": "",
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": 0,\n    \"stop_loss\": 0,\n    \"take_profit_1\": 0,\n    \"take_profit_2\": 0,\n    \"confidence\": 5,\n    \"reasoning\": \"A análise apresenta múltiplos fatores que justificam a inação. O bias geral é negativo (-1/10) com ação recomendada 'WAIT'. A tendência primária é neutra, mas com alinhamento multi-timeframe fortemente bearish e momentum bearish. Os indicadores mostram sinais mistos: RSI neutro (40.9), MACD bearish acelerando para baixo, preço na banda inferior de Bollinger e EMAs mistas. O score de confluência é negativo (-3/5) com mais fatores bearish (2) que bullish (1). A volatilidade extrema aumenta o risco. Embora o preço esteja próximo do suporte ($2.13, +6.41%) e o sentimento geral seja positivo, a falta de confluência clara de indicadores, o alinhamento bearish dos timeframes e a recomendação explícita de esperar resultam em confiança insuficiente (5/10) para gerar um sinal executável (mínimo 7 requerido).\"\n}\n```",
+  "response_type": "str"
+}

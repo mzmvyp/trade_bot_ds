@@ -1,0 +1,23 @@
+[
+  {
+    "timestamp": "2025-12-05 10:51:54",
+    "symbol": "ADAUSDT",
+    "close_price": 0.4272,
+    "pnl": -119.33238900000002,
+    "reason": "STOP_LOSS"
+  },
+  {
+    "timestamp": "2025-12-05 10:51:55",
+    "symbol": "AVAXUSDT",
+    "close_price": 13.685,
+    "pnl": -38.750000000000014,
+    "reason": "STOP_LOSS"
+  },
+  {
+    "timestamp": "2025-12-05 13:42:25",
+    "symbol": "ADAUSDT_partial",
+    "close_price": 0.4096,
+    "pnl": 123.73733749999971,
+    "reason": "TAKE_PROFIT_1_PARTIAL"
+  }
+]

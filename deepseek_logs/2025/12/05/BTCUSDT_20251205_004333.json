@@ -1,0 +1,7 @@
+{
+  "symbol": "BTCUSDT",
+  "timestamp": "2025-12-05T00:43:33.228646",
+  "prompt_sent": "",
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": 92288.00,\n    \"stop_loss\": 93248.00,\n    \"take_profit_1\": 93570.00,\n    \"take_profit_2\": 94208.00,\n    \"confidence\": 3,\n    \"reasoning\": \"Análise mostra múltiplos fatores bearish (score -2/10, momentum bearish, alinhamento timeframes bearish, MACD acelerando para baixo) contra apenas 1 fator bullish (OBV). Tendência primária neutra com ADX fraco indica falta de direção clara. Posição no range (53%) não oferece vantagem clara. Ação recomendada é WAIT devido à confluência negativa e volatilidade extrema.\"\n}\n```",
+  "response_type": "str"
+}

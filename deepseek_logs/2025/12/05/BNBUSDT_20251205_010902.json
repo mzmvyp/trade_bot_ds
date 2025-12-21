@@ -1,0 +1,7 @@
+{
+  "symbol": "BNBUSDT",
+  "timestamp": "2025-12-05T01:09:02.680404",
+  "prompt_sent": "",
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": 904.74,\n    \"stop_loss\": 895.07,\n    \"take_profit_1\": 917.68,\n    \"take_profit_2\": 924.19,\n    \"confidence\": 5,\n    \"reasoning\": \"A análise apresenta múltiplos sinais conflitantes que reduzem significativamente a confiança. Embora a tendência primária seja bullish com forte alinhamento multi-timeframe (5/5 confluência) e stack de EMAs bullish, os indicadores de momento são contraditórios: MACD mostra bearish crossover acelerando para baixo, enquanto o RSI é neutro (50.7). A pressão no orderbook é de venda, contrastando com o OBV bullish. O preço está próximo da resistência ($912.53, apenas +0.86%) e a volatilidade extrema aumenta o risco. O bias geral é neutro (1/10) com ação recomendada de WAIT. A confiança calculada é 5 devido à falta de confluência clara entre tendência, momentum e fluxo de ordens, tornando o trade de alto risco neste momento.\"\n}\n```",
+  "response_type": "str"
+}

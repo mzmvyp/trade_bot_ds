@@ -1,0 +1,7 @@
+{
+  "symbol": "SOLUSDT",
+  "timestamp": "2025-12-05T01:08:42.895553",
+  "prompt_sent": "",
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": 0,\n    \"stop_loss\": 0,\n    \"take_profit_1\": 0,\n    \"take_profit_2\": 0,\n    \"confidence\": 5,\n    \"reasoning\": \"A análise indica múltiplos fatores que justificam a inação. O bias geral é negativo (-2/10) com recomendação de 'WAIT'. A tendência primária é neutra, mas com forte alinhamento bearish nos timeframes e momentum bearish. Os indicadores são conflitantes: RSI está se aproximando de oversold (potencialmente bullish), mas MACD está bearish e acelerando para baixo, EMAs estão mistas, e o OBV é bearish. A posição no range (16%) está próxima ao suporte, mas não há confirmação de reversão. A volatilidade extrema aumenta o risco. A confluência de fatores bearish (3 vs 1 bullish) e a falta de alinhamento claro entre indicadores e estrutura de preço resultam em confiança insuficiente (5/10) para um sinal executável. O sistema requer confiança >= 7 para execução.\"\n}\n```",
+  "response_type": "str"
+}

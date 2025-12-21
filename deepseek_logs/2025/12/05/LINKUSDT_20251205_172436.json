@@ -1,0 +1,99 @@
+{
+  "symbol": "LINKUSDT",
+  "timestamp": "2025-12-05T17:24:36.146169",
+  "prompt_sent": "\nAnalise os dados e forneça um sinal de trading.\n\n## DADOS DE MERCADO\n\n- Símbolo: LINKUSDT\n- Preço: $13.62\n- Variação 24h: -4.25%\n- Posição no range: 25%\n\n## ANÁLISE DE TENDÊNCIA\n\n- Tendência primária: bearish\n- Força (ADX): moderate\n- Momentum: bearish\n- Alinhamento timeframes: bullish_alignment\n- Score confluência: 1/5\n\n## INDICADORES\n\n- RSI: 36.6 (approaching_oversold)\n- MACD: bearish - accelerating_down\n- Bollinger: lower_band\n- EMAs: mixed\n\n## NÍVEIS CHAVE\n\n- Suporte: $12.95 (+4.87%)\n- Resistência: $14.55 (+6.84%)\n- POC Volume: $14.25\n\n## VOLUME E FLUXO\n\n- Pressão orderbook: neutral\n- OBV: bullish\n\n## SENTIMENTO\n\n- Geral: negative\n- Funding: neutral\n\n## VOLATILIDADE\n\n- Nível: extreme\n- Stop sugerido: 2.26%\n- TP1 sugerido: 3.01%\n- TP2 sugerido: 4.51%\n\n## SINAIS CONFLITANTES\n\n- Nenhum conflito identificado\n\n## SCORE AGREGADO\n\n- Fatores bullish: 1\n- Fatores bearish: 5\n- Bias geral: -4/10 (sell)\n- Ação recomendada: SELL\n\n---\n\n## IMPORTANTE: ESCALA DE CONFIANÇA (0-10)\n\nA confiança deve ser um número inteiro de 1 a 10, onde:\n\n- **10**: Sinal extremamente forte, múltiplas confluências, alta probabilidade de sucesso\n- **9**: Sinal muito forte, confluências claras, boa probabilidade\n- **8**: Sinal forte, confluências presentes, probabilidade acima da média\n- **7**: Sinal moderado-forte, algumas confluências, probabilidade razoável (MÍNIMO PARA EXECUÇÃO)\n- **6**: Sinal moderado, confluências limitadas, probabilidade média (NÃO SERÁ EXECUTADO)\n- **5**: Sinal fraco, poucas confluências, probabilidade baixa (NÃO SERÁ EXECUTADO)\n- **4 ou menos**: Sinal muito fraco ou ambíguo (NÃO SERÁ EXECUTADO)\n\n**CRÍTICO**: Apenas sinais com confiança >= 7 serão executados pelo sistema. \nSe você não tiver confiança suficiente (>= 7), retorne \"NO_SIGNAL\" ao invés de um sinal fraco.\n\n**Como calcular a confiança:**\n- Considere a força da tendência (ADX, alinhamento EMAs)\n- Considere a confluência de indicadores (RSI, MACD, Bollinger)\n- Considere o alinhamento multi-timeframe\n- Considere a clareza dos níveis de suporte/resistência\n- Considere sinais conflitantes (reduz confiança)\n- Considere a volatilidade (alta volatilidade pode reduzir confiança)\n\n---\n\nRESPONDA APENAS COM JSON:\n\n```json\n{\n    \"signal\": \"BUY\" ou \"SELL\" ou \"NO_SIGNAL\",\n    \"entry_price\": <número>,\n    \"stop_loss\": <número>,\n    \"take_profit_1\": <número>,\n    \"take_profit_2\": <número>,\n    \"confidence\": <1-10> (APENAS >= 7 será executado),\n    \"reasoning\": \"<justificativa detalhada incluindo cálculo da confiança>\"\n}\n```\n",
+  "analysis_data_sent": {
+    "symbol": "LINKUSDT",
+    "timestamp": "2025-12-05T17:24:25.612258",
+    "price_context": {
+      "current": 13.618,
+      "change_24h_pct": -4.247,
+      "high_24h": 14.393,
+      "low_24h": 13.355,
+      "position_in_range_pct": 25.337186897880525
+    },
+    "trend_analysis": {
+      "primary_trend": "bearish",
+      "trend_strength_adx": 27.216807163064342,
+      "trend_strength_interpretation": "moderate",
+      "momentum": "bearish",
+      "timeframe_alignment": {
+        "5m": "bullish",
+        "15m": "bullish",
+        "1h": "bearish",
+        "4h": "bearish",
+        "1d": "bullish"
+      },
+      "confluence_score": 1,
+      "confluence_interpretation": "bullish_alignment"
+    },
+    "key_indicators": {
+      "rsi": {
+        "value": 36.58014800075839,
+        "zone": "approaching_oversold",
+        "action_hint": "potential_buy"
+      },
+      "macd": {
+        "histogram": -0.04841404376072425,
+        "crossover": "bearish",
+        "momentum_direction": "accelerating_down"
+      },
+      "bollinger": {
+        "position": 0.19791530124313653,
+        "zone": "lower_band",
+        "squeeze_detected": false
+      },
+      "ema_structure": {
+        "price_vs_ema20": "below",
+        "price_vs_ema50": "below",
+        "price_vs_ema200": "above",
+        "ema_alignment": "mixed"
+      },
+      "obv_trend": "bullish"
+    },
+    "key_levels": {
+      "immediate_support": 12.954524,
+      "immediate_resistance": 14.549369792316499,
+      "fib_382": 13.705476,
+      "fib_50": 13.33,
+      "fib_618": 12.954524,
+      "volume_poc": 14.251105263157894,
+      "distance_to_support_pct": 4.872051696284338,
+      "distance_to_resistance_pct": 6.839255340846664
+    },
+    "volume_flow": {
+      "volume_24h": 20213844.95,
+      "volume_trend": "stable",
+      "obv_trend": "bullish",
+      "orderbook_imbalance": -0.04866330301284705,
+      "orderbook_bias": "neutral",
+      "cvd_direction": "positive"
+    },
+    "sentiment": {
+      "overall": "negative",
+      "confidence": 0.9,
+      "funding_rate": -5.46e-05,
+      "funding_interpretation": "neutral",
+      "open_interest_trend": "stable"
+    },
+    "volatility": {
+      "atr_value": 0.20480446102431013,
+      "atr_pct": 1.5039246660619043,
+      "level": "extreme",
+      "suggested_stop_pct": 2.2558869990928567,
+      "suggested_tp1_pct": 3.0078493321238087,
+      "suggested_tp2_pct": 4.5117739981857135
+    },
+    "conflicting_signals": [],
+    "aggregated_scores": {
+      "bullish_factors_count": 1,
+      "bearish_factors_count": 5,
+      "neutral_factors_count": 2,
+      "overall_bias": -4,
+      "overall_bias_interpretation": "sell",
+      "recommended_action": "SELL"
+    }
+  },
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": 13.62,\n    \"stop_loss\": 13.93,\n    \"take_profit_1\": 13.21,\n    \"take_profit_2\": 13.01,\n    \"confidence\": 6,\n    \"reasoning\": \"A análise apresenta múltiplos fatores bearish (tendência primária, momentum, MACD, posição no range, bias geral -4/10) que sugerem uma venda. No entanto, a confiança para executar um sinal SELL é insuficiente (<7) devido a: 1) Confluência de indicadores muito baixa (score 1/5), 2) Alinhamento de timeframes bullish (conflito com tendência primária), 3) OBV bullish (sinal divergente), 4) RSI approaching_oversold (36.6) que pode limitar o movimento de queda, 5) Volatilidade extrema que aumenta o risco. Embora a ação recomendada seja SELL, a falta de confluência clara e a presença de sinais conflitantes reduzem a probabilidade de sucesso abaixo do limiar necessário para execução (7).\"\n}\n```",
+  "response_type": "str"
+}

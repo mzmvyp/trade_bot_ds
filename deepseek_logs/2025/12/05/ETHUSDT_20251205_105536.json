@@ -1,0 +1,99 @@
+{
+  "symbol": "ETHUSDT",
+  "timestamp": "2025-12-05T10:55:36.751859",
+  "prompt_sent": "\nAnalise os dados e forneça um sinal de trading.\n\n## DADOS DE MERCADO\n\n- Símbolo: ETHUSDT\n- Preço: $3,106.04\n- Variação 24h: -2.10%\n- Posição no range: 25%\n\n## ANÁLISE DE TENDÊNCIA\n\n- Tendência primária: neutral\n- Força (ADX): weak\n- Momentum: bearish\n- Alinhamento timeframes: bearish_alignment\n- Score confluência: -1/5\n\n## INDICADORES\n\n- RSI: 40.0 (approaching_oversold)\n- MACD: bearish - accelerating_down\n- Bollinger: lower_band\n- EMAs: mixed\n\n## NÍVEIS CHAVE\n\n- Suporte: $2,917.17 (+6.08%)\n- Resistência: $3,185.42 (+2.56%)\n- POC Volume: $2,992.39\n\n## VOLUME E FLUXO\n\n- Pressão orderbook: strong_sell_pressure\n- OBV: bearish\n\n## SENTIMENTO\n\n- Geral: neutral\n- Funding: neutral\n\n## VOLATILIDADE\n\n- Nível: extreme\n- Stop sugerido: 1.61%\n- TP1 sugerido: 2.14%\n- TP2 sugerido: 3.21%\n\n## SINAIS CONFLITANTES\n\n- Nenhum conflito identificado\n\n## SCORE AGREGADO\n\n- Fatores bullish: 1\n- Fatores bearish: 3\n- Bias geral: -2/10 (neutral)\n- Ação recomendada: WAIT\n\n---\n\n## IMPORTANTE: ESCALA DE CONFIANÇA (0-10)\n\nA confiança deve ser um número inteiro de 1 a 10, onde:\n\n- **10**: Sinal extremamente forte, múltiplas confluências, alta probabilidade de sucesso\n- **9**: Sinal muito forte, confluências claras, boa probabilidade\n- **8**: Sinal forte, confluências presentes, probabilidade acima da média\n- **7**: Sinal moderado-forte, algumas confluências, probabilidade razoável (MÍNIMO PARA EXECUÇÃO)\n- **6**: Sinal moderado, confluências limitadas, probabilidade média (NÃO SERÁ EXECUTADO)\n- **5**: Sinal fraco, poucas confluências, probabilidade baixa (NÃO SERÁ EXECUTADO)\n- **4 ou menos**: Sinal muito fraco ou ambíguo (NÃO SERÁ EXECUTADO)\n\n**CRÍTICO**: Apenas sinais com confiança >= 7 serão executados pelo sistema. \nSe você não tiver confiança suficiente (>= 7), retorne \"NO_SIGNAL\" ao invés de um sinal fraco.\n\n**Como calcular a confiança:**\n- Considere a força da tendência (ADX, alinhamento EMAs)\n- Considere a confluência de indicadores (RSI, MACD, Bollinger)\n- Considere o alinhamento multi-timeframe\n- Considere a clareza dos níveis de suporte/resistência\n- Considere sinais conflitantes (reduz confiança)\n- Considere a volatilidade (alta volatilidade pode reduzir confiança)\n\n---\n\nRESPONDA APENAS COM JSON:\n\n```json\n{\n    \"signal\": \"BUY\" ou \"SELL\" ou \"NO_SIGNAL\",\n    \"entry_price\": <número>,\n    \"stop_loss\": <número>,\n    \"take_profit_1\": <número>,\n    \"take_profit_2\": <número>,\n    \"confidence\": <1-10> (APENAS >= 7 será executado),\n    \"reasoning\": \"<justificativa detalhada incluindo cálculo da confiança>\"\n}\n```\n",
+  "analysis_data_sent": {
+    "symbol": "ETHUSDT",
+    "timestamp": "2025-12-05T10:55:24.738222",
+    "price_context": {
+      "current": 3106.04,
+      "change_24h_pct": -2.102,
+      "high_24h": 3227.66,
+      "low_24h": 3064.81,
+      "position_in_range_pct": 25.317777095486672
+    },
+    "trend_analysis": {
+      "primary_trend": "neutral",
+      "trend_strength_adx": 24.66499831661285,
+      "trend_strength_interpretation": "weak",
+      "momentum": "bearish",
+      "timeframe_alignment": {
+        "5m": "bearish",
+        "15m": "bearish",
+        "1h": "bearish",
+        "4h": "bullish",
+        "1d": "bullish"
+      },
+      "confluence_score": -1,
+      "confluence_interpretation": "bearish_alignment"
+    },
+    "key_indicators": {
+      "rsi": {
+        "value": 39.99077253531145,
+        "zone": "approaching_oversold",
+        "action_hint": "potential_buy"
+      },
+      "macd": {
+        "histogram": -6.186930349125237,
+        "crossover": "bearish",
+        "momentum_direction": "accelerating_down"
+      },
+      "bollinger": {
+        "position": 0.03910011568245019,
+        "zone": "lower_band",
+        "squeeze_detected": false
+      },
+      "ema_structure": {
+        "price_vs_ema20": "below",
+        "price_vs_ema50": "below",
+        "price_vs_ema200": "above",
+        "ema_alignment": "mixed"
+      },
+      "obv_trend": "bearish"
+    },
+    "key_levels": {
+      "immediate_support": 2917.1684,
+      "immediate_resistance": 3185.418030841629,
+      "fib_382": 3040.1716,
+      "fib_50": 2978.67,
+      "fib_618": 2917.1684,
+      "volume_poc": 2992.3857894736843,
+      "distance_to_support_pct": 6.080784535936432,
+      "distance_to_resistance_pct": 2.5556023374338053
+    },
+    "volume_flow": {
+      "volume_24h": 4925011.792,
+      "volume_trend": "stable",
+      "obv_trend": "bearish",
+      "orderbook_imbalance": -0.536715033020096,
+      "orderbook_bias": "strong_sell_pressure",
+      "cvd_direction": "negative"
+    },
+    "sentiment": {
+      "overall": "neutral",
+      "confidence": 0.9,
+      "funding_rate": 3.36e-05,
+      "funding_interpretation": "neutral",
+      "open_interest_trend": "stable"
+    },
+    "volatility": {
+      "atr_value": 33.273560701596786,
+      "atr_pct": 1.071253451391379,
+      "level": "extreme",
+      "suggested_stop_pct": 1.6068801770870684,
+      "suggested_tp1_pct": 2.142506902782758,
+      "suggested_tp2_pct": 3.213760354174137
+    },
+    "conflicting_signals": [],
+    "aggregated_scores": {
+      "bullish_factors_count": 1,
+      "bearish_factors_count": 3,
+      "neutral_factors_count": 3,
+      "overall_bias": -2,
+      "overall_bias_interpretation": "neutral",
+      "recommended_action": "WAIT"
+    }
+  },
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": null,\n    \"stop_loss\": null,\n    \"take_profit_1\": null,\n    \"take_profit_2\": null,\n    \"confidence\": 4,\n    \"reasoning\": \"A análise apresenta múltiplos fatores que justificam a inação. O bias geral é negativo (-2/10) com recomendação de 'WAIT'. A tendência primária é neutra com força fraca (ADX weak) e momentum bearish. Os indicadores mostram confluência bearish: RSI em 40 (aproximando-se de oversold), MACD bearish e acelerando para baixo, e preço na lower band de Bollinger. O alinhamento multi-timeframe é bearish com score de confluência -1/5. Há forte pressão de venda no orderbook e OBV bearish. Embora o preço esteja no extremo inferior do range (25%) e próximo ao suporte em $2,917.17, a falta de sinais de reversão claros, a volatilidade extrema e a ausência de fatores bullish significativos (apenas 1 vs 3 bearish) resultam em confiança insuficiente para uma entrada. A confiança calculada é 4, abaixo do mínimo de 7 necessário para execução.\"\n}\n```",
+  "response_type": "str"
+}

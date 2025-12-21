@@ -1,0 +1,101 @@
+{
+  "symbol": "BNBUSDT",
+  "timestamp": "2025-12-05T16:13:59.502558",
+  "prompt_sent": "\nAnalise os dados e forneça um sinal de trading.\n\n## DADOS DE MERCADO\n\n- Símbolo: BNBUSDT\n- Preço: $879.42\n- Variação 24h: -1.83%\n- Posição no range: 23%\n\n## ANÁLISE DE TENDÊNCIA\n\n- Tendência primária: bearish\n- Força (ADX): moderate\n- Momentum: bearish\n- Alinhamento timeframes: strong_bearish_alignment\n- Score confluência: -5/5\n\n## INDICADORES\n\n- RSI: 33.8 (approaching_oversold)\n- MACD: bearish - accelerating_down\n- Bollinger: lower_band\n- EMAs: mixed\n\n## NÍVEIS CHAVE\n\n- Suporte: $850.10 (+3.33%)\n- Resistência: $912.22 (+3.73%)\n- POC Volume: $895.33\n\n## VOLUME E FLUXO\n\n- Pressão orderbook: buy_pressure\n- OBV: bearish\n\n## SENTIMENTO\n\n- Geral: negative\n- Funding: neutral\n\n## VOLATILIDADE\n\n- Nível: extreme\n- Stop sugerido: 1.32%\n- TP1 sugerido: 1.77%\n- TP2 sugerido: 2.65%\n\n## SINAIS CONFLITANTES\n\n- Bearish trend but buy pressure in orderbook\n\n## SCORE AGREGADO\n\n- Fatores bullish: 2\n- Fatores bearish: 5\n- Bias geral: -3/10 (sell)\n- Ação recomendada: SELL\n\n---\n\n## IMPORTANTE: ESCALA DE CONFIANÇA (0-10)\n\nA confiança deve ser um número inteiro de 1 a 10, onde:\n\n- **10**: Sinal extremamente forte, múltiplas confluências, alta probabilidade de sucesso\n- **9**: Sinal muito forte, confluências claras, boa probabilidade\n- **8**: Sinal forte, confluências presentes, probabilidade acima da média\n- **7**: Sinal moderado-forte, algumas confluências, probabilidade razoável (MÍNIMO PARA EXECUÇÃO)\n- **6**: Sinal moderado, confluências limitadas, probabilidade média (NÃO SERÁ EXECUTADO)\n- **5**: Sinal fraco, poucas confluências, probabilidade baixa (NÃO SERÁ EXECUTADO)\n- **4 ou menos**: Sinal muito fraco ou ambíguo (NÃO SERÁ EXECUTADO)\n\n**CRÍTICO**: Apenas sinais com confiança >= 7 serão executados pelo sistema. \nSe você não tiver confiança suficiente (>= 7), retorne \"NO_SIGNAL\" ao invés de um sinal fraco.\n\n**Como calcular a confiança:**\n- Considere a força da tendência (ADX, alinhamento EMAs)\n- Considere a confluência de indicadores (RSI, MACD, Bollinger)\n- Considere o alinhamento multi-timeframe\n- Considere a clareza dos níveis de suporte/resistência\n- Considere sinais conflitantes (reduz confiança)\n- Considere a volatilidade (alta volatilidade pode reduzir confiança)\n\n---\n\nRESPONDA APENAS COM JSON:\n\n```json\n{\n    \"signal\": \"BUY\" ou \"SELL\" ou \"NO_SIGNAL\",\n    \"entry_price\": <número>,\n    \"stop_loss\": <número>,\n    \"take_profit_1\": <número>,\n    \"take_profit_2\": <número>,\n    \"confidence\": <1-10> (APENAS >= 7 será executado),\n    \"reasoning\": \"<justificativa detalhada incluindo cálculo da confiança>\"\n}\n```\n",
+  "analysis_data_sent": {
+    "symbol": "BNBUSDT",
+    "timestamp": "2025-12-05T16:13:50.122880",
+    "price_context": {
+      "current": 879.42,
+      "change_24h_pct": -1.835,
+      "high_24h": 908.68,
+      "low_24h": 870.52,
+      "position_in_range_pct": 23.322851153039792
+    },
+    "trend_analysis": {
+      "primary_trend": "bearish",
+      "trend_strength_adx": 25.21953342135077,
+      "trend_strength_interpretation": "moderate",
+      "momentum": "bearish",
+      "timeframe_alignment": {
+        "5m": "bearish",
+        "15m": "bearish",
+        "1h": "bearish",
+        "4h": "bearish",
+        "1d": "bearish"
+      },
+      "confluence_score": -5,
+      "confluence_interpretation": "strong_bearish_alignment"
+    },
+    "key_indicators": {
+      "rsi": {
+        "value": 33.79492943912686,
+        "zone": "approaching_oversold",
+        "action_hint": "potential_buy"
+      },
+      "macd": {
+        "histogram": -1.7237876744130975,
+        "crossover": "bearish",
+        "momentum_direction": "accelerating_down"
+      },
+      "bollinger": {
+        "position": 0.08997386297085225,
+        "zone": "lower_band",
+        "squeeze_detected": false
+      },
+      "ema_structure": {
+        "price_vs_ema20": "below",
+        "price_vs_ema50": "below",
+        "price_vs_ema200": "below",
+        "ema_alignment": "mixed"
+      },
+      "obv_trend": "bearish"
+    },
+    "key_levels": {
+      "immediate_support": 850.09736,
+      "immediate_resistance": 912.2189278634647,
+      "fib_382": 880.18264,
+      "fib_50": 865.14,
+      "fib_618": 850.09736,
+      "volume_poc": 895.3326315789474,
+      "distance_to_support_pct": 3.3343157990493713,
+      "distance_to_resistance_pct": 3.7296090449915593
+    },
+    "volume_flow": {
+      "volume_24h": 688308.98,
+      "volume_trend": "stable",
+      "obv_trend": "bearish",
+      "orderbook_imbalance": 0.2600618143531569,
+      "orderbook_bias": "buy_pressure",
+      "cvd_direction": "positive"
+    },
+    "sentiment": {
+      "overall": "negative",
+      "confidence": 0.7,
+      "funding_rate": 4.948e-05,
+      "funding_interpretation": "neutral",
+      "open_interest_trend": "stable"
+    },
+    "volatility": {
+      "atr_value": 7.761425986994796,
+      "atr_pct": 0.8825619143293075,
+      "level": "extreme",
+      "suggested_stop_pct": 1.3238428714939614,
+      "suggested_tp1_pct": 1.765123828658615,
+      "suggested_tp2_pct": 2.647685742987923
+    },
+    "conflicting_signals": [
+      "Bearish trend but buy pressure in orderbook"
+    ],
+    "aggregated_scores": {
+      "bullish_factors_count": 2,
+      "bearish_factors_count": 5,
+      "neutral_factors_count": 1,
+      "overall_bias": -3,
+      "overall_bias_interpretation": "sell",
+      "recommended_action": "SELL"
+    }
+  },
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": 879.42,\n    \"stop_loss\": 890.03,\n    \"take_profit_1\": 895.33,\n    \"take_profit_2\": 902.65,\n    \"confidence\": 6,\n    \"reasoning\": \"Apesar do bias geral bearish (-3/10) e alinhamento multi-timeframe strong_bearish, existem múltiplos sinais conflitantes que reduzem significativamente a confiança: 1) Pressão de compra no orderbook vs. tendência bearish, 2) RSI approaching_oversold (33.8) sugerindo possível exaustão de venda, 3) Posição no range baixa (23%) próximo ao suporte de $850.10, 4) Volatilidade extrema aumenta risco de whipsaw. A confluência bearish não é suficientemente clara para justificar um sinal SELL com confiança >=7. O sistema requer maior clareza e alinhamento dos fatores antes de uma entrada.\"\n}\n```",
+  "response_type": "str"
+}

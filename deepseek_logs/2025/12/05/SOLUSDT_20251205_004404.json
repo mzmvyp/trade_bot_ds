@@ -1,0 +1,7 @@
+{
+  "symbol": "SOLUSDT",
+  "timestamp": "2025-12-05T00:44:04.701282",
+  "prompt_sent": "",
+  "response_received": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"entry_price\": null,\n    \"stop_loss\": null,\n    \"take_profit_1\": null,\n    \"take_profit_2\": null,\n    \"confidence\": 3,\n    \"reasoning\": \"Análise mostra múltiplos fatores bearish (momentum, alinhamento de timeframes, OBV, score de confluência -1/5) com bias geral negativo (-2/10). Ação recomendada é WAIT. RSI approaching_oversold e posição no range baixa (13%) sugerem possível exaustão de venda, mas falta confirmação de reversão. Volatilidade extrema aumenta risco. Aguardar confirmação de suporte em $132.15 ou reversão de momentum.\"\n}\n```",
+  "response_type": "str"
+}

@@ -1,0 +1,7 @@
+{
+  "symbol": "XRPUSDT",
+  "timestamp": "2025-12-05T01:11:01.528433",
+  "prompt_sent": "",
+  "response_received": "```json\n{\n    \"signal\": \"SELL\",\n    \"entry_price\": 2.10,\n    \"stop_loss\": 2.1277,\n    \"take_profit_1\": 2.0664,\n    \"take_profit_2\": 2.0446,\n    \"confidence\": 8,\n    \"reasoning\": \"Sinal de venda com confiança 8/10 baseado em múltiplas confluências bearish: 1) Tendência primária strong_bearish com alinhamento multi-timeframe strong_bearish_alignment; 2) Score de confluência -5/5 (máximo bearish); 3) Indicadores técnicos alinhados (MACD bearish acelerando, RSI approaching_oversold mas ainda não oversold, EMAs em bearish_stack, preço abaixo da média de Bollinger); 4) Bias geral -4/10 com 6 fatores bearish vs 2 bullish; 5) Volume/OBV bearish confirmando pressão de venda; 6) Preço posicionado no terço inferior do range (21%) próximo ao suporte em $2.07, sugerindo potencial de rompimento. A confiança é reduzida de 9 para 8 devido à volatilidade extrema e ao RSI approaching_oversold que pode limitar movimento imediato, mas a forte confluência bearish justifica execução.\"\n}\n```",
+  "response_type": "str"
+}

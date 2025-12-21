@@ -1,0 +1,99 @@
+{
+  "symbol": "DOTUSDT",
+  "timestamp": "2025-12-05T11:01:39.945866",
+  "prompt_sent": "\nAnalise os dados e forneça um sinal de trading.\n\n## DADOS DE MERCADO\n\n- Símbolo: DOTUSDT\n- Preço: $2.22\n- Variação 24h: -4.23%\n- Posição no range: 9%\n\n## ANÁLISE DE TENDÊNCIA\n\n- Tendência primária: bearish\n- Força (ADX): moderate\n- Momentum: bearish\n- Alinhamento timeframes: strong_bearish_alignment\n- Score confluência: -5/5\n\n## INDICADORES\n\n- RSI: 32.1 (approaching_oversold)\n- MACD: bearish - accelerating_down\n- Bollinger: lower_band\n- EMAs: mixed\n\n## NÍVEIS CHAVE\n\n- Suporte: $2.13 (+4.13%)\n- Resistência: $2.31 (+4.24%)\n- POC Volume: $2.26\n\n## VOLUME E FLUXO\n\n- Pressão orderbook: neutral\n- OBV: bearish\n\n## SENTIMENTO\n\n- Geral: neutral\n- Funding: neutral\n\n## VOLATILIDADE\n\n- Nível: extreme\n- Stop sugerido: 1.54%\n- TP1 sugerido: 2.05%\n- TP2 sugerido: 3.07%\n\n## SINAIS CONFLITANTES\n\n- Nenhum conflito identificado\n\n## SCORE AGREGADO\n\n- Fatores bullish: 1\n- Fatores bearish: 4\n- Bias geral: -3/10 (sell)\n- Ação recomendada: SELL\n\n---\n\n## IMPORTANTE: ESCALA DE CONFIANÇA (0-10)\n\nA confiança deve ser um número inteiro de 1 a 10, onde:\n\n- **10**: Sinal extremamente forte, múltiplas confluências, alta probabilidade de sucesso\n- **9**: Sinal muito forte, confluências claras, boa probabilidade\n- **8**: Sinal forte, confluências presentes, probabilidade acima da média\n- **7**: Sinal moderado-forte, algumas confluências, probabilidade razoável (MÍNIMO PARA EXECUÇÃO)\n- **6**: Sinal moderado, confluências limitadas, probabilidade média (NÃO SERÁ EXECUTADO)\n- **5**: Sinal fraco, poucas confluências, probabilidade baixa (NÃO SERÁ EXECUTADO)\n- **4 ou menos**: Sinal muito fraco ou ambíguo (NÃO SERÁ EXECUTADO)\n\n**CRÍTICO**: Apenas sinais com confiança >= 7 serão executados pelo sistema. \nSe você não tiver confiança suficiente (>= 7), retorne \"NO_SIGNAL\" ao invés de um sinal fraco.\n\n**Como calcular a confiança:**\n- Considere a força da tendência (ADX, alinhamento EMAs)\n- Considere a confluência de indicadores (RSI, MACD, Bollinger)\n- Considere o alinhamento multi-timeframe\n- Considere a clareza dos níveis de suporte/resistência\n- Considere sinais conflitantes (reduz confiança)\n- Considere a volatilidade (alta volatilidade pode reduzir confiança)\n\n---\n\nRESPONDA APENAS COM JSON:\n\n```json\n{\n    \"signal\": \"BUY\" ou \"SELL\" ou \"NO_SIGNAL\",\n    \"entry_price\": <número>,\n    \"stop_loss\": <número>,\n    \"take_profit_1\": <número>,\n    \"take_profit_2\": <número>,\n    \"confidence\": <1-10> (APENAS >= 7 será executado),\n    \"reasoning\": \"<justificativa detalhada incluindo cálculo da confiança>\"\n}\n```\n",
+  "analysis_data_sent": {
+    "symbol": "DOTUSDT",
+    "timestamp": "2025-12-05T11:01:27.538040",
+    "price_context": {
+      "current": 2.219,
+      "change_24h_pct": -4.23,
+      "high_24h": 2.341,
+      "low_24h": 2.207,
+      "position_in_range_pct": 8.955223880597
+    },
+    "trend_analysis": {
+      "primary_trend": "bearish",
+      "trend_strength_adx": 32.134272841542796,
+      "trend_strength_interpretation": "moderate",
+      "momentum": "bearish",
+      "timeframe_alignment": {
+        "5m": "bearish",
+        "15m": "bearish",
+        "1h": "bearish",
+        "4h": "bearish",
+        "1d": "bearish"
+      },
+      "confluence_score": -5,
+      "confluence_interpretation": "strong_bearish_alignment"
+    },
+    "key_indicators": {
+      "rsi": {
+        "value": 32.109496148190324,
+        "zone": "approaching_oversold",
+        "action_hint": "potential_buy"
+      },
+      "macd": {
+        "histogram": -0.005105171914795339,
+        "crossover": "bearish",
+        "momentum_direction": "accelerating_down"
+      },
+      "bollinger": {
+        "position": 0.031042456216336438,
+        "zone": "lower_band",
+        "squeeze_detected": false
+      },
+      "ema_structure": {
+        "price_vs_ema20": "below",
+        "price_vs_ema50": "below",
+        "price_vs_ema200": "below",
+        "ema_alignment": "mixed"
+      },
+      "obv_trend": "bearish"
+    },
+    "key_levels": {
+      "immediate_support": 2.127316,
+      "immediate_resistance": 2.3130118542212763,
+      "fib_382": 2.230684,
+      "fib_50": 2.1790000000000003,
+      "fib_618": 2.127316,
+      "volume_poc": 2.259684210526316,
+      "distance_to_support_pct": 4.131771068048665,
+      "distance_to_resistance_pct": 4.236676621057974
+    },
+    "volume_flow": {
+      "volume_24h": 33523504.7,
+      "volume_trend": "stable",
+      "obv_trend": "bearish",
+      "orderbook_imbalance": 0.1331526887495005,
+      "orderbook_bias": "neutral",
+      "cvd_direction": "positive"
+    },
+    "sentiment": {
+      "overall": "neutral",
+      "confidence": 0.8999999999999999,
+      "funding_rate": -2.946e-05,
+      "funding_interpretation": "neutral",
+      "open_interest_trend": "stable"
+    },
+    "volatility": {
+      "atr_value": 0.022718589921178405,
+      "atr_pct": 1.0238210870292208,
+      "level": "extreme",
+      "suggested_stop_pct": 1.535731630543831,
+      "suggested_tp1_pct": 2.0476421740584416,
+      "suggested_tp2_pct": 3.071463261087662
+    },
+    "conflicting_signals": [],
+    "aggregated_scores": {
+      "bullish_factors_count": 1,
+      "bearish_factors_count": 4,
+      "neutral_factors_count": 3,
+      "overall_bias": -3,
+      "overall_bias_interpretation": "sell",
+      "recommended_action": "SELL"
+    }
+  },
+  "response_received": "```json\n{\n    \"signal\": \"SELL\",\n    \"entry_price\": 2.22,\n    \"stop_loss\": 2.255,\n    \"take_profit_1\": 2.175,\n    \"take_profit_2\": 2.153,\n    \"confidence\": 8,\n    \"reasoning\": \"Sinal de venda com alta confluência bearish. A tendência primária é bearish com forte alinhamento multi-timeframe (strong_bearish_alignment) e score de confluência máximo negativo (-5/5). O momentum é bearish com MACD acelerando para baixo. O preço está no lower band de Bollinger e o RSI (32.1) está se aproximando de oversold, mas não está extremo, sugerindo mais espaço para queda. O bias geral é -3/10 com recomendação de SELL. A posição no range é de apenas 9%, indicando proximidade com suporte, mas a forte pressão vendedora e o alinhamento bearish superam este fator. A volatilidade extrema exige stops mais apertados. Confiança 8 devido à forte confluência bearish, alinhamento claro de indicadores e tendência, ausência de sinais conflitantes e clareza dos níveis (resistência em $2.31, 4.24% acima). O risco é a proximidade do suporte em $2.13.\"\n}\n```",
+  "response_type": "str"
+}

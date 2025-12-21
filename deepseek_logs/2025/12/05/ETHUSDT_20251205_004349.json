@@ -1,0 +1,7 @@
+{
+  "symbol": "ETHUSDT",
+  "timestamp": "2025-12-05T00:43:49.002117",
+  "prompt_sent": "",
+  "response_received": "```json\n{\n    \"signal\": \"BUY\",\n    \"entry_price\": 3170.01,\n    \"stop_loss\": 3117.00,\n    \"take_profit_1\": 3240.00,\n    \"take_profit_2\": 3276.00,\n    \"confidence\": 6,\n    \"reasoning\": \"Tendência primária strong_bullish com alinhamento de timeframes, pressão de compra forte no orderbook, OBV bullish e stack de EMAs favorável. Apesar do MACD bearish, o momentum geral é positivo com preço próximo da resistência ($3,210.70) e suporte sólido em $2,917.17. Score de confluência 3/5 e bias geral 5/10 favorecem entrada long com risco controlado.\"\n}\n```",
+  "response_type": "str"
+}
