@@ -153,37 +153,36 @@ def load_last_analysis_timestamps():
     return analysis_times
 
 # Função para obter preços atuais dos principais pares
+# CORREÇÃO: Usar endpoint BULK da Binance ao invés de 10 chamadas individuais
 @st.cache_data(ttl=10)
 def get_market_prices():
-    """Obtém preços atuais dos principais pares de criptomoedas"""
-    symbols = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "MATICUSDT"]
+    """
+    Obtém preços atuais dos principais pares de criptomoedas.
+    CORREÇÃO: Usa endpoint bulk para obter TODOS os preços em UMA única chamada de API.
+    Reduz de 10 chamadas para apenas 1!
+    """
+    symbols_wanted = {"BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT", "AVAXUSDT", "DOTUSDT", "MATICUSDT", "LINKUSDT"}
     prices = {}
-    
-    for symbol in symbols:
-        try:
-            response = requests.get(f"https://fapi.binance.com/fapi/v1/ticker/price", params={'symbol': symbol}, timeout=5)
-            if response.status_code == 200:
-                data = response.json()
-                # Verificar se a chave 'price' existe e se é válida
-                if isinstance(data, dict) and 'price' in data:
+
+    try:
+        # CORREÇÃO: Endpoint bulk - retorna TODOS os preços em UMA chamada
+        response = requests.get("https://fapi.binance.com/fapi/v1/ticker/price", timeout=5)
+        if response.status_code == 200:
+            all_prices = response.json()
+            # Filtrar apenas os símbolos desejados
+            for item in all_prices:
+                if isinstance(item, dict) and item.get('symbol') in symbols_wanted:
                     try:
-                        prices[symbol] = float(data['price'])
-                    except (ValueError, TypeError):
-                        # Se não conseguir converter, pular este símbolo
+                        prices[item['symbol']] = float(item['price'])
+                    except (ValueError, TypeError, KeyError):
                         continue
-                else:
-                    # Resposta não tem a estrutura esperada
-                    continue
-            else:
-                # Status code não é 200, pular este símbolo
-                continue
-        except requests.exceptions.RequestException:
-            # Erro de conexão/timeout, pular este símbolo
-            continue
-        except Exception as e:
-            # Outro erro, pular este símbolo silenciosamente
-            continue
-    
+    except requests.exceptions.RequestException:
+        # Erro de conexão/timeout
+        pass
+    except Exception:
+        # Outro erro silencioso
+        pass
+
     return prices
 
 # Carregar dados

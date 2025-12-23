@@ -1,20 +1,126 @@
 """
 Ferramentas AGNO com indicadores técnicos reais e análise de sentimento
 Updated with logging, constants, and improved error handling
+CORREÇÃO: Adicionado sistema de cache para evitar chamadas duplicadas de API
 """
 import json
 import pandas as pd
 import numpy as np
 from typing import Dict, Any, Optional, List
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 import talib
 import os
+import time
+from functools import wraps
 
 from logger import get_logger
 from constants import *
 
 logger = get_logger(__name__)
+
+# ===== SISTEMA DE CACHE PARA EVITAR CHAMADAS DUPLICADAS DE API =====
+# Cache simples com TTL para resultados de API
+# Isso evita múltiplas chamadas para o mesmo símbolo durante uma análise
+
+class APICache:
+    """Cache simples com TTL para evitar chamadas duplicadas de API"""
+
+    def __init__(self, default_ttl: int = 60):
+        """
+        Inicializa o cache.
+
+        Args:
+            default_ttl: Tempo de vida padrão em segundos (default: 60s)
+        """
+        self._cache: Dict[str, Dict[str, Any]] = {}
+        self._default_ttl = default_ttl
+
+    def get(self, key: str) -> Optional[Any]:
+        """Obtém valor do cache se não expirado"""
+        if key in self._cache:
+            entry = self._cache[key]
+            if time.time() < entry["expires_at"]:
+                logger.debug(f"[CACHE HIT] {key}")
+                return entry["value"]
+            else:
+                # Expirado, remover
+                del self._cache[key]
+                logger.debug(f"[CACHE EXPIRED] {key}")
+        return None
+
+    def set(self, key: str, value: Any, ttl: int = None) -> None:
+        """Armazena valor no cache"""
+        ttl = ttl or self._default_ttl
+        self._cache[key] = {
+            "value": value,
+            "expires_at": time.time() + ttl
+        }
+        logger.debug(f"[CACHE SET] {key} (TTL: {ttl}s)")
+
+    def clear(self) -> None:
+        """Limpa todo o cache"""
+        self._cache.clear()
+        logger.debug("[CACHE CLEARED]")
+
+    def clear_symbol(self, symbol: str) -> None:
+        """Limpa cache de um símbolo específico"""
+        keys_to_delete = [k for k in self._cache.keys() if symbol in k]
+        for key in keys_to_delete:
+            del self._cache[key]
+        logger.debug(f"[CACHE CLEARED for {symbol}]")
+
+
+# Instância global do cache (TTL de 60 segundos)
+_api_cache = APICache(default_ttl=60)
+
+
+def cached_api_call(cache_key_prefix: str, ttl: int = 60):
+    """
+    Decorator para adicionar cache a funções de API.
+
+    Args:
+        cache_key_prefix: Prefixo para a chave do cache
+        ttl: Tempo de vida em segundos
+
+    Uso:
+        @cached_api_call("market_data", ttl=30)
+        async def get_market_data(symbol: str) -> Dict:
+            ...
+    """
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            # Construir chave do cache baseada nos argumentos
+            # Primeiro argumento é geralmente o símbolo
+            symbol = args[0] if args else kwargs.get("symbol", "unknown")
+            cache_key = f"{cache_key_prefix}:{symbol}"
+
+            # Verificar cache
+            cached_value = _api_cache.get(cache_key)
+            if cached_value is not None:
+                return cached_value
+
+            # Chamar função original
+            result = await func(*args, **kwargs)
+
+            # Armazenar no cache (apenas se não houve erro)
+            if isinstance(result, dict) and "error" not in result:
+                _api_cache.set(cache_key, result, ttl)
+
+            return result
+        return wrapper
+    return decorator
+
+
+# Função para limpar cache manualmente se necessário
+def clear_api_cache(symbol: str = None):
+    """Limpa o cache de API. Se symbol for fornecido, limpa apenas para esse símbolo."""
+    if symbol:
+        _api_cache.clear_symbol(symbol)
+    else:
+        _api_cache.clear()
+
 
 # Análise de sentimento baseada apenas em dados de mercado (Twitter removido)
 
@@ -216,9 +322,11 @@ def classify_market_condition(analysis: Dict[str, Any]) -> Dict[str, Any]:
             "market_conditions": {}
         }
 
+@cached_api_call("market_data", ttl=30)
 async def get_market_data(symbol: str = "BTCUSDT") -> Dict[str, Any]:
     """
     Obtém dados de mercado da Binance para análise (CORRIGIDO: agora async usando BinanceClient).
+    CACHE: TTL de 30 segundos para evitar chamadas duplicadas.
     """
     try:
         from binance_client import BinanceClient
@@ -322,10 +430,12 @@ def _analyze_market_structure(df: pd.DataFrame) -> Dict[str, Any]:
             "error": str(e)
         }
 
+@cached_api_call("multi_timeframe", ttl=60)
 async def analyze_multiple_timeframes(symbol: str) -> Dict[str, Any]:
     """
     Análise multi-timeframe para maior precisão.
     CORRIGIDO: Agora async usando BinanceClient.
+    CACHE: TTL de 60 segundos para evitar chamadas duplicadas.
     """
     try:
         from binance_client import BinanceClient
@@ -397,10 +507,12 @@ async def analyze_multiple_timeframes(symbol: str) -> Dict[str, Any]:
             "symbol": symbol
         }
 
+@cached_api_call("order_flow", ttl=30)
 async def analyze_order_flow(symbol: str) -> Dict[str, Any]:
     """
     Análise de fluxo de ordens e delta.
     CORRIGIDO: Agora async usando BinanceClient.
+    CACHE: TTL de 30 segundos para evitar chamadas duplicadas.
     """
     try:
         from binance_client import BinanceClient
@@ -455,11 +567,13 @@ async def analyze_order_flow(symbol: str) -> Dict[str, Any]:
             "symbol": symbol
         }
 
+@cached_api_call("technical_indicators", ttl=60)
 async def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any]:
     """
     Analisa indicadores técnicos REAIS usando TA-Lib.
     MELHORADO: Inclui EMA, OBV, Volume Profile e Fibonacci conforme sugestões Claude/DeepSeek.
     CORRIGIDO: Agora async usando BinanceClient.
+    CACHE: TTL de 60 segundos para evitar chamadas duplicadas.
     """
     try:
         from binance_client import BinanceClient
@@ -694,10 +808,12 @@ async def analyze_technical_indicators(symbol: str = "BTCUSDT") -> Dict[str, Any
             "error_type": error_type
         }
 
+@cached_api_call("market_sentiment", ttl=60)
 async def analyze_market_sentiment(symbol: str = "BTCUSDT") -> Dict[str, Any]:
     """
     Análise de sentimento baseada em dados de mercado (preço, volume, funding rate).
     CORRIGIDO: Agora async.
+    CACHE: TTL de 60 segundos para evitar chamadas duplicadas.
     """
     try:
         market_data = await get_market_data(symbol)

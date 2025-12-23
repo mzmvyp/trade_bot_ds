@@ -56,23 +56,24 @@ class AgnoTradingAgent:
         
         # Aplicar decorator @tool nas ferramentas
         from agno.tools import tool
-        
+
         # Configurar o Agent AGNO com otimizações de velocidade
         if api_key != "demo_key":
             # Modo real com DeepSeek
-            # CORREÇÃO: Remover get_deepseek_analysis das tools para evitar chamada duplicada
-            # O DeepSeek já é chamado diretamente antes do AGNO processar
+            # CORREÇÃO CRÍTICA: REMOVIDAS todas as tools de coleta de dados para evitar chamadas duplicadas!
+            # Os dados já são coletados por prepare_analysis_for_llm() chamado via get_deepseek_analysis()
+            # O AGNO agent agora apenas recebe os dados pré-coletados e gera seu próprio sinal
             self.agent = Agent(
                 model=DeepSeek(id="deepseek-chat", api_key=api_key, temperature=0.3, max_tokens=1000),
                 tools=[
-                    tool(get_market_data),
-                    tool(analyze_technical_indicators),
-                    tool(analyze_market_sentiment),
+                    # REMOVIDO: tool(get_market_data) - já coletado antes
+                    # REMOVIDO: tool(analyze_technical_indicators) - já coletado antes
+                    # REMOVIDO: tool(analyze_market_sentiment) - já coletado antes
+                    # REMOVIDO: tool(analyze_multiple_timeframes) - já coletado antes
+                    # REMOVIDO: tool(analyze_order_flow) - já coletado antes
                     # REMOVIDO: tool(get_deepseek_analysis) - evita chamada duplicada
                     tool(validate_risk_and_position),
                     tool(execute_paper_trade),
-                    tool(analyze_multiple_timeframes),
-                    tool(analyze_order_flow),
                     tool(backtest_strategy)
                 ],
                 instructions=self._get_instructions()
@@ -96,21 +97,19 @@ class AgnoTradingAgent:
         """Retorna as instruções para o agent"""
         return """
         Você é um trader profissional especializado em análise técnica e gestão de risco.
-        
+
         PROCESSO DE ANÁLISE:
-        1. Colete dados de mercado usando get_market_data()
-        2. Analise indicadores técnicos com analyze_technical_indicators()
-        3. Capture sentimento com analyze_market_sentiment()
-        4. Analise multi-timeframe com analyze_multiple_timeframes()
-        5. Analise order flow com analyze_order_flow()
-        6. Baseado nos dados coletados, tome sua própria decisão de trading
-        7. Valide risco com validate_risk_and_position()
-        8. Execute paper trade se apropriado com execute_paper_trade()
-        9. Para backtesting, use backtest_strategy() com datas específicas
-        
-        IMPORTANTE: Você está gerando um sinal AGNO independente. Analise os dados coletados
-        e tome sua própria decisão, não dependa de análises externas.
-        
+        Os dados de mercado já foram coletados e serão fornecidos no prompt.
+        NÃO tente coletar dados novamente - use apenas os dados fornecidos.
+
+        1. Analise os dados de mercado FORNECIDOS no prompt
+        2. Baseado nos dados, tome sua própria decisão de trading
+        3. Valide risco com validate_risk_and_position() se necessário
+        4. Execute paper trade se apropriado com execute_paper_trade()
+
+        IMPORTANTE: Você está gerando um sinal AGNO independente. Analise os dados já coletados
+        e tome sua própria decisão. Os dados já foram processados e estão no prompt.
+
         REGRAS DE TRADING:
         - SEMPRE forneça um sinal: BUY ou SELL (seja decisivo)
         - NÃO use HOLD ou NÃO OPERAR
@@ -120,18 +119,16 @@ class AgnoTradingAgent:
           * Take Profit 1: preço específico
           * Take Profit 2: preço específico
           * Confiança: 1-10
-        
+
         GESTÃO DE RISCO:
         - Confiança mínima 7/10 para executar (sinais com confiança < 7 serão rejeitados)
         - Escala de confiança: 1-10 (sempre use esta escala)
         - Se confiança < 7, retorne "NO_SIGNAL" ao invés de um sinal fraco
         - Respeite circuit breakers automáticos
-        - Analise estrutura de mercado (suporte/resistência)
-        - Considere múltiplos timeframes
-        
+
         FORMATO DE RESPOSTA OBRIGATÓRIO:
         Sempre termine sua análise com um bloco JSON estruturado:
-        
+
         ```json
         {
             "signal": "BUY" ou "SELL" ou "NO_SIGNAL",
@@ -142,7 +139,7 @@ class AgnoTradingAgent:
             "confidence": 7 (escala 1-10, mínimo 7 para executar)
         }
         ```
-        
+
         Seja detalhado na análise mas objetivo na decisão.
         """
     
@@ -207,47 +204,45 @@ class AgnoTradingAgent:
             # Se houver erro, continuar com análise (não bloquear)
             logger.warning(f"Erro ao verificar ultima analise: {e}")
         
-        # Prompt para o agent
-        # CORRIGIDO: get_deepseek_analysis() agora retorna o sinal JSON diretamente
-        # Obter dados sumarizados para o AGNO agent analisar
-        # Nota: get_deepseek_analysis() agora retorna sinal direto, mas podemos chamar prepare_analysis_for_llm() diretamente
-        # Por enquanto, vamos usar o prompt simples e deixar o AGNO analisar
-        prompt = f"""
-         Analise os dados de mercado para {symbol} e forneça um sinal de trading.
-         
-         NOTA: O sistema gera DOIS sinais separados para comparação:
-         - Um sinal DEEPSEEK (direto) - já foi gerado automaticamente
-         - Um sinal AGNO (este) - você deve analisar independentemente
-         
-         Processo:
-         1. Use get_market_data("{symbol}") para obter dados de mercado
-         2. Use analyze_technical_indicators("{symbol}") para indicadores técnicos
-         3. Use analyze_market_sentiment("{symbol}") para sentimento
-         4. Analise os dados e decida: BUY, SELL ou NO_SIGNAL
-         5. Retorne APENAS o JSON estruturado no final:
-         
-         ```json
-         {{
-             "signal": "BUY" ou "SELL" ou "NO_SIGNAL",
-             "entry_price": <número>,
-             "stop_loss": <número>,
-             "take_profit_1": <número>,
-             "take_profit_2": <número>,
-             "confidence": <1-10>,
-             "reasoning": "<justificativa>"
-         }}
-         ```
-         
-         IMPORTANTE: 
-         - Você está gerando o sinal AGNO (independente do sinal DeepSeek)
-         - O sistema executará ambos os sinais separadamente se ambos forem válidos
-         - Forneça sua própria análise baseada nos dados coletados
-         """
+        # Prompt para o AGNO agent
+        # CORREÇÃO CRÍTICA: Os dados já foram coletados, não instruir a coletar novamente
+        # O prompt será atualizado depois de obter os dados do DeepSeek
+        prompt_template = """
+Analise os dados de mercado para {symbol} e forneça um sinal de trading AGNO.
+
+NOTA: Os dados já foram coletados pelo sistema. Use os dados abaixo para sua análise.
+
+## DADOS DE MERCADO PRÉ-COLETADOS:
+{analysis_data}
+
+## INSTRUÇÕES:
+1. Analise os dados ACIMA (não tente coletar novamente)
+2. Baseado nos dados, decida: BUY, SELL ou NO_SIGNAL
+3. Retorne APENAS o JSON estruturado no final
+
+## FORMATO DE RESPOSTA:
+```json
+{{
+    "signal": "BUY" ou "SELL" ou "NO_SIGNAL",
+    "entry_price": <número>,
+    "stop_loss": <número>,
+    "take_profit_1": <número>,
+    "take_profit_2": <número>,
+    "confidence": <1-10>,
+    "reasoning": "<justificativa>"
+}}
+```
+
+IMPORTANTE:
+- Você está gerando o sinal AGNO (independente do sinal DeepSeek)
+- Use APENAS os dados fornecidos acima
+- NÃO chame funções de coleta de dados
+"""
         
         try:
             if hasattr(self, 'demo_mode') and self.demo_mode:
-                # Modo demo - análise local
-                signal = self._demo_analysis(symbol)
+                # Modo demo - análise local (CORREÇÃO: usar await)
+                signal = await self._demo_analysis(symbol)
             else:
                 # NOVO: Gerar DOIS sinais - um do DeepSeek direto e outro do AGNO processado
                 # Isso permite comparar a performance de ambos
@@ -299,31 +294,37 @@ class AgnoTradingAgent:
                             logger.info(f"[DEEPSEEK] Sinal não executado: {validation.get('reason', '')}")
                 
                 # 2. SINAL AGNO PROCESSADO
-                # Executar agent - ELE VAI ORQUESTRAR TUDO!
+                # CORREÇÃO CRÍTICA: Usar os dados JÁ COLETADOS pelo DeepSeek ao invés de chamar APIs novamente
+                # Os dados estão em deepseek_result["analysis_data"]
+                analysis_data = deepseek_result.get("analysis_data", {})
+
+                # Construir prompt com dados pré-coletados (não chamar APIs novamente!)
+                analysis_data_str = json.dumps(analysis_data, indent=2, ensure_ascii=False, default=str)
+                prompt = prompt_template.format(symbol=symbol, analysis_data=analysis_data_str)
+
+                # Executar AGNO agent com os dados já coletados
                 response = await self.agent.arun(prompt)
-                
+
                 # Salvar resposta bruta do AGNO para auditoria
-                self._save_deepseek_response(symbol, prompt, response, {})
-                
+                self._save_deepseek_response(symbol, prompt, response, analysis_data)
+
                 # Processar resposta do AGNO (agora async)
                 agno_signal = await self._process_agent_response(response, symbol)
                 agno_signal["source"] = "AGNO"  # Identificador da fonte
-                
-                # CORRIGIDO: Se não tem entry_price, obter do mercado (async)
+
+                # CORRIGIDO: Usar preço dos dados já coletados ao invés de chamar API novamente
                 if agno_signal.get("signal") in ["BUY", "SELL"] and not agno_signal.get("entry_price"):
-                    try:
-                        market_data = await get_market_data(symbol)
-                        if market_data and "current_price" in market_data:
-                            agno_signal["entry_price"] = market_data["current_price"]
-                            # Calcular stop loss se não tiver
-                            if not agno_signal.get("stop_loss"):
-                                if agno_signal["signal"] == "BUY":
-                                    agno_signal["stop_loss"] = agno_signal["entry_price"] * 0.98
-                                else:  # SELL
-                                    agno_signal["stop_loss"] = agno_signal["entry_price"] * 1.02
-                            logger.info(f"[AGNO] Preço atual obtido: Entry=${agno_signal['entry_price']}, SL=${agno_signal.get('stop_loss')}")
-                    except Exception as e:
-                        logger.error(f"[AGNO] Erro ao obter preço atual: {e}")
+                    # Usar preço dos dados pré-coletados
+                    current_price = analysis_data.get("price_context", {}).get("current", 0)
+                    if current_price > 0:
+                        agno_signal["entry_price"] = current_price
+                        # Calcular stop loss se não tiver
+                        if not agno_signal.get("stop_loss"):
+                            if agno_signal["signal"] == "BUY":
+                                agno_signal["stop_loss"] = agno_signal["entry_price"] * 0.98
+                            else:  # SELL
+                                agno_signal["stop_loss"] = agno_signal["entry_price"] * 1.02
+                        logger.info(f"[AGNO] Preço usado dos dados pré-coletados: Entry=${agno_signal['entry_price']}, SL=${agno_signal.get('stop_loss')}")
                 
                 # Salvar sinal AGNO
                 self._save_signal(agno_signal)
@@ -955,16 +956,19 @@ class AgnoTradingAgent:
             print(f"Stop Loss: ${signal['stop_loss']:,.2f}")
         print("="*60)
     
-    def _demo_analysis(self, symbol: str) -> Dict[str, Any]:
-        """Análise demo local sem DeepSeek"""
+    async def _demo_analysis(self, symbol: str) -> Dict[str, Any]:
+        """
+        Análise demo local sem DeepSeek.
+        CORREÇÃO: Agora async para usar await nas chamadas de API.
+        """
         print(f"[DEMO] Executando analise demo local para {symbol}...")
-        
+
         try:
-            # Coletar dados
-            market_data = get_market_data(symbol)
-            technical_indicators = analyze_technical_indicators(symbol)
-            sentiment = analyze_market_sentiment(symbol)
-            
+            # CORREÇÃO: Usar await nas chamadas async
+            market_data = await get_market_data(symbol)
+            technical_indicators = await analyze_technical_indicators(symbol)
+            sentiment = await analyze_market_sentiment(symbol)
+
             print(f"[DADOS] Dados coletados:")
             print(f"   Preço: ${market_data.get('current_price', 0):,.2f}")
             print(f"   Variação 24h: {market_data.get('price_change_24h', 0):.2f}%")
