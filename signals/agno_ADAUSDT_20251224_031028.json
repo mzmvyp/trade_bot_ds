@@ -1,0 +1,12 @@
+{
+  "symbol": "ADAUSDT",
+  "timestamp": "2025-12-24T03:10:28.815089",
+  "agent_response": "Vou analisar os dados de mercado para ADAUSDT de forma independente para gerar o sinal AGNO.Agora vou analisar os dados coletados para tomar minha decisão independente:\n\n## ANÁLISE AGNO PARA ADAUSDT\n\n**Dados de Mercado:**\n- Preço atual: $0.3548\n- Variação 24h: -3.09%\n- Volume 24h: $548M (alto)\n- Funding rate: -0.0058% (ligeiramente negativo)\n- Open Interest: $262M\n\n**Análise Técnica:**\n1. **Tendência**: Fortemente bearish (DOWNTREND forte)\n2. **Momentum**: Bearish (RSI 34.6 - quase oversold)\n3. ",
+  "signal": "NO_SIGNAL",
+  "entry_price": 0.3548,
+  "stop_loss": 0.34,
+  "take_profit_1": 0.366,
+  "take_profit_2": 0.372,
+  "confidence": 6,
+  "source": "AGNO"
+}

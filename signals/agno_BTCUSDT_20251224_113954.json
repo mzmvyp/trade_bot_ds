@@ -1,0 +1,13 @@
+{
+  "symbol": "BTCUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-24T11:39:54.898213",
+  "signal": "NO_SIGNAL",
+  "entry_price": 86480.1,
+  "stop_loss": 87300.0,
+  "take_profit_1": 85600.0,
+  "take_profit_2": 84800.0,
+  "confidence": 5,
+  "reasoning": "A análise apresenta múltiplos sinais conflitantes que reduzem significativamente a confiança para uma operação executável (>=7). A tendência primária é bearish com alinhamento multi-timeframe forte, mas o MACD mostra crossover bullish acelerando para cima e há pressão de compra no orderbook. O RSI está se aproximando de oversold, o que pode indicar uma possível reversão, mas o momentum geral permanece bearish com OBV negativo. A volatilidade extrema combinada com a força fraca da tendência (ADX 20) e o bias geral neutro (-2/10) criam um ambiente de alta incerteza. A ação recomendada pela análise é WAIT, e concordo com essa avaliação. Não há confluência suficiente para justificar um sinal com confiança >=7.",
+  "raw_response": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 86480.10,\n    \"stop_loss\": 87300.00,\n    \"take_profit_1\": 85600.00,\n    \"take_profit_2\": 84800.00,\n    \"confidence\": 5,\n    \"reasoning\": \"A análise apresenta múltiplos sinais conflitantes que reduzem significativamente a confiança para uma operação executável (>=7). A tendência primária é bearish com alinhamento multi-timeframe forte, mas o MACD mostra crossover bullish acelerando para cima e há pressão de compra no orderbook. O RSI está se aproximando de oversold, o que pode indicar uma possível reversão, mas o momentum geral permanece bearish com OBV negativo. A volatilidade extrema combinada com a força fraca da tendência (ADX 20) e o bias geral neutro (-2/10) criam um ambiente de alta incerteza. A ação recomendada pela análise é WAIT, e concordo com essa avaliação. Não há confluência suficiente para justificar um sinal com confiança >=7.\"\n}\n```"
+}

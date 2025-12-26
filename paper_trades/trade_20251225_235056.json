@@ -1,0 +1,20 @@
+{
+  "trade_id": "20251225_235056",
+  "symbol": "DOGEUSDT",
+  "source": "AGNO",
+  "signal": "BUY",
+  "operation_type": "SWING_TRADE",
+  "entry_price": 0.12607,
+  "position_size": 31545.74132492121,
+  "original_position_size": 31545.74132492121,
+  "position_value": 3976.971608832817,
+  "stop_loss": 0.1229,
+  "take_profit_1": 0.1282,
+  "take_profit_2": 0.1294,
+  "confidence": 7,
+  "timestamp": "2025-12-25T23:50:56.571004",
+  "status": "OPEN",
+  "max_profit_reached": 0.0,
+  "max_loss_reached": 0.0,
+  "tp1_partial_closed": false
+}

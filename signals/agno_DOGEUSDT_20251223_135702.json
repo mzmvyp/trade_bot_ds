@@ -1,0 +1,13 @@
+{
+  "symbol": "DOGEUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T13:57:02.715002",
+  "signal": "NO_SIGNAL",
+  "entry_price": 0.13,
+  "stop_loss": 0.13156,
+  "take_profit_1": 0.12748,
+  "take_profit_2": 0.12535,
+  "confidence": 5,
+  "reasoning": "Apesar da recomendação de SELL e do bias geral bearish (-3/10), múltiplos fatores críticos reduzem drasticamente a confiança para níveis não executáveis (<7). A análise indica 'no_trend' na força da tendência (ADX: 20), confluência extremamente baixa (-1/5), posição de preço no meio do range (39%), RSI neutro (47.4), EMAs mistas e pressão do orderbook neutra. A volatilidade extrema, combinada com a ausência de uma tendência clara e forte e a falta de confluência entre indicadores, cria um ambiente de alto risco para um DAY_TRADE. O sistema só executa com confiança >=7. Portanto, o sinal mais prudente é aguardar uma configuração de mercado mais definida.",
+  "raw_response": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 0.13,\n    \"stop_loss\": 0.13156,\n    \"take_profit_1\": 0.12748,\n    \"take_profit_2\": 0.12535,\n    \"confidence\": 5,\n    \"reasoning\": \"Apesar da recomendação de SELL e do bias geral bearish (-3/10), múltiplos fatores críticos reduzem drasticamente a confiança para níveis não executáveis (<7). A análise indica 'no_trend' na força da tendência (ADX: 20), confluência extremamente baixa (-1/5), posição de preço no meio do range (39%), RSI neutro (47.4), EMAs mistas e pressão do orderbook neutra. A volatilidade extrema, combinada com a ausência de uma tendência clara e forte e a falta de confluência entre indicadores, cria um ambiente de alto risco para um DAY_TRADE. O sistema só executa com confiança >=7. Portanto, o sinal mais prudente é aguardar uma configuração de mercado mais definida.\"\n}\n```"
+}

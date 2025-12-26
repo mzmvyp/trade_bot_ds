@@ -1,0 +1,12 @@
+{
+  "symbol": "DOGEUSDT",
+  "timestamp": "2025-12-25T23:50:56.568863",
+  "agent_response": "Vou analisar o DOGEUSDT independentemente seguindo o processo completo. Vou começar coletando os dados de mercado.Agora vou analisar os indicadores técnicos:Agora vou analisar o sentimento de mercado:Vou fazer uma análise multi-timeframe para maior precisão:Agora vou analisar o fluxo de ordens:Com base na análise completa dos dados coletados, vou fazer minha análise independente:\n\n## ANÁLISE AGNO PARA DOGEUSDT\n\n**DADOS DE MERCADO:**\n- Preço atual: $0.12607\n- Variação 24h: -2.13%\n- Volume: $3.46B",
+  "signal": "BUY",
+  "entry_price": 0.12607,
+  "stop_loss": 0.1229,
+  "take_profit_1": 0.1282,
+  "take_profit_2": 0.1294,
+  "confidence": 7,
+  "source": "AGNO"
+}

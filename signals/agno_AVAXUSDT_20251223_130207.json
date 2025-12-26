@@ -1,0 +1,13 @@
+{
+  "symbol": "AVAXUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T13:02:07.432575",
+  "signal": "SELL",
+  "entry_price": 11.91,
+  "stop_loss": 12.07,
+  "take_profit_1": 11.67,
+  "take_profit_2": 11.52,
+  "confidence": 8,
+  "reasoning": "A análise apresenta múltiplas confluências para uma operação de venda (SELL) no modo DAY_TRADE: 1) Tendência primária bearish com alinhamento forte entre timeframes; 2) Score de confluência negativo (-5/5) e bias geral de venda (-4/10); 3) Indicadores técnicos suportam o movimento de baixa (RSI se aproximando de oversold, MACD bearish e acelerando, preço na banda inferior de Bollinger); 4) O preço está próximo de um nível de suporte imediato ($11.90), oferecendo um bom ponto de entrada para uma quebra. A volatilidade extrema e a ausência de tendência clara no ADX limitam a confiança a 8, mas a convergência dos fatores bearish e a recomendação do sistema para DAY_TRADE tornam esta uma oportunidade executável. Os parâmetros de risco foram ajustados para refletir a alta volatilidade, com um stop loss de ~1.34%.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 11.91,\n    \"stop_loss\": 12.07,\n    \"take_profit_1\": 11.67,\n    \"take_profit_2\": 11.52,\n    \"confidence\": 8,\n    \"reasoning\": \"A análise apresenta múltiplas confluências para uma operação de venda (SELL) no modo DAY_TRADE: 1) Tendência primária bearish com alinhamento forte entre timeframes; 2) Score de confluência negativo (-5/5) e bias geral de venda (-4/10); 3) Indicadores técnicos suportam o movimento de baixa (RSI se aproximando de oversold, MACD bearish e acelerando, preço na banda inferior de Bollinger); 4) O preço está próximo de um nível de suporte imediato ($11.90), oferecendo um bom ponto de entrada para uma quebra. A volatilidade extrema e a ausência de tendência clara no ADX limitam a confiança a 8, mas a convergência dos fatores bearish e a recomendação do sistema para DAY_TRADE tornam esta uma oportunidade executável. Os parâmetros de risco foram ajustados para refletir a alta volatilidade, com um stop loss de ~1.34%.\"\n}\n```"
+}

@@ -1,0 +1,284 @@
+2025-12-23 12:47:04 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 12:47:04 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\BTCUSDT_20251223_124704.json
+2025-12-23 12:47:04 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para BTCUSDT
+2025-12-23 12:47:04 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 0.096927 unidades a $87268.30
+2025-12-23 12:47:56 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\BTCUSDT_20251223_124756.json
+2025-12-23 12:47:56 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-23 12:47:56 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para BTCUSDT
+2025-12-23 12:47:56 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): BUY 0.142857 unidades a $87200.00
+2025-12-23 12:48:14 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 12:48:14 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ETHUSDT_20251223_124814.json
+2025-12-23 12:48:14 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para ETHUSDT
+2025-12-23 12:48:14 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 2.923977 unidades a $2923.80
+2025-12-23 12:48:59 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ETHUSDT_20251223_124859.json
+2025-12-23 12:48:59 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: SELL
+2025-12-23 12:48:59 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal SELL para ETHUSDT
+2025-12-23 12:48:59 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): SELL 1.923077 unidades a $2923.00
+2025-12-23 12:49:19 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 12:49:19 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\SOLUSDT_20251223_124919.json
+2025-12-23 12:49:19 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para SOLUSDT
+2025-12-23 12:49:19 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 67.567568 unidades a $123.01
+2025-12-23 12:50:03 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\SOLUSDT_20251223_125003.json
+2025-12-23 12:50:03 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: SELL
+2025-12-23 12:50:03 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal SELL para SOLUSDT
+2025-12-23 12:50:03 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): SELL 27.777778 unidades a $123.00
+2025-12-23 12:50:20 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 12:50:20 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\BNBUSDT_20251223_125020.json
+2025-12-23 12:50:20 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para BNBUSDT
+2025-12-23 12:50:20 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 9.871668 unidades a $843.30
+2025-12-23 12:51:06 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\BNBUSDT_20251223_125106.json
+2025-12-23 12:51:06 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: NO_SIGNAL
+2025-12-23 12:51:24 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: NO_SIGNAL
+2025-12-23 12:51:24 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\XRPUSDT_20251223_125124.json
+2025-12-23 12:52:14 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\XRPUSDT_20251223_125214.json
+2025-12-23 12:52:14 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: NO_SIGNAL
+2025-12-23 12:52:33 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: NO_SIGNAL
+2025-12-23 12:52:33 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOGEUSDT_20251223_125233.json
+2025-12-23 12:53:19 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOGEUSDT_20251223_125319.json
+2025-12-23 12:53:19 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: NO_SIGNAL
+2025-12-23 12:53:38 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 12:53:38 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOTUSDT_20251223_125338.json
+2025-12-23 12:53:38 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para DOTUSDT
+2025-12-23 12:53:38 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 4761.904762 unidades a $1.75
+2025-12-23 12:54:23 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOTUSDT_20251223_125423.json
+2025-12-23 12:54:23 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: NO_SIGNAL
+2025-12-23 12:54:44 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 12:54:44 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\LINKUSDT_20251223_125444.json
+2025-12-23 12:54:44 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para LINKUSDT
+2025-12-23 12:54:44 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 555.555556 unidades a $12.27
+2025-12-23 12:55:35 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\LINKUSDT_20251223_125535.json
+2025-12-23 12:55:35 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: SELL
+2025-12-23 12:55:35 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal SELL para LINKUSDT
+2025-12-23 12:55:35 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): SELL 250.626566 unidades a $12.27
+2025-12-23 13:00:55 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 13:00:55 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ADAUSDT_20251223_130055.json
+2025-12-23 13:00:55 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para ADAUSDT
+2025-12-23 13:00:55 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 23148.148148 unidades a $0.36
+2025-12-23 13:01:41 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ADAUSDT_20251223_130141.json
+2025-12-23 13:01:41 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-23 13:01:41 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para ADAUSDT
+2025-12-23 13:01:41 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): BUY 20000.000000 unidades a $0.36
+2025-12-23 13:02:07 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 13:02:07 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\AVAXUSDT_20251223_130207.json
+2025-12-23 13:02:07 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para AVAXUSDT
+2025-12-23 13:02:07 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 625.000000 unidades a $11.91
+2025-12-23 13:02:53 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\AVAXUSDT_20251223_130253.json
+2025-12-23 13:02:53 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: SELL
+2025-12-23 13:02:53 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal SELL para AVAXUSDT
+2025-12-23 13:02:53 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): SELL 400.000000 unidades a $11.90
+2025-12-23 13:56:03 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: NO_SIGNAL
+2025-12-23 13:56:03 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\XRPUSDT_20251223_135603.json
+2025-12-23 13:56:44 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\XRPUSDT_20251223_135644.json
+2025-12-23 13:56:44 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: NO_SIGNAL
+2025-12-23 13:57:02 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: NO_SIGNAL
+2025-12-23 13:57:02 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOGEUSDT_20251223_135702.json
+2025-12-23 13:57:48 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOGEUSDT_20251223_135748.json
+2025-12-23 13:57:48 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-23 13:57:48 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para DOGEUSDT
+2025-12-23 13:57:48 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): BUY 24390.243902 unidades a $0.13
+2025-12-23 13:58:08 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 13:58:08 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOTUSDT_20251223_135808.json
+2025-12-23 13:58:08 - trading_agent_agno - INFO - analyze:299 - [DEEPSEEK] Sinal não executado: Ja existe uma posicao SELL DEEPSEEK aberta para DOTUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-23 13:58:43 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOTUSDT_20251223_135843.json
+2025-12-23 13:58:43 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: NO_SIGNAL
+2025-12-23 13:59:00 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: NO_SIGNAL
+2025-12-23 13:59:00 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\LINKUSDT_20251223_135900.json
+2025-12-23 13:59:44 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\LINKUSDT_20251223_135944.json
+2025-12-23 13:59:44 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: NO_SIGNAL
+2025-12-23 14:10:06 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 14:10:06 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ADAUSDT_20251223_141006.json
+2025-12-23 14:10:06 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para ADAUSDT
+2025-12-23 14:10:06 - trading_agent_agno - WARNING - analyze:297 - [DEEPSEEK] Falha ao executar trade: Ja existe uma posicao SELL DEEPSEEK aberta para ADAUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-23 14:10:51 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ADAUSDT_20251223_141051.json
+2025-12-23 14:10:51 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-23 14:10:51 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para ADAUSDT
+2025-12-23 14:10:51 - trading_agent_agno - WARNING - analyze:341 - [AGNO] Falha ao executar trade: Ja existe uma posicao BUY AGNO aberta para ADAUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-23 14:11:16 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 14:11:16 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\AVAXUSDT_20251223_141116.json
+2025-12-23 14:11:16 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para AVAXUSDT
+2025-12-23 14:11:16 - trading_agent_agno - WARNING - analyze:297 - [DEEPSEEK] Falha ao executar trade: Ja existe uma posicao SELL DEEPSEEK aberta para AVAXUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-23 14:12:01 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\AVAXUSDT_20251223_141201.json
+2025-12-23 14:12:01 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: SELL
+2025-12-23 14:12:01 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal SELL para AVAXUSDT
+2025-12-23 14:12:01 - trading_agent_agno - WARNING - analyze:341 - [AGNO] Falha ao executar trade: Ja existe uma posicao SELL AGNO aberta para AVAXUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-23 15:16:12 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 15:16:12 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ADAUSDT_20251223_151612.json
+2025-12-23 15:16:12 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para ADAUSDT
+2025-12-23 15:16:12 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 23255.813953 unidades a $0.36
+2025-12-23 15:16:57 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ADAUSDT_20251223_151657.json
+2025-12-23 15:16:57 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-23 15:16:57 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para ADAUSDT
+2025-12-23 15:16:57 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): BUY 14285.714286 unidades a $0.36
+2025-12-23 15:17:17 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 15:17:17 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\XRPUSDT_20251223_151717.json
+2025-12-23 15:17:17 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para XRPUSDT
+2025-12-23 15:17:17 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 4545.454545 unidades a $1.87
+2025-12-23 15:18:01 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\XRPUSDT_20251223_151801.json
+2025-12-23 15:18:01 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-23 15:18:01 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para XRPUSDT
+2025-12-23 15:18:01 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): BUY 5000.000000 unidades a $1.88
+2025-12-23 15:18:22 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 15:18:22 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOGEUSDT_20251223_151822.json
+2025-12-23 15:18:22 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para DOGEUSDT
+2025-12-23 15:18:22 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 64102.564103 unidades a $0.13
+2025-12-23 15:19:09 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOGEUSDT_20251223_151909.json
+2025-12-23 15:19:09 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: NO_SIGNAL
+2025-12-23 15:19:29 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 15:19:29 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\AVAXUSDT_20251223_151929.json
+2025-12-23 15:19:29 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para AVAXUSDT
+2025-12-23 15:19:29 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 666.666667 unidades a $12.05
+2025-12-23 15:20:17 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\AVAXUSDT_20251223_152017.json
+2025-12-23 15:20:17 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-23 15:20:17 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para AVAXUSDT
+2025-12-23 15:20:17 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): BUY 333.333333 unidades a $12.05
+2025-12-23 15:20:35 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 15:20:35 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOTUSDT_20251223_152035.json
+2025-12-23 15:20:35 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para DOTUSDT
+2025-12-23 15:20:35 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 4761.904762 unidades a $1.75
+2025-12-23 15:21:17 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOTUSDT_20251223_152117.json
+2025-12-23 15:21:17 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: NO_SIGNAL
+2025-12-23 15:21:34 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 15:21:34 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\LINKUSDT_20251223_152134.json
+2025-12-23 15:21:34 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para LINKUSDT
+2025-12-23 15:21:34 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 666.666667 unidades a $12.33
+2025-12-23 15:22:19 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\LINKUSDT_20251223_152219.json
+2025-12-23 15:22:19 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-23 15:22:19 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para LINKUSDT
+2025-12-23 15:22:19 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): BUY 285.714286 unidades a $12.30
+2025-12-23 16:23:02 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: NO_SIGNAL
+2025-12-23 16:23:02 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOTUSDT_20251223_162302.json
+2025-12-23 16:23:49 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOTUSDT_20251223_162349.json
+2025-12-23 16:23:49 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-23 16:23:49 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para DOTUSDT
+2025-12-23 16:23:49 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): BUY 3225.806452 unidades a $1.77
+2025-12-23 17:45:04 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: NO_SIGNAL
+2025-12-23 17:45:04 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ETHUSDT_20251223_174504.json
+2025-12-23 17:45:50 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ETHUSDT_20251223_174550.json
+2025-12-23 17:45:50 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-23 17:45:50 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para ETHUSDT
+2025-12-23 17:45:50 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): BUY 1.176471 unidades a $2975.00
+2025-12-23 20:24:47 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: NO_SIGNAL
+2025-12-23 20:24:47 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ETHUSDT_20251223_202447.json
+2025-12-23 20:25:37 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ETHUSDT_20251223_202537.json
+2025-12-23 20:25:37 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: SELL
+2025-12-23 20:25:37 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal SELL para ETHUSDT
+2025-12-23 20:25:37 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): SELL 2.000000 unidades a $2955.00
+2025-12-23 21:26:05 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 21:26:05 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ETHUSDT_20251223_212605.json
+2025-12-23 21:26:05 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para ETHUSDT
+2025-12-23 21:26:05 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 2.793296 unidades a $2959.20
+2025-12-23 21:26:56 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ETHUSDT_20251223_212656.json
+2025-12-23 21:26:56 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: NO_SIGNAL
+2025-12-23 23:07:18 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 23:07:18 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ETHUSDT_20251223_230718.json
+2025-12-23 23:07:18 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para ETHUSDT
+2025-12-23 23:07:18 - trading_agent_agno - WARNING - analyze:297 - [DEEPSEEK] Falha ao executar trade: Ja existe uma posicao SELL DEEPSEEK aberta para ETHUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-23 23:08:05 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\ETHUSDT_20251223_230805.json
+2025-12-23 23:08:05 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: NO_SIGNAL
+2025-12-23 23:43:31 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-23 23:43:31 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\XRPUSDT_20251223_234331.json
+2025-12-23 23:43:31 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para XRPUSDT
+2025-12-23 23:43:31 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 4504.504505 unidades a $1.85
+2025-12-23 23:44:22 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\XRPUSDT_20251223_234422.json
+2025-12-23 23:44:22 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-23 23:44:22 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para XRPUSDT
+2025-12-23 23:44:22 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): BUY 4166.666667 unidades a $1.85
+2025-12-23 23:49:41 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: NO_SIGNAL
+2025-12-23 23:49:41 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOTUSDT_20251223_234941.json
+2025-12-23 23:50:26 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\23\DOTUSDT_20251223_235026.json
+2025-12-23 23:50:26 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-23 23:50:26 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para DOTUSDT
+2025-12-23 23:50:26 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): BUY 4166.666667 unidades a $1.74
+2025-12-24 02:31:09 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: NO_SIGNAL
+2025-12-24 02:31:09 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\ETHUSDT_20251224_023109.json
+2025-12-24 02:31:55 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\ETHUSDT_20251224_023155.json
+2025-12-24 02:31:55 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: SELL
+2025-12-24 02:31:55 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal SELL para ETHUSDT
+2025-12-24 02:31:55 - trading_agent_agno - WARNING - analyze:341 - [AGNO] Falha ao executar trade: Ja existe uma posicao SELL AGNO aberta para ETHUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-24 02:32:15 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-24 02:32:15 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\XRPUSDT_20251224_023215.json
+2025-12-24 02:32:15 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para XRPUSDT
+2025-12-24 02:32:15 - trading_agent_agno - WARNING - analyze:297 - [DEEPSEEK] Falha ao executar trade: Ja existe uma posicao SELL DEEPSEEK aberta para XRPUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-24 02:33:00 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\XRPUSDT_20251224_023300.json
+2025-12-24 02:33:00 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: SELL
+2025-12-24 02:33:00 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal SELL para XRPUSDT
+2025-12-24 02:33:00 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): SELL 2127.659574 unidades a $1.85
+2025-12-24 02:33:19 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: NO_SIGNAL
+2025-12-24 02:33:19 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\DOTUSDT_20251224_023319.json
+2025-12-24 02:34:05 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\DOTUSDT_20251224_023405.json
+2025-12-24 02:34:05 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: SELL
+2025-12-24 02:34:05 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal SELL para DOTUSDT
+2025-12-24 02:34:05 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): SELL 3846.153846 unidades a $1.73
+2025-12-24 03:09:51 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-24 03:09:51 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\ADAUSDT_20251224_030951.json
+2025-12-24 03:09:51 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para ADAUSDT
+2025-12-24 03:09:51 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 23809.523810 unidades a $0.35
+2025-12-24 03:10:28 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\ADAUSDT_20251224_031028.json
+2025-12-24 03:10:28 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: NO_SIGNAL
+2025-12-24 04:11:23 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-24 04:11:23 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\ADAUSDT_20251224_041123.json
+2025-12-24 04:11:23 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para ADAUSDT
+2025-12-24 04:11:23 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 23255.813953 unidades a $0.36
+2025-12-24 04:12:14 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\ADAUSDT_20251224_041214.json
+2025-12-24 04:12:14 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: SELL
+2025-12-24 04:12:14 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal SELL para ADAUSDT
+2025-12-24 04:12:14 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): SELL 10526.315789 unidades a $0.36
+2025-12-24 05:27:34 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-24 05:27:34 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\ETHUSDT_20251224_052734.json
+2025-12-24 05:27:34 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para ETHUSDT
+2025-12-24 05:27:34 - trading_agent_agno - WARNING - analyze:297 - [DEEPSEEK] Falha ao executar trade: Ja existe uma posicao SELL DEEPSEEK aberta para ETHUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-24 05:28:24 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\ETHUSDT_20251224_052824.json
+2025-12-24 05:28:24 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-24 05:28:24 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para ETHUSDT
+2025-12-24 05:28:24 - trading_agent_agno - WARNING - analyze:341 - [AGNO] Falha ao executar trade: Ja existe uma posicao BUY AGNO aberta para ETHUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-24 05:28:43 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-24 05:28:43 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\ADAUSDT_20251224_052843.json
+2025-12-24 05:28:43 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para ADAUSDT
+2025-12-24 05:28:43 - trading_agent_agno - WARNING - analyze:297 - [DEEPSEEK] Falha ao executar trade: Ja existe uma posicao SELL DEEPSEEK aberta para ADAUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-24 05:29:35 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\ADAUSDT_20251224_052935.json
+2025-12-24 05:29:35 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: SELL
+2025-12-24 05:29:35 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal SELL para ADAUSDT
+2025-12-24 05:29:35 - trading_agent_agno - WARNING - analyze:341 - [AGNO] Falha ao executar trade: Ja existe uma posicao SELL AGNO aberta para ADAUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-24 05:29:55 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-24 05:29:55 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\XRPUSDT_20251224_052955.json
+2025-12-24 05:29:55 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para XRPUSDT
+2025-12-24 05:29:55 - trading_agent_agno - WARNING - analyze:297 - [DEEPSEEK] Falha ao executar trade: Ja existe uma posicao SELL DEEPSEEK aberta para XRPUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-24 05:30:49 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\XRPUSDT_20251224_053049.json
+2025-12-24 05:30:49 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-24 05:30:49 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para XRPUSDT
+2025-12-24 05:30:49 - trading_agent_agno - WARNING - analyze:341 - [AGNO] Falha ao executar trade: Ja existe uma posicao BUY AGNO aberta para XRPUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-24 05:31:09 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: SELL
+2025-12-24 05:31:09 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\DOTUSDT_20251224_053109.json
+2025-12-24 05:31:09 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal SELL para DOTUSDT
+2025-12-24 05:31:09 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): SELL 4761.904762 unidades a $1.72
+2025-12-24 05:31:57 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\DOTUSDT_20251224_053157.json
+2025-12-24 05:31:57 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: NO_SIGNAL
+2025-12-24 11:39:54 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: NO_SIGNAL
+2025-12-24 11:39:54 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\BTCUSDT_20251224_113954.json
+2025-12-24 11:40:49 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\24\BTCUSDT_20251224_114049.json
+2025-12-24 11:40:49 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-24 11:40:49 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para BTCUSDT
+2025-12-24 11:40:49 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): BUY 0.351865 unidades a $86584.20
+2025-12-25 12:46:42 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: BUY
+2025-12-25 12:46:42 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\25\BTCUSDT_20251225_124642.json
+2025-12-25 12:46:42 - trading_agent_agno - INFO - analyze:291 - [DEEPSEEK] Validando e executando sinal BUY para BTCUSDT
+2025-12-25 12:46:42 - trading_agent_agno - INFO - analyze:295 - [DEEPSEEK] Trade executado com sucesso: Trade executado (P&L Mode): BUY 0.092259 unidades a $88363.90
+2025-12-25 12:47:25 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\25\BTCUSDT_20251225_124725.json
+2025-12-25 12:47:25 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-25 12:47:25 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para BTCUSDT
+2025-12-25 12:47:25 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): BUY 0.062617 unidades a $88370.00
+2025-12-25 23:49:44 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\25\BTCUSDT_20251225_234944.json
+2025-12-25 23:49:44 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-25 23:49:44 - trading_agent_agno - INFO - analyze:343 - [AGNO] Sinal não executado: Ja existe uma posicao BUY AGNO aberta para BTCUSDT. Feche a posicao existente antes de abrir uma nova.
+2025-12-25 23:50:02 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: NO_SIGNAL
+2025-12-25 23:50:02 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\25\DOGEUSDT_20251225_235002.json
+2025-12-25 23:50:56 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\25\DOGEUSDT_20251225_235056.json
+2025-12-25 23:50:56 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: BUY
+2025-12-25 23:50:56 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal BUY para DOGEUSDT
+2025-12-25 23:50:56 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): BUY 31545.741325 unidades a $0.13
+2025-12-25 23:51:16 - trading_agent_agno - INFO - analyze:261 - [SINAL DEEPSEEK] Sinal direto: NO_SIGNAL
+2025-12-25 23:51:16 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\25\DOTUSDT_20251225_235116.json
+2025-12-25 23:52:08 - trading_agent_agno - INFO - _save_deepseek_response:938 - [DEEPSEEK LOG] Prompt e resposta salvos: deepseek_logs\2025\12\25\DOTUSDT_20251225_235208.json
+2025-12-25 23:52:08 - trading_agent_agno - INFO - _process_agent_response:486 - [JSON ESTRUTURADO] Sinal extraído via JSON: SELL
+2025-12-25 23:52:08 - trading_agent_agno - INFO - analyze:335 - [AGNO] Validando e executando sinal SELL para DOTUSDT
+2025-12-25 23:52:08 - trading_agent_agno - INFO - analyze:339 - [AGNO] Trade executado com sucesso: Trade executado (P&L Mode): SELL 4545.454545 unidades a $1.74

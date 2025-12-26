@@ -1,0 +1,12 @@
+{
+  "symbol": "BTCUSDT",
+  "timestamp": "2025-12-24T11:40:49.419078",
+  "agent_response": "Vou analisar os dados de mercado para BTCUSDT e gerar um sinal AGNO independente. Vou seguir o processo completo de análise.Agora vou analisar múltiplos timeframes e order flow para ter uma visão mais completa:Com base na análise completa dos dados coletados, vou fazer minha análise independente:\n\n## ANÁLISE AGNO PARA BTCUSDT\n\n**DADOS DE MERCADO:**\n- Preço atual: $86,584.20\n- Variação 24h: -0.89%\n- Faixa 24h: $86,355 - $88,349\n- Volume: 117,388 BTC\n- Funding rate: 0.00497% (neutro)\n\n**ANÁLISE TÉ",
+  "signal": "BUY",
+  "entry_price": 86584.2,
+  "stop_loss": 86300.0,
+  "take_profit_1": 87200.0,
+  "take_profit_2": 87800.0,
+  "confidence": 7,
+  "source": "AGNO"
+}

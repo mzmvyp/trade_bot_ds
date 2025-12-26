@@ -1,0 +1,12 @@
+{
+  "symbol": "ETHUSDT",
+  "timestamp": "2025-12-23T17:45:50.893099",
+  "agent_response": "Vou analisar o ETHUSDT seguindo o processo completo para gerar um sinal AGNO independente.Agora vou analisar todos os dados coletados para tomar minha decisão independente:\n\n## ANÁLISE AGNO - ETHUSDT\n\n**DADOS DE MERCADO:**\n- Preço atual: $2,980.00\n- Variação 24h: +7.3%\n- Volume 24h: 4.06M ETH (alto)\n- Funding rate: 0.005166% (positivo)\n- Open Interest: $2.13B\n\n**ANÁLISE TÉCNICA:**\n- Tendência: UPTREND forte\n- RSI: 52.56 (neutro, espaço para alta)\n- MACD: Crossover bullish (histograma positivo)\n-",
+  "signal": "BUY",
+  "entry_price": 2975.0,
+  "stop_loss": 2890.0,
+  "take_profit_1": 3010.0,
+  "take_profit_2": 3050.0,
+  "confidence": 7,
+  "source": "AGNO"
+}

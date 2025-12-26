@@ -1,0 +1,13 @@
+{
+  "symbol": "DOTUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-24T05:31:09.423146",
+  "signal": "SELL",
+  "entry_price": 1.72,
+  "stop_loss": 1.741,
+  "take_profit_1": 1.685,
+  "take_profit_2": 1.661,
+  "confidence": 8,
+  "reasoning": "Sinal de venda forte com múltiplas confluências bearish: tendência primária strong_bearish com alinhamento multi-timeframe, momentum bearish acelerando (MACD), preço no lower band de Bollinger, stack de EMAs bearish e RSI ainda não em oversold (36.3). A posição no range de 8% indica proximidade do suporte em $1.71, mas a pressão de venda é dominante. A volatilidade extrema favorece DAY_TRADE para capturar movimentos rápidos dentro da tendência, com parâmetros ajustados para um risco/recompensa favorável (SL 1.2%, TP1 2.0%, TP2 3.5%). Confiança reduzida de 10 para 8 devido à volatilidade extrema, que aumenta o risco de whipsaws.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 1.72,\n    \"stop_loss\": 1.741,\n    \"take_profit_1\": 1.685,\n    \"take_profit_2\": 1.661,\n    \"confidence\": 8,\n    \"reasoning\": \"Sinal de venda forte com múltiplas confluências bearish: tendência primária strong_bearish com alinhamento multi-timeframe, momentum bearish acelerando (MACD), preço no lower band de Bollinger, stack de EMAs bearish e RSI ainda não em oversold (36.3). A posição no range de 8% indica proximidade do suporte em $1.71, mas a pressão de venda é dominante. A volatilidade extrema favorece DAY_TRADE para capturar movimentos rápidos dentro da tendência, com parâmetros ajustados para um risco/recompensa favorável (SL 1.2%, TP1 2.0%, TP2 3.5%). Confiança reduzida de 10 para 8 devido à volatilidade extrema, que aumenta o risco de whipsaws.\"\n}\n```"
+}

@@ -1,0 +1,12 @@
+{
+  "symbol": "XRPUSDT",
+  "timestamp": "2025-12-24T02:33:00.289949",
+  "agent_response": "Vou analisar o XRPUSDT seguindo o processo completo para gerar um sinal AGNO independente.Agora vou fazer uma análise multi-timeframe para maior precisão:## Análise AGNO para XRPUSDT\n\nCom base nos dados coletados, aqui está minha análise independente:\n\n**DADOS TÉCNICOS:**\n- Preço atual: $1.8474 (-1.99% nas últimas 24h)\n- RSI: 32.38 (sobrevenda)\n- Tendência: Fortemente baixista em todos os timeframes (5m, 15m, 1h, 4h, 1d)\n- MACD: Crossover baixista\n- OBV: Tendência baixista\n- Suporte: $1.8469 (ba",
+  "signal": "SELL",
+  "entry_price": 1.847,
+  "stop_loss": 1.894,
+  "take_profit_1": 1.81,
+  "take_profit_2": 1.77,
+  "confidence": 7,
+  "source": "AGNO"
+}

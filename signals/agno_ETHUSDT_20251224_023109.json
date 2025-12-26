@@ -1,0 +1,13 @@
+{
+  "symbol": "ETHUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-24T02:31:09.268990",
+  "signal": "NO_SIGNAL",
+  "entry_price": 2935.0,
+  "stop_loss": 2970.0,
+  "take_profit_1": 2889.0,
+  "take_profit_2": 2850.0,
+  "confidence": 5,
+  "reasoning": "A análise apresenta múltiplos sinais conflitantes que reduzem significativamente a confiança para uma operação. Embora a classificação automática recomende DAY_TRADE com confiança 10/10, os dados mostram: tendência primária bearish com alinhamento forte, mas força fraca (ADX 20); momentum bearish, porém MACD bullish e acelerando para cima; RSI neutro; e bias geral de -2/10 com ação recomendada de WAIT. A volatilidade extrema combinada com sinais mistos (1 fator bullish vs 3 bearish) e a falta de confluência clara entre indicadores criam um ambiente de alta incerteza. Para DAY_TRADE, é necessário maior clareza na direção e confluência de indicadores, o que não está presente neste cenário. A confiança calculada é 5/10, abaixo do mínimo de 7/10 necessário para execução.",
+  "raw_response": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 2935.00,\n    \"stop_loss\": 2970.00,\n    \"take_profit_1\": 2889.00,\n    \"take_profit_2\": 2850.00,\n    \"confidence\": 5,\n    \"reasoning\": \"A análise apresenta múltiplos sinais conflitantes que reduzem significativamente a confiança para uma operação. Embora a classificação automática recomende DAY_TRADE com confiança 10/10, os dados mostram: tendência primária bearish com alinhamento forte, mas força fraca (ADX 20); momentum bearish, porém MACD bullish e acelerando para cima; RSI neutro; e bias geral de -2/10 com ação recomendada de WAIT. A volatilidade extrema combinada com sinais mistos (1 fator bullish vs 3 bearish) e a falta de confluência clara entre indicadores criam um ambiente de alta incerteza. Para DAY_TRADE, é necessário maior clareza na direção e confluência de indicadores, o que não está presente neste cenário. A confiança calculada é 5/10, abaixo do mínimo de 7/10 necessário para execução.\"\n}\n```"
+}

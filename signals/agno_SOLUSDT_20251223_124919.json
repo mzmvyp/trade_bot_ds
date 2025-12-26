@@ -1,0 +1,13 @@
+{
+  "symbol": "SOLUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T12:49:19.751563",
+  "signal": "SELL",
+  "entry_price": 123.01,
+  "stop_loss": 124.49,
+  "take_profit_1": 120.55,
+  "take_profit_2": 118.7,
+  "confidence": 8,
+  "reasoning": "Sinal de venda baseado em múltiplas confluências bearish: tendência primária bearish, alinhamento multi-timeframe strong_bearish, momentum bearish acelerando (MACD), RSI em 35.1 e preço próximo à banda inferior de Bollinger. A posição no range de 15% indica proximidade do suporte em $122.65, mas a pressão de venda (OBV bearish) e o score de confluência -3/5 sugerem continuação da queda. A volatilidade extrema justifica um stop de 1.2% e TPs escalonados. DAY_TRADE é apropriado dado o bias intraday bearish claro, apesar do ADX baixo (20) indicar 'no_trend' - a confluência dos outros fatores compensa. Confiança 8 devido à forte alinhamento bearish, mas moderada pela volatilidade extrema e ADX fraco.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 123.01,\n    \"stop_loss\": 124.49,\n    \"take_profit_1\": 120.55,\n    \"take_profit_2\": 118.70,\n    \"confidence\": 8,\n    \"reasoning\": \"Sinal de venda baseado em múltiplas confluências bearish: tendência primária bearish, alinhamento multi-timeframe strong_bearish, momentum bearish acelerando (MACD), RSI em 35.1 e preço próximo à banda inferior de Bollinger. A posição no range de 15% indica proximidade do suporte em $122.65, mas a pressão de venda (OBV bearish) e o score de confluência -3/5 sugerem continuação da queda. A volatilidade extrema justifica um stop de 1.2% e TPs escalonados. DAY_TRADE é apropriado dado o bias intraday bearish claro, apesar do ADX baixo (20) indicar 'no_trend' - a confluência dos outros fatores compensa. Confiança 8 devido à forte alinhamento bearish, mas moderada pela volatilidade extrema e ADX fraco.\"\n}\n```"
+}

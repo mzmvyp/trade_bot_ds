@@ -1,0 +1,20 @@
+{
+  "trade_id": "20251225_124725",
+  "symbol": "BTCUSDT",
+  "source": "AGNO",
+  "signal": "BUY",
+  "operation_type": "SWING_TRADE",
+  "entry_price": 88370.0,
+  "position_size": 0.06261740763932373,
+  "original_position_size": 0.06261740763932373,
+  "position_value": 5533.500313087038,
+  "stop_loss": 86773.0,
+  "take_profit_1": 89138.0,
+  "take_profit_2": 90599.0,
+  "confidence": 7,
+  "timestamp": "2025-12-25T12:47:25.291589",
+  "status": "OPEN",
+  "max_profit_reached": 0.0,
+  "max_loss_reached": 0.0,
+  "tp1_partial_closed": false
+}

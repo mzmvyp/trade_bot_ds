@@ -1,0 +1,13 @@
+{
+  "symbol": "DOTUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T12:53:38.406355",
+  "signal": "SELL",
+  "entry_price": 1.75,
+  "stop_loss": 1.771,
+  "take_profit_1": 1.711,
+  "take_profit_2": 1.688,
+  "confidence": 8,
+  "reasoning": "Sinal de venda baseado em múltiplas confluências bearish: tendência primária bearish com alinhamento forte entre timeframes, momentum bearish acelerando (MACD), preço no lower band de Bollinger, stack de EMAs bearish e RSI em 35.9 (aproximando-se de oversold, mas não extremo, sugerindo espaço para mais queda). A posição no range de 19% indica proximidade com o suporte em $1.74, mas a pressão de venda (OBV bearish) e a volatilidade extrema criam oportunidade para um day trade de venda. O tipo DAY_TRADE é apropriado dado o momentum atual e a volatilidade, permitindo capturar o movimento descendente intraday. Confiança 8 devido à clara confluência bearish, apesar da volatilidade extrema que aumenta o risco.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 1.75,\n    \"stop_loss\": 1.771,\n    \"take_profit_1\": 1.711,\n    \"take_profit_2\": 1.688,\n    \"confidence\": 8,\n    \"reasoning\": \"Sinal de venda baseado em múltiplas confluências bearish: tendência primária bearish com alinhamento forte entre timeframes, momentum bearish acelerando (MACD), preço no lower band de Bollinger, stack de EMAs bearish e RSI em 35.9 (aproximando-se de oversold, mas não extremo, sugerindo espaço para mais queda). A posição no range de 19% indica proximidade com o suporte em $1.74, mas a pressão de venda (OBV bearish) e a volatilidade extrema criam oportunidade para um day trade de venda. O tipo DAY_TRADE é apropriado dado o momentum atual e a volatilidade, permitindo capturar o movimento descendente intraday. Confiança 8 devido à clara confluência bearish, apesar da volatilidade extrema que aumenta o risco.\"\n}\n```"
+}

@@ -1,0 +1,13 @@
+{
+  "symbol": "LINKUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T12:54:44.070543",
+  "signal": "SELL",
+  "entry_price": 12.27,
+  "stop_loss": 12.45,
+  "take_profit_1": 12.02,
+  "take_profit_2": 11.88,
+  "confidence": 8,
+  "reasoning": "O sinal de SELL é suportado por múltiplas confluências bearish: tendência primária bearish com alinhamento forte entre timeframes, momentum bearish acelerando (MACD), RSI em queda (39.7) mas não ainda oversold, e stack de EMAs bearish. A posição no range (26%) indica espaço para queda até o suporte em $12.13. A volatilidade extrema e ADX fraco (20) sugerem que uma operação de DAY_TRADE é mais apropriada que SWING, permitindo capturar o movimento intraday com parâmetros ajustados (SL 1.47%, TP1 2.04%, TP2 3.18%) que respeitam os níveis de suporte/resistência. A confiança é 8 devido à clara bias bearish (-5/10) e ausência de sinais conflitantes, embora a força fraca da tendência (ADX) e volatilidade extrema impeçam uma confiança mais alta.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 12.27,\n    \"stop_loss\": 12.45,\n    \"take_profit_1\": 12.02,\n    \"take_profit_2\": 11.88,\n    \"confidence\": 8,\n    \"reasoning\": \"O sinal de SELL é suportado por múltiplas confluências bearish: tendência primária bearish com alinhamento forte entre timeframes, momentum bearish acelerando (MACD), RSI em queda (39.7) mas não ainda oversold, e stack de EMAs bearish. A posição no range (26%) indica espaço para queda até o suporte em $12.13. A volatilidade extrema e ADX fraco (20) sugerem que uma operação de DAY_TRADE é mais apropriada que SWING, permitindo capturar o movimento intraday com parâmetros ajustados (SL 1.47%, TP1 2.04%, TP2 3.18%) que respeitam os níveis de suporte/resistência. A confiança é 8 devido à clara bias bearish (-5/10) e ausência de sinais conflitantes, embora a força fraca da tendência (ADX) e volatilidade extrema impeçam uma confiança mais alta.\"\n}\n```"
+}

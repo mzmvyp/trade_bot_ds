@@ -1,0 +1,20 @@
+{
+  "trade_id": "20251223_212605",
+  "symbol": "ETHUSDT",
+  "source": "DEEPSEEK",
+  "signal": "SELL",
+  "operation_type": "SWING_TRADE",
+  "entry_price": 2959.2,
+  "position_size": 2.7932960893854606,
+  "original_position_size": 2.7932960893854606,
+  "position_value": 8265.921787709454,
+  "stop_loss": 2995.0,
+  "take_profit_1": 2900.0,
+  "take_profit_2": 2860.0,
+  "confidence": 7,
+  "timestamp": "2025-12-23T21:26:05.622978",
+  "status": "OPEN",
+  "max_profit_reached": 0.0,
+  "max_loss_reached": 0.0,
+  "tp1_partial_closed": false
+}

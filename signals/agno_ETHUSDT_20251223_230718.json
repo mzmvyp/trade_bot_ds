@@ -1,0 +1,13 @@
+{
+  "symbol": "ETHUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T23:07:18.136000",
+  "signal": "SELL",
+  "entry_price": 2956.59,
+  "stop_loss": 2992.26,
+  "take_profit_1": 2897.46,
+  "take_profit_2": 2853.61,
+  "confidence": 7,
+  "reasoning": "Concordo com a classificação de DAY_TRADE devido à volatilidade extrema e tendência bearish identificada. Apesar do MACD bullish, há múltiplas confluências bearish: alinhamento multi-timeframe strong_bearish, pressão de venda forte no orderbook, momentum bearish, e score de confluência -3/5. O preço está abaixo da resistência imediata ($2,988.90) e o RSI neutro não oferece suporte para compra. A confiança é 7/10 porque, embora a tendência seja fraca (ADX 20) e exista um sinal conflitante do MACD, o alinhamento bearish entre timeframes e a pressão de venda clara criam uma oportunidade de venda intraday com risco controlado. Os parâmetros foram ajustados para refletir a volatilidade extrema (stop 1.2%, TP1 2.0%, TP2 3.5%).",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 2956.59,\n    \"stop_loss\": 2992.26,\n    \"take_profit_1\": 2897.46,\n    \"take_profit_2\": 2853.61,\n    \"confidence\": 7,\n    \"reasoning\": \"Concordo com a classificação de DAY_TRADE devido à volatilidade extrema e tendência bearish identificada. Apesar do MACD bullish, há múltiplas confluências bearish: alinhamento multi-timeframe strong_bearish, pressão de venda forte no orderbook, momentum bearish, e score de confluência -3/5. O preço está abaixo da resistência imediata ($2,988.90) e o RSI neutro não oferece suporte para compra. A confiança é 7/10 porque, embora a tendência seja fraca (ADX 20) e exista um sinal conflitante do MACD, o alinhamento bearish entre timeframes e a pressão de venda clara criam uma oportunidade de venda intraday com risco controlado. Os parâmetros foram ajustados para refletir a volatilidade extrema (stop 1.2%, TP1 2.0%, TP2 3.5%).\"\n}\n```"
+}

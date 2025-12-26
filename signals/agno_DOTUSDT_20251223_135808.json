@@ -1,0 +1,13 @@
+{
+  "symbol": "DOTUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T13:58:08.569105",
+  "signal": "SELL",
+  "entry_price": 1.76,
+  "stop_loss": 1.782,
+  "take_profit_1": 1.722,
+  "take_profit_2": 1.698,
+  "confidence": 7,
+  "reasoning": "Concordo com a recomendação de DAY_TRADE devido à tendência bearish primária e alinhamento de timeframes, apesar da força fraca (ADX 20). A confluência bearish é clara: momentum bearish, MACD acelerando para baixo, stack de EMAs bearish e OBV bearish. O preço está abaixo do POC de volume ($1.79) e se aproximando do suporte em $1.74. A alta volatilidade justifica um stop de 1.2% e TPs escalonados. A confiança é 7 porque, embora haja múltiplos fatores bearish, a força da tendência é fraca e o RSI está neutro, indicando que o movimento pode ser limitado. É um sinal executável para uma operação intraday.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 1.76,\n    \"stop_loss\": 1.782,\n    \"take_profit_1\": 1.722,\n    \"take_profit_2\": 1.698,\n    \"confidence\": 7,\n    \"reasoning\": \"Concordo com a recomendação de DAY_TRADE devido à tendência bearish primária e alinhamento de timeframes, apesar da força fraca (ADX 20). A confluência bearish é clara: momentum bearish, MACD acelerando para baixo, stack de EMAs bearish e OBV bearish. O preço está abaixo do POC de volume ($1.79) e se aproximando do suporte em $1.74. A alta volatilidade justifica um stop de 1.2% e TPs escalonados. A confiança é 7 porque, embora haja múltiplos fatores bearish, a força da tendência é fraca e o RSI está neutro, indicando que o movimento pode ser limitado. É um sinal executável para uma operação intraday.\"\n}\n```"
+}

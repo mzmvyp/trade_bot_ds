@@ -1,0 +1,13 @@
+{
+  "symbol": "ETHUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T21:26:05.620896",
+  "signal": "SELL",
+  "entry_price": 2959.2,
+  "stop_loss": 2995.0,
+  "take_profit_1": 2900.0,
+  "take_profit_2": 2860.0,
+  "confidence": 7,
+  "reasoning": "Concordo com a recomendação de DAY_TRADE devido à volatilidade extrema e tendência bearish identificada. Apesar do MACD bullish, há múltiplas confluências bearish: alinhamento multi-timeframe strong_bearish, pressão de venda forte no orderbook, score de confluência -3/5, bias geral -3/10, e posição do preço abaixo da resistência imediata. A confiança é 7/10 porque, embora o ADX seja fraco (20) e o RSI neutro, o alinhamento bearish e a pressão de venda criam uma oportunidade de venda intraday com risco controlado. Os parâmetros foram ajustados para refletir a volatilidade extrema.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 2959.20,\n    \"stop_loss\": 2995.00,\n    \"take_profit_1\": 2900.00,\n    \"take_profit_2\": 2860.00,\n    \"confidence\": 7,\n    \"reasoning\": \"Concordo com a recomendação de DAY_TRADE devido à volatilidade extrema e tendência bearish identificada. Apesar do MACD bullish, há múltiplas confluências bearish: alinhamento multi-timeframe strong_bearish, pressão de venda forte no orderbook, score de confluência -3/5, bias geral -3/10, e posição do preço abaixo da resistência imediata. A confiança é 7/10 porque, embora o ADX seja fraco (20) e o RSI neutro, o alinhamento bearish e a pressão de venda criam uma oportunidade de venda intraday com risco controlado. Os parâmetros foram ajustados para refletir a volatilidade extrema.\"\n}\n```"
+}

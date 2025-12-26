@@ -1,0 +1,13 @@
+{
+  "symbol": "ADAUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-24T04:11:23.199031",
+  "signal": "SELL",
+  "entry_price": 0.36,
+  "stop_loss": 0.3643,
+  "take_profit_1": 0.3528,
+  "take_profit_2": 0.3474,
+  "confidence": 8,
+  "reasoning": "Concordo com a recomendação de DAY_TRADE devido à tendência bearish primária e alinhamento forte nos timeframes, combinado com momentum bearish acelerando no MACD e preço na banda inferior de Bollinger. A confiança é 8/10 porque há múltiplas confluências bearish (ADX fraco mas alinhamento forte, stack de EMAs bearish, OBV bearish) e o preço está próximo de um nível de suporte que, se rompido, pode acelerar a queda. A volatilidade extrema justifica um stop de 1.2% e TPs escalonados para gerenciar risco. O tipo DAY_TRADE é apropriado para capturar o movimento intraday dentro da tendência bearish estabelecida.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 0.36,\n    \"stop_loss\": 0.3643,\n    \"take_profit_1\": 0.3528,\n    \"take_profit_2\": 0.3474,\n    \"confidence\": 8,\n    \"reasoning\": \"Concordo com a recomendação de DAY_TRADE devido à tendência bearish primária e alinhamento forte nos timeframes, combinado com momentum bearish acelerando no MACD e preço na banda inferior de Bollinger. A confiança é 8/10 porque há múltiplas confluências bearish (ADX fraco mas alinhamento forte, stack de EMAs bearish, OBV bearish) e o preço está próximo de um nível de suporte que, se rompido, pode acelerar a queda. A volatilidade extrema justifica um stop de 1.2% e TPs escalonados para gerenciar risco. O tipo DAY_TRADE é apropriado para capturar o movimento intraday dentro da tendência bearish estabelecida.\"\n}\n```"
+}

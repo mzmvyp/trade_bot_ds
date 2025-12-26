@@ -1,0 +1,13 @@
+{
+  "symbol": "BTCUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T12:47:04.870093",
+  "signal": "SELL",
+  "entry_price": 87268.3,
+  "stop_loss": 88300.0,
+  "take_profit_1": 85500.0,
+  "take_profit_2": 84200.0,
+  "confidence": 8,
+  "reasoning": "Concordo com a recomendação de DAY_TRADE devido à tendência bearish clara e alinhamento multi-timeframe forte. A confluência de indicadores suporta a venda: RSI (38.2) se aproximando de oversold mas ainda com espaço para queda, MACD bearish e acelerando para baixo, preço na banda inferior de Bollinger, e pressão de venda no orderbook. A posição no range (21%) indica que o preço está mais próximo do suporte, mas a resistência imediata está a apenas 1.84% acima, oferecendo um bom risco/recompensa para uma operação de venda intraday. A confiança é 8/10 devido à forte confluência bearish, mas a volatilidade extrema requer cautela nos níveis de stop e take profit.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 87268.30,\n    \"stop_loss\": 88300.00,\n    \"take_profit_1\": 85500.00,\n    \"take_profit_2\": 84200.00,\n    \"confidence\": 8,\n    \"reasoning\": \"Concordo com a recomendação de DAY_TRADE devido à tendência bearish clara e alinhamento multi-timeframe forte. A confluência de indicadores suporta a venda: RSI (38.2) se aproximando de oversold mas ainda com espaço para queda, MACD bearish e acelerando para baixo, preço na banda inferior de Bollinger, e pressão de venda no orderbook. A posição no range (21%) indica que o preço está mais próximo do suporte, mas a resistência imediata está a apenas 1.84% acima, oferecendo um bom risco/recompensa para uma operação de venda intraday. A confiança é 8/10 devido à forte confluência bearish, mas a volatilidade extrema requer cautela nos níveis de stop e take profit.\"\n}\n```"
+}

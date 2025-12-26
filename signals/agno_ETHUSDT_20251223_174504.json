@@ -1,0 +1,13 @@
+{
+  "symbol": "ETHUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T17:45:04.669491",
+  "signal": "NO_SIGNAL",
+  "entry_price": 2979.83,
+  "stop_loss": 3011.21,
+  "take_profit_1": 2909.72,
+  "take_profit_2": 2933.99,
+  "confidence": 4,
+  "reasoning": "A análise indica um viés de compra fraco (3/10) com confluência muito baixa (1/5). A tendência primária é neutra, o ADX de 20 mostra tendência fraca, e os EMAs estão mistos, sem alinhamento claro. Embora o momentum e o OBV sejam bullish, a resistência próxima ($3,011.21) e a posição no range (59%) sugerem um movimento lateral limitado. A volatilidade extrema aumenta o risco para day trade. A confiança calculada (4/10) está abaixo do mínimo exigido (7) para execução, portanto, nenhum sinal é gerado.",
+  "raw_response": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 2979.83,\n    \"stop_loss\": 3011.21,\n    \"take_profit_1\": 2909.72,\n    \"take_profit_2\": 2933.99,\n    \"confidence\": 4,\n    \"reasoning\": \"A análise indica um viés de compra fraco (3/10) com confluência muito baixa (1/5). A tendência primária é neutra, o ADX de 20 mostra tendência fraca, e os EMAs estão mistos, sem alinhamento claro. Embora o momentum e o OBV sejam bullish, a resistência próxima ($3,011.21) e a posição no range (59%) sugerem um movimento lateral limitado. A volatilidade extrema aumenta o risco para day trade. A confiança calculada (4/10) está abaixo do mínimo exigido (7) para execução, portanto, nenhum sinal é gerado.\"\n}\n```"
+}

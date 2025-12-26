@@ -1,0 +1,13 @@
+{
+  "symbol": "XRPUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-24T05:29:55.791580",
+  "signal": "SELL",
+  "entry_price": 1.86,
+  "stop_loss": 1.882,
+  "take_profit_1": 1.823,
+  "take_profit_2": 1.795,
+  "confidence": 7,
+  "reasoning": "Concordo com a classificação DAY_TRADE devido à tendência strong_bearish clara com múltiplas confluências: alinhamento bearish nos timeframes, stack de EMAs bearish, MACD acelerando para baixo e preço abaixo da média das Bollinger Bands. O ADX moderado (20) confirma uma tendência estabelecida, e o posicionamento do preço a 33% do range, próximo ao suporte de $1.84, oferece um bom risco/recompensa para uma operação de venda intraday. A volatilidade extrema justifica um stop de 1.2% e TPs escalonados. A confiança é 7/10 porque, apesar da forte bias bearish, o RSI neutro (41.1) e o OBV bullish são sinais contrários leves que impedem uma classificação mais alta.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 1.86,\n    \"stop_loss\": 1.882,\n    \"take_profit_1\": 1.823,\n    \"take_profit_2\": 1.795,\n    \"confidence\": 7,\n    \"reasoning\": \"Concordo com a classificação DAY_TRADE devido à tendência strong_bearish clara com múltiplas confluências: alinhamento bearish nos timeframes, stack de EMAs bearish, MACD acelerando para baixo e preço abaixo da média das Bollinger Bands. O ADX moderado (20) confirma uma tendência estabelecida, e o posicionamento do preço a 33% do range, próximo ao suporte de $1.84, oferece um bom risco/recompensa para uma operação de venda intraday. A volatilidade extrema justifica um stop de 1.2% e TPs escalonados. A confiança é 7/10 porque, apesar da forte bias bearish, o RSI neutro (41.1) e o OBV bullish são sinais contrários leves que impedem uma classificação mais alta.\"\n}\n```"
+}

@@ -1,0 +1,20 @@
+{
+  "trade_id": "20251224_023405",
+  "symbol": "DOTUSDT",
+  "source": "AGNO",
+  "signal": "SELL",
+  "operation_type": "SWING_TRADE",
+  "entry_price": 1.729,
+  "position_size": 3846.1538461538757,
+  "original_position_size": 3846.1538461538757,
+  "position_value": 6650.000000000052,
+  "stop_loss": 1.755,
+  "take_profit_1": 1.7,
+  "take_profit_2": 1.68,
+  "confidence": 7,
+  "timestamp": "2025-12-24T02:34:05.579069",
+  "status": "OPEN",
+  "max_profit_reached": 0.0,
+  "max_loss_reached": 0.0,
+  "tp1_partial_closed": false
+}

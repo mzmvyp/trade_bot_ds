@@ -1,0 +1,20 @@
+{
+  "trade_id": "20251223_125003",
+  "symbol": "SOLUSDT",
+  "source": "AGNO",
+  "signal": "SELL",
+  "operation_type": "SWING_TRADE",
+  "entry_price": 123.0,
+  "position_size": 27.77777777777782,
+  "original_position_size": 27.77777777777782,
+  "position_value": 3416.666666666672,
+  "stop_loss": 126.6,
+  "take_profit_1": 120.0,
+  "take_profit_2": 117.5,
+  "confidence": 7,
+  "timestamp": "2025-12-23T12:50:03.194236",
+  "status": "OPEN",
+  "max_profit_reached": 0.0,
+  "max_loss_reached": 0.0,
+  "tp1_partial_closed": false
+}

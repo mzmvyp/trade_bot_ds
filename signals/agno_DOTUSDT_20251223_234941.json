@@ -1,0 +1,13 @@
+{
+  "symbol": "DOTUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T23:49:41.750720",
+  "signal": "NO_SIGNAL",
+  "entry_price": 1.74,
+  "stop_loss": 1.76,
+  "take_profit_1": 1.7,
+  "take_profit_2": 1.68,
+  "confidence": 5,
+  "reasoning": "A análise apresenta múltiplos sinais conflitantes que reduzem drasticamente a confiança para uma operação executável (>=7). A tendência primária é bearish com alinhamento forte nos timeframes, mas o MACD mostra crossover bullish acelerando para cima e o OBV é bullish, indicando divergência de momentum. O RSI está se aproximando de oversold, mas ainda não confirmou. A volatilidade extrema combinada com uma força de tendência fraca (ADX: 20) e um bias geral neutro (-1/10) cria um ambiente de alto risco para day trade. A ação recomendada pela própria análise é 'WAIT'. Portanto, não há confiança suficiente para emitir um sinal de BUY ou SELL executável.",
+  "raw_response": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 1.74,\n    \"stop_loss\": 1.76,\n    \"take_profit_1\": 1.70,\n    \"take_profit_2\": 1.68,\n    \"confidence\": 5,\n    \"reasoning\": \"A análise apresenta múltiplos sinais conflitantes que reduzem drasticamente a confiança para uma operação executável (>=7). A tendência primária é bearish com alinhamento forte nos timeframes, mas o MACD mostra crossover bullish acelerando para cima e o OBV é bullish, indicando divergência de momentum. O RSI está se aproximando de oversold, mas ainda não confirmou. A volatilidade extrema combinada com uma força de tendência fraca (ADX: 20) e um bias geral neutro (-1/10) cria um ambiente de alto risco para day trade. A ação recomendada pela própria análise é 'WAIT'. Portanto, não há confiança suficiente para emitir um sinal de BUY ou SELL executável.\"\n}\n```"
+}

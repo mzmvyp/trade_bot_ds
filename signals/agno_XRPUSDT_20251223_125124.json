@@ -1,0 +1,13 @@
+{
+  "symbol": "XRPUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T12:51:24.220268",
+  "signal": "NO_SIGNAL",
+  "entry_price": 1.88,
+  "stop_loss": 1.9,
+  "take_profit_1": 1.86,
+  "take_profit_2": 1.84,
+  "confidence": 5,
+  "reasoning": "A análise apresenta múltiplos sinais conflitantes que reduzem significativamente a confiança para uma operação executável (>=7). A tendência primária é bearish com alinhamento multi-timeframe forte, mas há pressão de compra no orderbook e o RSI está neutro. O score de confluência é negativo (-3/5) e o bias geral é neutro (-2/10). A volatilidade extrema aumenta o risco para day trade. A ação recomendada pelo sistema é 'WAIT', e a confiança calculada (5) está abaixo do mínimo necessário (7) para execução. Portanto, o sinal mais prudente é NO_SIGNAL.",
+  "raw_response": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 1.88,\n    \"stop_loss\": 1.90,\n    \"take_profit_1\": 1.86,\n    \"take_profit_2\": 1.84,\n    \"confidence\": 5,\n    \"reasoning\": \"A análise apresenta múltiplos sinais conflitantes que reduzem significativamente a confiança para uma operação executável (>=7). A tendência primária é bearish com alinhamento multi-timeframe forte, mas há pressão de compra no orderbook e o RSI está neutro. O score de confluência é negativo (-3/5) e o bias geral é neutro (-2/10). A volatilidade extrema aumenta o risco para day trade. A ação recomendada pelo sistema é 'WAIT', e a confiança calculada (5) está abaixo do mínimo necessário (7) para execução. Portanto, o sinal mais prudente é NO_SIGNAL.\"\n}\n```"
+}

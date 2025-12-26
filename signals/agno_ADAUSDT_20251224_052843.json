@@ -1,0 +1,13 @@
+{
+  "symbol": "ADAUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-24T05:28:43.403536",
+  "signal": "SELL",
+  "entry_price": 0.36,
+  "stop_loss": 0.3643,
+  "take_profit_1": 0.3528,
+  "take_profit_2": 0.3478,
+  "confidence": 8,
+  "reasoning": "Sinal de venda baseado em múltiplas confluências bearish: tendência primária e alinhamento multi-timeframe fortemente negativos, momentum acelerando para baixo (MACD), preço na banda inferior de Bollinger, RSI em queda (37.2) e OBV bearish. Apesar da volatilidade extrema, que reduz um pouco a confiança, a clareza do bias vendedor (-3/10) e a ausência de sinais conflitantes suportam uma operação de DAY_TRADE. Os parâmetros foram ajustados para um stop de 1.2% e TPs de 2.0% e 3.5%, compatíveis com o perfil de risco intraday.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 0.36,\n    \"stop_loss\": 0.3643,\n    \"take_profit_1\": 0.3528,\n    \"take_profit_2\": 0.3478,\n    \"confidence\": 8,\n    \"reasoning\": \"Sinal de venda baseado em múltiplas confluências bearish: tendência primária e alinhamento multi-timeframe fortemente negativos, momentum acelerando para baixo (MACD), preço na banda inferior de Bollinger, RSI em queda (37.2) e OBV bearish. Apesar da volatilidade extrema, que reduz um pouco a confiança, a clareza do bias vendedor (-3/10) e a ausência de sinais conflitantes suportam uma operação de DAY_TRADE. Os parâmetros foram ajustados para um stop de 1.2% e TPs de 2.0% e 3.5%, compatíveis com o perfil de risco intraday.\"\n}\n```"
+}

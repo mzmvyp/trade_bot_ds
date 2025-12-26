@@ -1,0 +1,13 @@
+{
+  "symbol": "ETHUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-24T05:27:34.344852",
+  "signal": "SELL",
+  "entry_price": 2929.9,
+  "stop_loss": 2967.7,
+  "take_profit_1": 2879.3,
+  "take_profit_2": 2825.4,
+  "confidence": 8,
+  "reasoning": "A análise indica múltiplas confluências bearish: tendência primária bearish com alinhamento forte entre timeframes, momentum bearish acelerando (MACD), posição abaixo da média das Bollinger Bands, e score de confluência -5/5. Apesar da volatilidade extrema (que reduz um pouco a confiança), a fraqueza da tendência (ADX 20) sugere que um movimento mais forte pode estar se formando. O DAY_TRADE é apropriado dado o bias intraday bearish claro, com níveis de suporte/resistência bem definidos para definir stops e targets. A confiança é 8 devido à clara confluência bearish, mas a volatilidade extrema e ADX fraco impedem uma classificação mais alta.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 2929.90,\n    \"stop_loss\": 2967.70,\n    \"take_profit_1\": 2879.30,\n    \"take_profit_2\": 2825.40,\n    \"confidence\": 8,\n    \"reasoning\": \"A análise indica múltiplas confluências bearish: tendência primária bearish com alinhamento forte entre timeframes, momentum bearish acelerando (MACD), posição abaixo da média das Bollinger Bands, e score de confluência -5/5. Apesar da volatilidade extrema (que reduz um pouco a confiança), a fraqueza da tendência (ADX 20) sugere que um movimento mais forte pode estar se formando. O DAY_TRADE é apropriado dado o bias intraday bearish claro, com níveis de suporte/resistência bem definidos para definir stops e targets. A confiança é 8 devido à clara confluência bearish, mas a volatilidade extrema e ADX fraco impedem uma classificação mais alta.\"\n}\n```"
+}

@@ -1,0 +1,13 @@
+{
+  "symbol": "DOTUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T16:23:02.689816",
+  "signal": "NO_SIGNAL",
+  "entry_price": 1.77,
+  "stop_loss": 1.8,
+  "take_profit_1": 1.73,
+  "take_profit_2": 1.7,
+  "confidence": 4,
+  "reasoning": "A análise apresenta múltiplos sinais conflitantes e fracos que não justificam uma entrada. A tendência primária é neutral com força fraca (ADX: 20) e momentum bearish, apesar de um alinhamento de timeframes bullish. Os indicadores são mistos (RSI neutral, MACD bullish mas com momentum bearish, EMAs mixed). A confluência é muito baixa (1/5) e o bias geral é apenas 2/10 (neutral). A recomendação do sistema é 'WAIT'. A volatilidade extrema combinada com a falta de direção clara e sinais conflitantes (especialmente MACD bullish crossover vs. bearish momentum) resulta em uma confiança muito baixa (4/10), abaixo do mínimo de 7/10 necessário para execução. O tipo DAY_TRADE é mantido como referência, mas nenhuma operação é recomendada.",
+  "raw_response": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 1.77,\n    \"stop_loss\": 1.80,\n    \"take_profit_1\": 1.73,\n    \"take_profit_2\": 1.70,\n    \"confidence\": 4,\n    \"reasoning\": \"A análise apresenta múltiplos sinais conflitantes e fracos que não justificam uma entrada. A tendência primária é neutral com força fraca (ADX: 20) e momentum bearish, apesar de um alinhamento de timeframes bullish. Os indicadores são mistos (RSI neutral, MACD bullish mas com momentum bearish, EMAs mixed). A confluência é muito baixa (1/5) e o bias geral é apenas 2/10 (neutral). A recomendação do sistema é 'WAIT'. A volatilidade extrema combinada com a falta de direção clara e sinais conflitantes (especialmente MACD bullish crossover vs. bearish momentum) resulta em uma confiança muito baixa (4/10), abaixo do mínimo de 7/10 necessário para execução. O tipo DAY_TRADE é mantido como referência, mas nenhuma operação é recomendada.\"\n}\n```"
+}

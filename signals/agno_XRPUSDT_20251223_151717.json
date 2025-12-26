@@ -1,0 +1,13 @@
+{
+  "symbol": "XRPUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T15:17:17.086546",
+  "signal": "SELL",
+  "entry_price": 1.87,
+  "stop_loss": 1.892,
+  "take_profit_1": 1.833,
+  "take_profit_2": 1.805,
+  "confidence": 8,
+  "reasoning": "Concordo com a classificação de DAY_TRADE devido à tendência bearish clara e alinhamento multi-timeframe forte. O sinal de venda é suportado por: 1) Tendência primária bearish com momentum acelerando para baixo (MACD), 2) Alinhamento bearish forte entre timeframes, 3) Preço negociando na banda inferior de Bollinger, 4) Score de confluência fortemente negativo (-5/5) e bias geral de venda (-3/10). A confiança é 8/10 porque, apesar da forte confluência bearish, o RSI neutro (40.8) e o OBV bullish apresentam sinais conflitantes leves, e a volatilidade extrema adiciona risco. Os parâmetros de risco/recompensa (SL 1.2%, TP1 2.0%, TP2 3.5%) são apropriados para o day trade na volatilidade atual.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 1.87,\n    \"stop_loss\": 1.892,\n    \"take_profit_1\": 1.833,\n    \"take_profit_2\": 1.805,\n    \"confidence\": 8,\n    \"reasoning\": \"Concordo com a classificação de DAY_TRADE devido à tendência bearish clara e alinhamento multi-timeframe forte. O sinal de venda é suportado por: 1) Tendência primária bearish com momentum acelerando para baixo (MACD), 2) Alinhamento bearish forte entre timeframes, 3) Preço negociando na banda inferior de Bollinger, 4) Score de confluência fortemente negativo (-5/5) e bias geral de venda (-3/10). A confiança é 8/10 porque, apesar da forte confluência bearish, o RSI neutro (40.8) e o OBV bullish apresentam sinais conflitantes leves, e a volatilidade extrema adiciona risco. Os parâmetros de risco/recompensa (SL 1.2%, TP1 2.0%, TP2 3.5%) são apropriados para o day trade na volatilidade atual.\"\n}\n```"
+}

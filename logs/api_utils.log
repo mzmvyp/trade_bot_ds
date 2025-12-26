@@ -1,0 +1,3 @@
+2025-12-25 23:48:51 - api_utils - ERROR - call:149 - Circuit breaker failure 1/5 for make_request: Cannot connect to host fapi.binance.com:443 ssl:default [getaddrinfo failed]
+2025-12-25 23:48:51 - api_utils - ERROR - call:149 - Circuit breaker failure 2/5 for make_request: Cannot connect to host fapi.binance.com:443 ssl:default [getaddrinfo failed]
+2025-12-25 23:48:51 - api_utils - WARNING - exponential_backoff_retry:247 - Attempt 1/4 failed for _request_with_protection: Cannot connect to host fapi.binance.com:443 ssl:default [getaddrinfo failed]. Retrying in 2.0s...

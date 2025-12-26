@@ -1,0 +1,12 @@
+{
+  "symbol": "DOGEUSDT",
+  "timestamp": "2025-12-23T12:53:19.333649",
+  "agent_response": "Vou analisar o DOGEUSDT de forma independente para gerar o sinal AGNO. Vou seguir o processo completo de análise.Agora vou analisar todos os dados coletados para tomar minha decisão independente:\n\n**ANÁLISE AGNO DO DOGEUSDT:**\n\n1. **Dados de Mercado:**\n   - Preço atual: $0.12934 (-3.17% nas últimas 24h)\n   - Volume alto: $3.89B (liquidez boa)\n   - Funding rate positivo: 0.0018% (leve pressão compradora)\n   - Open Interest: $1.47B (alto)\n\n2. **Indicadores Técnicos:**\n   - Tendência: BEARISH (todo",
+  "signal": "NO_SIGNAL",
+  "entry_price": 0.12934,
+  "stop_loss": 0.12666,
+  "take_profit_1": 0.1315,
+  "take_profit_2": 0.13351,
+  "confidence": 6,
+  "source": "AGNO"
+}

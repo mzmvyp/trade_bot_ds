@@ -1,0 +1,13 @@
+{
+  "symbol": "DOGEUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T12:52:33.635642",
+  "signal": "NO_SIGNAL",
+  "entry_price": 0.13,
+  "stop_loss": 0.13156,
+  "take_profit_1": 0.1274,
+  "take_profit_2": 0.1251,
+  "confidence": 5,
+  "reasoning": "A análise apresenta múltiplas contradições que reduzem a confiança abaixo do limiar executável (>=7). A classificação automática indica 'Tendência bearish' e 'strong_bearish_alignment', mas o ADX de 20 mostra 'no_trend' e a força da tendência também é 'no_trend'. O RSI está em 37.6 (approaching_oversold), o que pode sugerir uma possível reversão, mas o momentum e o OBV são bearish. A volatilidade extrema aumenta o risco para day trade. O score agregado de bias é -2/10 (neutral) com ação recomendada 'WAIT', e a confluência é -5/5 (bearish), mas sem clareza suficiente para um sinal de SELL forte. Portanto, a condição mais prudente é aguardar uma confirmação mais clara do mercado.",
+  "raw_response": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 0.13,\n    \"stop_loss\": 0.13156,\n    \"take_profit_1\": 0.1274,\n    \"take_profit_2\": 0.1251,\n    \"confidence\": 5,\n    \"reasoning\": \"A análise apresenta múltiplas contradições que reduzem a confiança abaixo do limiar executável (>=7). A classificação automática indica 'Tendência bearish' e 'strong_bearish_alignment', mas o ADX de 20 mostra 'no_trend' e a força da tendência também é 'no_trend'. O RSI está em 37.6 (approaching_oversold), o que pode sugerir uma possível reversão, mas o momentum e o OBV são bearish. A volatilidade extrema aumenta o risco para day trade. O score agregado de bias é -2/10 (neutral) com ação recomendada 'WAIT', e a confluência é -5/5 (bearish), mas sem clareza suficiente para um sinal de SELL forte. Portanto, a condição mais prudente é aguardar uma confirmação mais clara do mercado.\"\n}\n```"
+}

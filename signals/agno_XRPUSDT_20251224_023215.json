@@ -1,0 +1,13 @@
+{
+  "symbol": "XRPUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-24T02:32:15.973783",
+  "signal": "SELL",
+  "entry_price": 1.85,
+  "stop_loss": 1.8712,
+  "take_profit_1": 1.8223,
+  "take_profit_2": 1.7886,
+  "confidence": 8,
+  "reasoning": "A análise apresenta múltiplas confluências para uma operação de venda (SELL) no modo DAY_TRADE. A tendência primária é strong_bearish com alinhamento multi-timeframe confirmado. Os indicadores suportam o movimento: RSI em 32.7 (approaching_oversold mas não sobrevendido), MACD bearish e acelerando para baixo, preço no lower band da Bollinger e stack de EMAs bearish. O score de confluência é -5/5 e o bias geral é -4/10 (sell). A volatilidade extrema e a posição no range de apenas 8% indicam espaço para queda em direção aos suportes mais baixos. O DAY_TRADE é apropriado dado o momentum bearish moderado e a volatilidade extrema, permitindo capturar um movimento intradiário com risco controlado. A confiança é 8 devido à forte confluência bearish, mas é moderada pela volatilidade extrema que pode causar whipsaws.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 1.85,\n    \"stop_loss\": 1.8712,\n    \"take_profit_1\": 1.8223,\n    \"take_profit_2\": 1.7886,\n    \"confidence\": 8,\n    \"reasoning\": \"A análise apresenta múltiplas confluências para uma operação de venda (SELL) no modo DAY_TRADE. A tendência primária é strong_bearish com alinhamento multi-timeframe confirmado. Os indicadores suportam o movimento: RSI em 32.7 (approaching_oversold mas não sobrevendido), MACD bearish e acelerando para baixo, preço no lower band da Bollinger e stack de EMAs bearish. O score de confluência é -5/5 e o bias geral é -4/10 (sell). A volatilidade extrema e a posição no range de apenas 8% indicam espaço para queda em direção aos suportes mais baixos. O DAY_TRADE é apropriado dado o momentum bearish moderado e a volatilidade extrema, permitindo capturar um movimento intradiário com risco controlado. A confiança é 8 devido à forte confluência bearish, mas é moderada pela volatilidade extrema que pode causar whipsaws.\"\n}\n```"
+}

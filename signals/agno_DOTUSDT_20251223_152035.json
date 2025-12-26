@@ -1,0 +1,13 @@
+{
+  "symbol": "DOTUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T15:20:35.299485",
+  "signal": "SELL",
+  "entry_price": 1.75,
+  "stop_loss": 1.771,
+  "take_profit_1": 1.715,
+  "take_profit_2": 1.688,
+  "confidence": 8,
+  "reasoning": "Concordo com a recomendação de DAY_TRADE devido à tendência bearish primária e alinhamento forte entre timeframes, apoiado por uma pilha bearish de EMAs e momentum acelerado de baixa no MACD. A confiança é 8/10 porque, embora o ADX indique uma tendência fraca (20) e o RSI seja neutro, a confluência de múltiplos fatores bearish (score -5/10, 5 fatores bearish vs. 0 bullish) e a posição do preço abaixo da média das Bollinger Bands reforçam o viés de venda. A volatilidade extrema justifica um stop loss de 1.2% (calculado) e take profits escalonados para gerenciar risco. O DAY_TRADE é apropriado para capturar o movimento intraday dentro da tendência bearish identificada.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 1.75,\n    \"stop_loss\": 1.771,\n    \"take_profit_1\": 1.715,\n    \"take_profit_2\": 1.688,\n    \"confidence\": 8,\n    \"reasoning\": \"Concordo com a recomendação de DAY_TRADE devido à tendência bearish primária e alinhamento forte entre timeframes, apoiado por uma pilha bearish de EMAs e momentum acelerado de baixa no MACD. A confiança é 8/10 porque, embora o ADX indique uma tendência fraca (20) e o RSI seja neutro, a confluência de múltiplos fatores bearish (score -5/10, 5 fatores bearish vs. 0 bullish) e a posição do preço abaixo da média das Bollinger Bands reforçam o viés de venda. A volatilidade extrema justifica um stop loss de 1.2% (calculado) e take profits escalonados para gerenciar risco. O DAY_TRADE é apropriado para capturar o movimento intraday dentro da tendência bearish identificada.\"\n}\n```"
+}

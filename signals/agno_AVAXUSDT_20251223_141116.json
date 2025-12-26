@@ -1,0 +1,13 @@
+{
+  "symbol": "AVAXUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T14:11:16.159333",
+  "signal": "SELL",
+  "entry_price": 12.06,
+  "stop_loss": 12.21,
+  "take_profit_1": 11.82,
+  "take_profit_2": 11.65,
+  "confidence": 7,
+  "reasoning": "A análise indica um bias bearish claro com múltiplas confluências: tendência primária bearish, alinhamento de timeframes bearish, momentum bearish acelerando no MACD, e posição abaixo da média das Bollinger Bands. O RSI neutro (41.2) não oferece contra-sinal forte. A volatilidade extrema justifica um stop loss de 1.24% (próximo ao suporte de $11.91) e take profits escalonados para capturar movimento descendente. A confiança é 7/10 porque, apesar do ADX indicar 'no_trend' e a confluência score ser baixa (-1/5), a direção dos indicadores de momentum e o alinhamento bearish são consistentes para um day trade. O tipo DAY_TRADE é mantido conforme recomendado, adequado para a volatilidade atual e horizonte intraday.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 12.06,\n    \"stop_loss\": 12.21,\n    \"take_profit_1\": 11.82,\n    \"take_profit_2\": 11.65,\n    \"confidence\": 7,\n    \"reasoning\": \"A análise indica um bias bearish claro com múltiplas confluências: tendência primária bearish, alinhamento de timeframes bearish, momentum bearish acelerando no MACD, e posição abaixo da média das Bollinger Bands. O RSI neutro (41.2) não oferece contra-sinal forte. A volatilidade extrema justifica um stop loss de 1.24% (próximo ao suporte de $11.91) e take profits escalonados para capturar movimento descendente. A confiança é 7/10 porque, apesar do ADX indicar 'no_trend' e a confluência score ser baixa (-1/5), a direção dos indicadores de momentum e o alinhamento bearish são consistentes para um day trade. O tipo DAY_TRADE é mantido conforme recomendado, adequado para a volatilidade atual e horizonte intraday.\"\n}\n```"
+}

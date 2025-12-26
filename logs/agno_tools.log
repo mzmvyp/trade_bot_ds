@@ -1,0 +1,479 @@
+2025-12-23 12:46:49 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $87268.30
+2025-12-23 12:46:51 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $87254.00
+2025-12-23 12:46:53 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] BTCUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 12:46:53 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para BTCUSDT
+2025-12-23 12:47:04 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] BTCUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-23 12:47:04 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 12:47:04 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 0.096927 unidades, Valor: $8458.69, Risco: $100.00
+2025-12-23 12:47:10 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $87247.30
+2025-12-23 12:47:17 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $87250.80
+2025-12-23 12:47:56 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 12:47:56 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 0.142857 unidades, Valor: $12457.14, Risco: $100.00
+2025-12-23 12:48:00 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2923.80
+2025-12-23 12:48:01 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2923.95
+2025-12-23 12:48:03 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] ETHUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 12:48:03 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para ETHUSDT
+2025-12-23 12:48:14 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] ETHUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-23 12:48:14 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 12:48:14 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 2.923977 unidades, Valor: $8549.12, Risco: $100.00
+2025-12-23 12:48:19 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2923.00
+2025-12-23 12:48:27 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2923.30
+2025-12-23 12:48:59 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 12:48:59 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 1.923077 unidades, Valor: $5621.15, Risco: $100.00
+2025-12-23 12:49:03 - agno_tools - INFO - get_market_data:255 - Market data fetched for SOLUSDT: $123.01
+2025-12-23 12:49:05 - agno_tools - INFO - get_market_data:255 - Market data fetched for SOLUSDT: $123.01
+2025-12-23 12:49:07 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] SOLUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 12:49:07 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para SOLUSDT
+2025-12-23 12:49:19 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] SOLUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-23 12:49:19 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 12:49:19 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 67.567568 unidades, Valor: $8311.49, Risco: $100.00
+2025-12-23 12:49:24 - agno_tools - INFO - get_market_data:255 - Market data fetched for SOLUSDT: $123.04
+2025-12-23 12:49:31 - agno_tools - INFO - get_market_data:255 - Market data fetched for SOLUSDT: $122.96
+2025-12-23 12:50:03 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 12:50:03 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 27.777778 unidades, Valor: $3416.67, Risco: $100.00
+2025-12-23 12:50:07 - agno_tools - INFO - get_market_data:255 - Market data fetched for BNBUSDT: $843.30
+2025-12-23 12:50:08 - agno_tools - INFO - get_market_data:255 - Market data fetched for BNBUSDT: $843.30
+2025-12-23 12:50:11 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] BNBUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 12:50:11 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para BNBUSDT
+2025-12-23 12:50:20 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] BNBUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-23 12:50:20 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 12:50:20 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 9.871668 unidades, Valor: $8324.78, Risco: $100.00
+2025-12-23 12:50:26 - agno_tools - INFO - get_market_data:255 - Market data fetched for BNBUSDT: $843.25
+2025-12-23 12:50:33 - agno_tools - INFO - get_market_data:255 - Market data fetched for BNBUSDT: $843.05
+2025-12-23 12:51:10 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.88
+2025-12-23 12:51:12 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.88
+2025-12-23 12:51:14 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] XRPUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 12:51:14 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para XRPUSDT
+2025-12-23 12:51:24 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] XRPUSDT: NO_SIGNAL (DAY_TRADE) - Confiança: 5/10
+2025-12-23 12:51:28 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.88
+2025-12-23 12:51:37 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.88
+2025-12-23 12:52:18 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-23 12:52:19 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-23 12:52:21 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] DOGEUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 12:52:21 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para DOGEUSDT
+2025-12-23 12:52:33 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] DOGEUSDT: NO_SIGNAL (DAY_TRADE) - Confiança: 5/10
+2025-12-23 12:52:38 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-23 12:52:46 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-23 12:53:23 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.75
+2025-12-23 12:53:24 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.75
+2025-12-23 12:53:27 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] DOTUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 12:53:27 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para DOTUSDT
+2025-12-23 12:53:38 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] DOTUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-23 12:53:38 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 12:53:38 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 4761.904762 unidades, Valor: $8333.33, Risco: $100.00
+2025-12-23 12:53:43 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.75
+2025-12-23 12:53:50 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.75
+2025-12-23 12:54:27 - agno_tools - INFO - get_market_data:255 - Market data fetched for LINKUSDT: $12.27
+2025-12-23 12:54:29 - agno_tools - INFO - get_market_data:255 - Market data fetched for LINKUSDT: $12.27
+2025-12-23 12:54:31 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] LINKUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 12:54:31 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para LINKUSDT
+2025-12-23 12:54:44 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] LINKUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-23 12:54:44 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 12:54:44 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 555.555556 unidades, Valor: $6816.67, Risco: $100.00
+2025-12-23 12:54:49 - agno_tools - INFO - get_market_data:255 - Market data fetched for LINKUSDT: $12.27
+2025-12-23 12:54:56 - agno_tools - INFO - get_market_data:255 - Market data fetched for LINKUSDT: $12.27
+2025-12-23 12:55:35 - agno_tools - WARNING - validate_risk_and_position:1822 - [RISCO] Risco elevado (3.25%), reduzindo tamanho de posição
+2025-12-23 12:55:35 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 12:55:35 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 250.626566 unidades, Valor: $3074.44, Risco: $100.00
+2025-12-23 13:00:39 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-23 13:00:40 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-23 13:00:43 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] ADAUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 13:00:43 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para ADAUSDT
+2025-12-23 13:00:55 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] ADAUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-23 13:00:55 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 13:00:55 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 23148.148148 unidades, Valor: $8333.33, Risco: $100.00
+2025-12-23 13:01:00 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-23 13:01:09 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-23 13:01:41 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 13:01:41 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 20000.000000 unidades, Valor: $7180.00, Risco: $100.00
+2025-12-23 13:01:51 - agno_tools - INFO - get_market_data:255 - Market data fetched for AVAXUSDT: $11.91
+2025-12-23 13:01:53 - agno_tools - INFO - get_market_data:255 - Market data fetched for AVAXUSDT: $11.91
+2025-12-23 13:01:55 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] AVAXUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 13:01:55 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para AVAXUSDT
+2025-12-23 13:02:07 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] AVAXUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-23 13:02:07 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 13:02:07 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 625.000000 unidades, Valor: $7443.75, Risco: $100.00
+2025-12-23 13:02:12 - agno_tools - INFO - get_market_data:255 - Market data fetched for AVAXUSDT: $11.93
+2025-12-23 13:02:20 - agno_tools - INFO - get_market_data:255 - Market data fetched for AVAXUSDT: $11.93
+2025-12-23 13:02:53 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 13:02:53 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 400.000000 unidades, Valor: $4760.00, Risco: $100.00
+2025-12-23 13:55:49 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.89
+2025-12-23 13:55:50 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.89
+2025-12-23 13:55:52 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] XRPUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 13:55:52 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para XRPUSDT
+2025-12-23 13:56:03 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] XRPUSDT: NO_SIGNAL (DAY_TRADE) - Confiança: 5/10
+2025-12-23 13:56:08 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.89
+2025-12-23 13:56:15 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.89
+2025-12-23 13:56:48 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-23 13:56:50 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-23 13:56:52 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] DOGEUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 13:56:52 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para DOGEUSDT
+2025-12-23 13:57:02 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] DOGEUSDT: NO_SIGNAL (DAY_TRADE) - Confiança: 5/10
+2025-12-23 13:57:07 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-23 13:57:16 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-23 13:57:48 - agno_tools - WARNING - validate_risk_and_position:1822 - [RISCO] Risco elevado (3.14%), reduzindo tamanho de posição
+2025-12-23 13:57:48 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 13:57:48 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 24390.243902 unidades, Valor: $3185.37, Risco: $100.00
+2025-12-23 13:57:55 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.76
+2025-12-23 13:57:56 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.76
+2025-12-23 13:57:58 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] DOTUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 13:57:58 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para DOTUSDT
+2025-12-23 13:58:08 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] DOTUSDT: SELL (DAY_TRADE) - Confiança: 7/10
+2025-12-23 13:58:14 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.76
+2025-12-23 13:58:21 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.76
+2025-12-23 13:58:47 - agno_tools - INFO - get_market_data:255 - Market data fetched for LINKUSDT: $12.38
+2025-12-23 13:58:49 - agno_tools - INFO - get_market_data:255 - Market data fetched for LINKUSDT: $12.38
+2025-12-23 13:58:51 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] LINKUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 13:58:51 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para LINKUSDT
+2025-12-23 13:59:00 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] LINKUSDT: NO_SIGNAL (DAY_TRADE) - Confiança: 5/10
+2025-12-23 13:59:05 - agno_tools - INFO - get_market_data:255 - Market data fetched for LINKUSDT: $12.39
+2025-12-23 13:59:13 - agno_tools - INFO - get_market_data:255 - Market data fetched for LINKUSDT: $12.39
+2025-12-23 14:09:52 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-23 14:09:53 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-23 14:09:55 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] ADAUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 14:09:55 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para ADAUSDT
+2025-12-23 14:10:06 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] ADAUSDT: SELL (DAY_TRADE) - Confiança: 7/10
+2025-12-23 14:10:06 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 14:10:06 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 23148.148148 unidades, Valor: $8333.33, Risco: $100.00
+2025-12-23 14:10:11 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-23 14:10:18 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-23 14:10:51 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 14:10:51 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 11111.111111 unidades, Valor: $4033.33, Risco: $100.00
+2025-12-23 14:11:02 - agno_tools - INFO - get_market_data:255 - Market data fetched for AVAXUSDT: $12.06
+2025-12-23 14:11:03 - agno_tools - INFO - get_market_data:255 - Market data fetched for AVAXUSDT: $12.06
+2025-12-23 14:11:05 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] AVAXUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 14:11:05 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para AVAXUSDT
+2025-12-23 14:11:16 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] AVAXUSDT: SELL (DAY_TRADE) - Confiança: 7/10
+2025-12-23 14:11:16 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 14:11:16 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 666.666667 unidades, Valor: $8040.00, Risco: $100.00
+2025-12-23 14:11:21 - agno_tools - INFO - get_market_data:255 - Market data fetched for AVAXUSDT: $12.05
+2025-12-23 14:11:28 - agno_tools - INFO - get_market_data:255 - Market data fetched for AVAXUSDT: $12.06
+2025-12-23 14:12:01 - agno_tools - WARNING - validate_risk_and_position:1822 - [RISCO] Risco elevado (4.56%), reduzindo tamanho de posição
+2025-12-23 14:12:01 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 14:12:01 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 181.818182 unidades, Valor: $2190.91, Risco: $100.00
+2025-12-23 15:15:58 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-23 15:15:59 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-23 15:16:01 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] ADAUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 15:16:01 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para ADAUSDT
+2025-12-23 15:16:12 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] ADAUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-23 15:16:12 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 15:16:12 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 23255.813953 unidades, Valor: $8372.09, Risco: $100.00
+2025-12-23 15:16:17 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-23 15:16:25 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-23 15:16:57 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 15:16:57 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 14285.714286 unidades, Valor: $5157.14, Risco: $100.00
+2025-12-23 15:17:02 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.87
+2025-12-23 15:17:03 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.87
+2025-12-23 15:17:05 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] XRPUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 15:17:05 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para XRPUSDT
+2025-12-23 15:17:17 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] XRPUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-23 15:17:17 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 15:17:17 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 4545.454545 unidades, Valor: $8500.00, Risco: $100.00
+2025-12-23 15:17:21 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.88
+2025-12-23 15:17:29 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.87
+2025-12-23 15:18:01 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 15:18:01 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 5000.000000 unidades, Valor: $9375.00, Risco: $100.00
+2025-12-23 15:18:05 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-23 15:18:07 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-23 15:18:09 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] DOGEUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 15:18:09 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para DOGEUSDT
+2025-12-23 15:18:22 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] DOGEUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-23 15:18:22 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 15:18:22 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 64102.564103 unidades, Valor: $8333.33, Risco: $100.00
+2025-12-23 15:18:27 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-23 15:18:35 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-23 15:19:13 - agno_tools - INFO - get_market_data:255 - Market data fetched for AVAXUSDT: $12.05
+2025-12-23 15:19:15 - agno_tools - INFO - get_market_data:255 - Market data fetched for AVAXUSDT: $12.05
+2025-12-23 15:19:17 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] AVAXUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 15:19:17 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para AVAXUSDT
+2025-12-23 15:19:29 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] AVAXUSDT: SELL (DAY_TRADE) - Confiança: 7/10
+2025-12-23 15:19:29 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 15:19:29 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 666.666667 unidades, Valor: $8033.33, Risco: $100.00
+2025-12-23 15:19:34 - agno_tools - INFO - get_market_data:255 - Market data fetched for AVAXUSDT: $12.05
+2025-12-23 15:19:42 - agno_tools - INFO - get_market_data:255 - Market data fetched for AVAXUSDT: $12.05
+2025-12-23 15:20:17 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 15:20:17 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 333.333333 unidades, Valor: $4016.67, Risco: $100.00
+2025-12-23 15:20:21 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.75
+2025-12-23 15:20:23 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.75
+2025-12-23 15:20:25 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] DOTUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 15:20:25 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para DOTUSDT
+2025-12-23 15:20:35 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] DOTUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-23 15:20:35 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 15:20:35 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 4761.904762 unidades, Valor: $8333.33, Risco: $100.00
+2025-12-23 15:20:40 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.75
+2025-12-23 15:20:47 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.75
+2025-12-23 15:21:21 - agno_tools - INFO - get_market_data:255 - Market data fetched for LINKUSDT: $12.33
+2025-12-23 15:21:23 - agno_tools - INFO - get_market_data:255 - Market data fetched for LINKUSDT: $12.32
+2025-12-23 15:21:25 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] LINKUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 15:21:25 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para LINKUSDT
+2025-12-23 15:21:34 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] LINKUSDT: SELL (DAY_TRADE) - Confiança: 7/10
+2025-12-23 15:21:34 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 15:21:34 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 666.666667 unidades, Valor: $8220.00, Risco: $100.00
+2025-12-23 15:21:39 - agno_tools - INFO - get_market_data:255 - Market data fetched for LINKUSDT: $12.33
+2025-12-23 15:21:46 - agno_tools - INFO - get_market_data:255 - Market data fetched for LINKUSDT: $12.33
+2025-12-23 15:22:19 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 15:22:19 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 285.714286 unidades, Valor: $3514.29, Risco: $100.00
+2025-12-23 16:22:48 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.77
+2025-12-23 16:22:49 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.77
+2025-12-23 16:22:51 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] DOTUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 16:22:51 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para DOTUSDT
+2025-12-23 16:23:02 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] DOTUSDT: NO_SIGNAL (DAY_TRADE) - Confiança: 4/10
+2025-12-23 16:23:07 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.77
+2025-12-23 16:23:15 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.77
+2025-12-23 16:23:49 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 16:23:49 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 3225.806452 unidades, Valor: $5696.77, Risco: $100.00
+2025-12-23 16:48:54 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-23 16:48:55 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-23 16:48:57 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] ADAUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 16:48:57 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para ADAUSDT
+2025-12-23 17:44:51 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2979.83
+2025-12-23 17:44:52 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2980.98
+2025-12-23 17:44:54 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] ETHUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 17:44:54 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para ETHUSDT
+2025-12-23 17:45:04 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] ETHUSDT: NO_SIGNAL (DAY_TRADE) - Confiança: 4/10
+2025-12-23 17:45:09 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2980.00
+2025-12-23 17:45:17 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2978.81
+2025-12-23 17:45:50 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 17:45:50 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 1.176471 unidades, Valor: $3500.00, Risco: $100.00
+2025-12-23 20:24:31 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2955.39
+2025-12-23 20:24:33 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2955.40
+2025-12-23 20:24:35 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] ETHUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 20:24:35 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para ETHUSDT
+2025-12-23 20:24:47 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] ETHUSDT: NO_SIGNAL (DAY_TRADE) - Confiança: 5/10
+2025-12-23 20:24:51 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2955.50
+2025-12-23 20:25:00 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2955.05
+2025-12-23 20:25:37 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 20:25:37 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 2.000000 unidades, Valor: $5910.00, Risco: $100.00
+2025-12-23 21:25:50 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2959.20
+2025-12-23 21:25:52 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2959.37
+2025-12-23 21:25:54 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] ETHUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 21:25:54 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para ETHUSDT
+2025-12-23 21:26:05 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] ETHUSDT: SELL (DAY_TRADE) - Confiança: 7/10
+2025-12-23 21:26:05 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 21:26:05 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 2.793296 unidades, Valor: $8265.92, Risco: $100.00
+2025-12-23 21:26:10 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2958.82
+2025-12-23 21:26:19 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2958.83
+2025-12-23 23:07:00 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2956.59
+2025-12-23 23:07:02 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2956.59
+2025-12-23 23:07:04 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] ETHUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 23:07:04 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para ETHUSDT
+2025-12-23 23:07:18 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] ETHUSDT: SELL (DAY_TRADE) - Confiança: 7/10
+2025-12-23 23:07:18 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 23:07:18 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 2.803476 unidades, Valor: $8288.73, Risco: $100.00
+2025-12-23 23:07:23 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2955.52
+2025-12-23 23:07:31 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2955.56
+2025-12-23 23:43:12 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.85
+2025-12-23 23:43:14 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.85
+2025-12-23 23:43:16 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] XRPUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 23:43:16 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para XRPUSDT
+2025-12-23 23:43:31 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] XRPUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-23 23:43:31 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 23:43:31 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 4504.504505 unidades, Valor: $8333.33, Risco: $100.00
+2025-12-23 23:43:36 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.85
+2025-12-23 23:43:45 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.85
+2025-12-23 23:44:22 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 23:44:22 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 4166.666667 unidades, Valor: $7725.00, Risco: $100.00
+2025-12-23 23:49:26 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.74
+2025-12-23 23:49:28 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.74
+2025-12-23 23:49:30 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] DOTUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-23 23:49:30 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para DOTUSDT
+2025-12-23 23:49:41 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] DOTUSDT: NO_SIGNAL (DAY_TRADE) - Confiança: 5/10
+2025-12-23 23:49:47 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.74
+2025-12-23 23:49:55 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.74
+2025-12-23 23:50:26 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-23 23:50:26 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 4166.666667 unidades, Valor: $7233.33, Risco: $100.00
+2025-12-24 02:30:53 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2935.00
+2025-12-24 02:30:54 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2935.01
+2025-12-24 02:30:57 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] ETHUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-24 02:30:57 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para ETHUSDT
+2025-12-24 02:31:09 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] ETHUSDT: NO_SIGNAL (DAY_TRADE) - Confiança: 5/10
+2025-12-24 02:31:14 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2935.43
+2025-12-24 02:31:21 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2934.93
+2025-12-24 02:31:55 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 02:31:55 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 1.923077 unidades, Valor: $5644.23, Risco: $100.00
+2025-12-24 02:31:59 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.85
+2025-12-24 02:32:01 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.85
+2025-12-24 02:32:03 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] XRPUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-24 02:32:03 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para XRPUSDT
+2025-12-24 02:32:15 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] XRPUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-24 02:32:15 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 02:32:15 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 4716.981132 unidades, Valor: $8726.42, Risco: $100.00
+2025-12-24 02:32:20 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.85
+2025-12-24 02:32:28 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.85
+2025-12-24 02:33:00 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 02:33:00 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 2127.659574 unidades, Valor: $3929.79, Risco: $100.00
+2025-12-24 02:33:04 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.73
+2025-12-24 02:33:06 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.73
+2025-12-24 02:33:08 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] DOTUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-24 02:33:08 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para DOTUSDT
+2025-12-24 02:33:19 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] DOTUSDT: NO_SIGNAL (DAY_TRADE) - Confiança: 5/10
+2025-12-24 02:33:24 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.73
+2025-12-24 02:33:32 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.73
+2025-12-24 02:34:05 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 02:34:05 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 3846.153846 unidades, Valor: $6650.00, Risco: $100.00
+2025-12-24 03:09:36 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.35
+2025-12-24 03:09:38 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.35
+2025-12-24 03:09:40 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] ADAUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-24 03:09:40 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para ADAUSDT
+2025-12-24 03:09:51 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] ADAUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-24 03:09:51 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 03:09:51 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 23809.523810 unidades, Valor: $8333.33, Risco: $100.00
+2025-12-24 03:09:56 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.35
+2025-12-24 03:10:04 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.35
+2025-12-24 04:11:07 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-24 04:11:09 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-24 04:11:11 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] ADAUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-24 04:11:11 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para ADAUSDT
+2025-12-24 04:11:23 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] ADAUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-24 04:11:23 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 04:11:23 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 23255.813953 unidades, Valor: $8372.09, Risco: $100.00
+2025-12-24 04:11:28 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-24 04:11:36 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-24 04:12:14 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 04:12:14 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 10526.315789 unidades, Valor: $3757.89, Risco: $100.00
+2025-12-24 05:27:18 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2929.90
+2025-12-24 05:27:20 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2929.94
+2025-12-24 05:27:22 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] ETHUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-24 05:27:22 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para ETHUSDT
+2025-12-24 05:27:34 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] ETHUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-24 05:27:34 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 05:27:34 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 2.645503 unidades, Valor: $7751.06, Risco: $100.00
+2025-12-24 05:27:39 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2929.94
+2025-12-24 05:27:47 - agno_tools - INFO - get_market_data:255 - Market data fetched for ETHUSDT: $2929.94
+2025-12-24 05:28:24 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 05:28:24 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 2.500000 unidades, Valor: $7312.50, Risco: $100.00
+2025-12-24 05:28:28 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-24 05:28:30 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-24 05:28:32 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] ADAUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-24 05:28:32 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para ADAUSDT
+2025-12-24 05:28:43 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] ADAUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-24 05:28:43 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 05:28:43 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 23255.813953 unidades, Valor: $8372.09, Risco: $100.00
+2025-12-24 05:28:48 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-24 05:28:56 - agno_tools - INFO - get_market_data:255 - Market data fetched for ADAUSDT: $0.36
+2025-12-24 05:29:35 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 05:29:35 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 9523.809524 unidades, Valor: $3387.62, Risco: $100.00
+2025-12-24 05:29:39 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.86
+2025-12-24 05:29:41 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.86
+2025-12-24 05:29:43 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] XRPUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-24 05:29:43 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para XRPUSDT
+2025-12-24 05:29:55 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] XRPUSDT: SELL (DAY_TRADE) - Confiança: 7/10
+2025-12-24 05:29:55 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 05:29:55 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 4545.454545 unidades, Valor: $8454.55, Risco: $100.00
+2025-12-24 05:30:02 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.86
+2025-12-24 05:30:11 - agno_tools - INFO - get_market_data:255 - Market data fetched for XRPUSDT: $1.86
+2025-12-24 05:30:49 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 05:30:49 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 3484.320557 unidades, Valor: $6476.31, Risco: $100.00
+2025-12-24 05:30:53 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.72
+2025-12-24 05:30:55 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.72
+2025-12-24 05:30:57 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] DOTUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-24 05:30:57 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para DOTUSDT
+2025-12-24 05:31:09 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] DOTUSDT: SELL (DAY_TRADE) - Confiança: 8/10
+2025-12-24 05:31:09 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 05:31:09 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 4761.904762 unidades, Valor: $8190.48, Risco: $100.00
+2025-12-24 05:31:15 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.72
+2025-12-24 05:31:24 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.72
+2025-12-24 11:39:39 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $86480.10
+2025-12-24 11:39:40 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $86480.10
+2025-12-24 11:39:42 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] BTCUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-24 11:39:42 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para BTCUSDT
+2025-12-24 11:39:54 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] BTCUSDT: NO_SIGNAL (DAY_TRADE) - Confiança: 5/10
+2025-12-24 11:40:01 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $86584.20
+2025-12-24 11:40:09 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $86572.60
+2025-12-24 11:40:49 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-24 11:40:49 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 0.351865 unidades, Valor: $30465.94, Risco: $100.00
+2025-12-25 12:46:24 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $88363.90
+2025-12-25 12:46:25 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $88363.80
+2025-12-25 12:46:28 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] BTCUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-25 12:46:28 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para BTCUSDT
+2025-12-25 12:46:42 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] BTCUSDT: BUY (DAY_TRADE) - Confiança: 7/10
+2025-12-25 12:46:42 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-25 12:46:42 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 0.092259 unidades, Valor: $8152.40, Risco: $100.00
+2025-12-25 12:46:47 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $88370.60
+2025-12-25 12:46:54 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $88354.00
+2025-12-25 12:47:25 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-25 12:47:25 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 0.062617 unidades, Valor: $5533.50, Risco: $100.00
+2025-12-25 23:48:51 - agno_tools - ERROR - get_market_data:261 - [BTCUSDT] Erro ao obter dados de mercado (ClientConnectorDNSError): Cannot connect to host fapi.binance.com:443 ssl:default [getaddrinfo failed]
+Traceback (most recent call last):
+  File "C:\Users\Willian\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiohttp\connector.py", line 1532, in _create_direct_connection
+    hosts = await self._resolve_host(host, port, traces=traces)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiohttp\connector.py", line 1148, in _resolve_host
+    return await asyncio.shield(resolved_host_task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiohttp\connector.py", line 1179, in _resolve_host_with_throttle
+    addrs = await self._resolver.resolve(host, port, family=self._family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiohttp\resolver.py", line 40, in resolve
+    infos = await self._loop.getaddrinfo(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\AppData\Local\Programs\Python\Python312\Lib\asyncio\base_events.py", line 905, in getaddrinfo
+    return await self.run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\AppData\Local\Programs\Python\Python312\Lib\socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 11004] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Willian\python_projects\tradebot_dez8\agno_tools.py", line 230, in get_market_data
+    ticker = await client.get_ticker_24hr(symbol)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\python_projects\tradebot_dez8\binance_client.py", line 104, in get_ticker_24hr
+    data = await self._request_with_protection(url, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\python_projects\tradebot_dez8\binance_client.py", line 48, in _request_with_protection
+    return await binance_circuit_breaker.call(make_request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\python_projects\tradebot_dez8\api_utils.py", line 133, in call
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\python_projects\tradebot_dez8\binance_client.py", line 40, in make_request
+    async with self.session.get(url, params=params) as response:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiohttp\client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiohttp\client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiohttp\client.py", line 734, in _connect_and_send_request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiohttp\connector.py", line 642, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiohttp\connector.py", line 1209, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Willian\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiohttp\connector.py", line 1538, in _create_direct_connection
+    raise ClientConnectorDNSError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host fapi.binance.com:443 ssl:default [getaddrinfo failed]
+2025-12-25 23:48:55 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $89035.70
+2025-12-25 23:48:57 - agno_tools - ERROR - prepare_analysis_for_llm:1173 - [BTCUSDT] Erro em market_data: Erro ao obter dados de mercado (ClientConnectorDNSError): Cannot connect to host fapi.binance.com:443 ssl:default [getaddrinfo failed]
+2025-12-25 23:48:57 - agno_tools - ERROR - prepare_analysis_for_llm:1198 - [BTCUSDT] Erro ao coletar dados críticos: market_data: Erro ao obter dados de mercado (ClientConnectorDNSError): Cannot connect to host fapi.binance.com:443 ssl:default [getaddrinfo failed]
+2025-12-25 23:49:02 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $89031.50
+2025-12-25 23:49:11 - agno_tools - INFO - get_market_data:255 - Market data fetched for BTCUSDT: $89085.30
+2025-12-25 23:49:48 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-25 23:49:50 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-25 23:49:52 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] DOGEUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-25 23:49:52 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para DOGEUSDT
+2025-12-25 23:50:02 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] DOGEUSDT: NO_SIGNAL (DAY_TRADE) - Confiança: 4/10
+2025-12-25 23:50:07 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-25 23:50:16 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOGEUSDT: $0.13
+2025-12-25 23:50:56 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-25 23:50:56 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 31545.741325 unidades, Valor: $3976.97, Risco: $100.00
+2025-12-25 23:51:00 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.74
+2025-12-25 23:51:02 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.74
+2025-12-25 23:51:04 - agno_tools - INFO - get_deepseek_analysis:1582 - [CLASSIFICAÇÃO] DOTUSDT: DAY_TRADE (confiança: 10/10)
+2025-12-25 23:51:04 - agno_tools - INFO - get_deepseek_analysis:1606 - [DEEPSEEK] Chamando DeepSeek diretamente para DOTUSDT
+2025-12-25 23:51:16 - agno_tools - INFO - get_deepseek_analysis:1622 - [DEEPSEEK] DOTUSDT: NO_SIGNAL (DAY_TRADE) - Confiança: 5/10
+2025-12-25 23:51:21 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.74
+2025-12-25 23:51:29 - agno_tools - INFO - get_market_data:255 - Market data fetched for DOTUSDT: $1.74
+2025-12-25 23:52:08 - agno_tools - INFO - validate_risk_and_position:1840 - [P&L MODE] Sistema em modo P&L - sem restrições de capital
+2025-12-25 23:52:08 - agno_tools - INFO - validate_risk_and_position:1868 - [P&L MODE] Tamanho posição: 4545.454545 unidades, Valor: $7913.64, Risco: $100.00

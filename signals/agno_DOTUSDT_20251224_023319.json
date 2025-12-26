@@ -1,0 +1,13 @@
+{
+  "symbol": "DOTUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-24T02:33:19.666881",
+  "signal": "NO_SIGNAL",
+  "entry_price": 1.73,
+  "stop_loss": 1.75,
+  "take_profit_1": 1.69,
+  "take_profit_2": 1.67,
+  "confidence": 5,
+  "reasoning": "A análise apresenta múltiplos sinais conflitantes que reduzem drasticamente a confiança para uma operação executável (>=7). A tendência primária é bearish com alinhamento multi-timeframe forte, indicadores como MACD acelerando para baixo e EMAs em stack bearish suportam um SELL. No entanto, o preço está no suporte imediato ($1.73), o RSI está se aproximando da zona de oversold, e há pressão de compra no orderbook, criando um cenário ambíguo. O bias geral do sistema é neutro (-2/10) com recomendação de 'WAIT'. A volatilidade extrema adiciona risco. Para DAY_TRADE, é necessária uma confluência mais clara de fatores. Portanto, aguardar uma confirmação de rompimento do suporte ou uma rejeição mais definida é a ação mais prudente.",
+  "raw_response": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 1.73,\n    \"stop_loss\": 1.75,\n    \"take_profit_1\": 1.69,\n    \"take_profit_2\": 1.67,\n    \"confidence\": 5,\n    \"reasoning\": \"A análise apresenta múltiplos sinais conflitantes que reduzem drasticamente a confiança para uma operação executável (>=7). A tendência primária é bearish com alinhamento multi-timeframe forte, indicadores como MACD acelerando para baixo e EMAs em stack bearish suportam um SELL. No entanto, o preço está no suporte imediato ($1.73), o RSI está se aproximando da zona de oversold, e há pressão de compra no orderbook, criando um cenário ambíguo. O bias geral do sistema é neutro (-2/10) com recomendação de 'WAIT'. A volatilidade extrema adiciona risco. Para DAY_TRADE, é necessária uma confluência mais clara de fatores. Portanto, aguardar uma confirmação de rompimento do suporte ou uma rejeição mais definida é a ação mais prudente.\"\n}\n```"
+}

@@ -1,0 +1,20 @@
+{
+  "trade_id": "20251223_125338",
+  "symbol": "DOTUSDT",
+  "source": "DEEPSEEK",
+  "signal": "SELL",
+  "operation_type": "SWING_TRADE",
+  "entry_price": 1.75,
+  "position_size": 4761.904761904783,
+  "original_position_size": 4761.904761904783,
+  "position_value": 8333.33333333337,
+  "stop_loss": 1.771,
+  "take_profit_1": 1.711,
+  "take_profit_2": 1.688,
+  "confidence": 8,
+  "timestamp": "2025-12-23T12:53:38.414678",
+  "status": "OPEN",
+  "max_profit_reached": 0.0,
+  "max_loss_reached": 0.0,
+  "tp1_partial_closed": false
+}

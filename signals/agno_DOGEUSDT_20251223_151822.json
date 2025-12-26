@@ -1,0 +1,13 @@
+{
+  "symbol": "DOGEUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T15:18:22.093304",
+  "signal": "SELL",
+  "entry_price": 0.13,
+  "stop_loss": 0.13156,
+  "take_profit_1": 0.1274,
+  "take_profit_2": 0.12555,
+  "confidence": 8,
+  "reasoning": "A análise indica múltiplas confluências para uma operação de venda (SELL) no modo DAY_TRADE. A tendência primária é bearish com forte alinhamento entre timeframes (strong_bearish_alignment). O momentum do MACD está acelerando para baixo (bearish - accelerating_down), e o preço está posicionado abaixo da média das Bollinger Bands. Embora o ADX (20) e a força da tendência sejam classificados como 'no_trend', o score de confluência é fortemente negativo (-5/5) e o bias geral é de -3/10 (sell). A volatilidade extrema e a posição no range baixa (21%) sugerem potencial para continuação da queda. O DAY_TRADE é apropriado para capturar este movimento intraday, alinhando-se com a recomendação inicial e a natureza volátil do ativo. A confiança é 8 devido à clara confluência bearish, apesar da volatilidade elevada que adiciona risco.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 0.13,\n    \"stop_loss\": 0.13156,\n    \"take_profit_1\": 0.1274,\n    \"take_profit_2\": 0.12555,\n    \"confidence\": 8,\n    \"reasoning\": \"A análise indica múltiplas confluências para uma operação de venda (SELL) no modo DAY_TRADE. A tendência primária é bearish com forte alinhamento entre timeframes (strong_bearish_alignment). O momentum do MACD está acelerando para baixo (bearish - accelerating_down), e o preço está posicionado abaixo da média das Bollinger Bands. Embora o ADX (20) e a força da tendência sejam classificados como 'no_trend', o score de confluência é fortemente negativo (-5/5) e o bias geral é de -3/10 (sell). A volatilidade extrema e a posição no range baixa (21%) sugerem potencial para continuação da queda. O DAY_TRADE é apropriado para capturar este movimento intraday, alinhando-se com a recomendação inicial e a natureza volátil do ativo. A confiança é 8 devido à clara confluência bearish, apesar da volatilidade elevada que adiciona risco.\"\n}\n```"
+}

@@ -1,0 +1,12 @@
+{
+  "symbol": "BTCUSDT",
+  "timestamp": "2025-12-25T23:49:44.329689",
+  "agent_response": "Vou analisar os dados de mercado para BTCUSDT de forma independente para gerar o sinal AGNO.Agora vou analisar múltiplos timeframes para maior precisão:Com base na análise completa dos dados coletados, vou gerar meu sinal AGNO independente:\n\n**ANÁLISE AGNO PARA BTCUSDT:**\n\n1. **Dados de Mercado**: Preço atual $89,031.50, com alta de 1.36% nas últimas 24h. O preço está próximo da máxima de 24h ($89,432).\n\n2. **Indicadores Técnicos**:\n   - RSI em 67.75 (próximo de sobrecompra, mas não extremo)\n   ",
+  "signal": "BUY",
+  "entry_price": 89031.5,
+  "stop_loss": 86773.33,
+  "take_profit_1": 89432.0,
+  "take_profit_2": 90599.0,
+  "confidence": 7,
+  "source": "AGNO"
+}

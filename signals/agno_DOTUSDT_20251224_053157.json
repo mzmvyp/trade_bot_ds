@@ -1,0 +1,12 @@
+{
+  "symbol": "DOTUSDT",
+  "timestamp": "2025-12-24T05:31:57.393648",
+  "agent_response": "Vou analisar os dados de mercado para DOTUSDT e gerar um sinal AGNO independente. Vou seguir o processo completo de análise.Agora vou fazer uma análise multi-timeframe para maior precisão:Vou analisar também o fluxo de ordens:**ANÁLISE AGNO PARA DOTUSDT:**\n\nCom base nos dados coletados, aqui está minha análise:\n\n1. **Tendência Geral**: Fortemente baixista em todos os timeframes (5m, 15m, 1h, 4h, 1d)\n2. **Indicadores Técnicos**: \n   - RSI em 36.27 (quase oversold, mas não extremo)\n   - MACD com c",
+  "signal": "NO_SIGNAL",
+  "entry_price": 0,
+  "stop_loss": 0,
+  "take_profit_1": 0,
+  "take_profit_2": 0,
+  "confidence": 6,
+  "source": "AGNO"
+}

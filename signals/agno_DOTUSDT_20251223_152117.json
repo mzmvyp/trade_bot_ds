@@ -1,0 +1,12 @@
+{
+  "symbol": "DOTUSDT",
+  "timestamp": "2025-12-23T15:21:17.687128",
+  "agent_response": "Vou analisar os dados de mercado para DOTUSDT de forma independente para gerar o sinal AGNO. Vou seguir o processo completo de análise.Agora vou analisar múltiplos timeframes e order flow para uma visão mais completa:## Análise AGNO para DOTUSDT\n\nCom base nos dados coletados, vou fazer minha análise independente:\n\n**Dados de Mercado:**\n- Preço atual: $1.753 (-3.52% nas últimas 24h)\n- Volume: 42.2M (alto)\n- Funding rate: -0.00029256 (ligeiramente negativo)\n- Open Interest: $25.75M\n\n**Análise Técn",
+  "signal": "NO_SIGNAL",
+  "entry_price": 0,
+  "stop_loss": 0,
+  "take_profit_1": 0,
+  "take_profit_2": 0,
+  "confidence": 5,
+  "source": "AGNO"
+}

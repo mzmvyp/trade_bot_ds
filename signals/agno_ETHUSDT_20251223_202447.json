@@ -1,0 +1,13 @@
+{
+  "symbol": "ETHUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T20:24:47.352796",
+  "signal": "NO_SIGNAL",
+  "entry_price": 2955.39,
+  "stop_loss": 2991.88,
+  "take_profit_1": 2889.49,
+  "take_profit_2": 2833.51,
+  "confidence": 5,
+  "reasoning": "A análise apresenta múltiplos sinais conflitantes que reduzem significativamente a confiança para uma operação executável (>=7). A tendência primária é bearish com alinhamento multi-timeframe forte, mas o MACD mostra crossover bullish acelerando para cima e o OBV é bullish, indicando divergência de momentum. O RSI neutro (47.1) e as EMAs mistas reforçam a falta de direção clara. A volatilidade extrema combinada com uma força de tendência fraca (ADX: 20) e confluência negativa (-3/5) criam um ambiente de alto risco para day trade. O bias geral do sistema é -2/10 com recomendação de WAIT, e os fatores bearish (3) superam os bullish (1). Portanto, não há confiança suficiente para emitir um sinal de BUY ou SELL.",
+  "raw_response": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 2955.39,\n    \"stop_loss\": 2991.88,\n    \"take_profit_1\": 2889.49,\n    \"take_profit_2\": 2833.51,\n    \"confidence\": 5,\n    \"reasoning\": \"A análise apresenta múltiplos sinais conflitantes que reduzem significativamente a confiança para uma operação executável (>=7). A tendência primária é bearish com alinhamento multi-timeframe forte, mas o MACD mostra crossover bullish acelerando para cima e o OBV é bullish, indicando divergência de momentum. O RSI neutro (47.1) e as EMAs mistas reforçam a falta de direção clara. A volatilidade extrema combinada com uma força de tendência fraca (ADX: 20) e confluência negativa (-3/5) criam um ambiente de alto risco para day trade. O bias geral do sistema é -2/10 com recomendação de WAIT, e os fatores bearish (3) superam os bullish (1). Portanto, não há confiança suficiente para emitir um sinal de BUY ou SELL.\"\n}\n```"
+}

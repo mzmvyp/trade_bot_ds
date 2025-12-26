@@ -1,0 +1,20 @@
+{
+  "trade_id": "20251223_151801",
+  "symbol": "XRPUSDT",
+  "source": "AGNO",
+  "signal": "BUY",
+  "operation_type": "SWING_TRADE",
+  "entry_price": 1.875,
+  "position_size": 4999.999999999995,
+  "original_position_size": 4999.999999999995,
+  "position_value": 9374.99999999999,
+  "stop_loss": 1.855,
+  "take_profit_1": 1.895,
+  "take_profit_2": 1.905,
+  "confidence": 7,
+  "timestamp": "2025-12-23T15:18:01.601890",
+  "status": "OPEN",
+  "max_profit_reached": 0.0,
+  "max_loss_reached": 0.0,
+  "tp1_partial_closed": false
+}

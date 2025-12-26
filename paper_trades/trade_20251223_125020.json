@@ -1,0 +1,20 @@
+{
+  "trade_id": "20251223_125020",
+  "symbol": "BNBUSDT",
+  "source": "DEEPSEEK",
+  "signal": "SELL",
+  "operation_type": "SWING_TRADE",
+  "entry_price": 843.3,
+  "position_size": 9.871668311944724,
+  "original_position_size": 9.871668311944724,
+  "position_value": 8324.777887462986,
+  "stop_loss": 853.43,
+  "take_profit_1": 826.43,
+  "take_profit_2": 813.79,
+  "confidence": 8,
+  "timestamp": "2025-12-23T12:50:20.728215",
+  "status": "OPEN",
+  "max_profit_reached": 0.0,
+  "max_loss_reached": 0.0,
+  "tp1_partial_closed": false
+}

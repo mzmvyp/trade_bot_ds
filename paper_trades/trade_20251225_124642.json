@@ -1,0 +1,20 @@
+{
+  "trade_id": "20251225_124642",
+  "symbol": "BTCUSDT",
+  "source": "DEEPSEEK",
+  "signal": "BUY",
+  "operation_type": "SWING_TRADE",
+  "entry_price": 88363.9,
+  "position_size": 0.09225943352707863,
+  "original_position_size": 0.09225943352707863,
+  "position_value": 8152.403358243423,
+  "stop_loss": 87280.0,
+  "take_profit_1": 90131.0,
+  "take_profit_2": 91450.0,
+  "confidence": 7,
+  "timestamp": "2025-12-25T12:46:42.028015",
+  "status": "OPEN",
+  "max_profit_reached": 0.0,
+  "max_loss_reached": 0.0,
+  "tp1_partial_closed": false
+}

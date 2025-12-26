@@ -1,0 +1,12 @@
+{
+  "symbol": "SOLUSDT",
+  "timestamp": "2025-12-23T12:50:03.192955",
+  "agent_response": "Vou analisar os dados de mercado para SOLUSDT seguindo o processo completo para gerar um sinal AGNO independente.Agora vou analisar todos os dados coletados para tomar minha decisão independente:\n\n## ANÁLISE AGNO PARA SOLUSDT\n\n**DADOS DE MERCADO:**\n- Preço atual: $123.04 (-3.23% nas últimas 24h)\n- Volume: $19.7M (alto)\n- Funding rate: -0.0075% (negativo, pressão de venda)\n- Open Interest: $8.37M\n\n**ANÁLISE TÉCNICA:**\n- Tendência: Bearish (todos os indicadores)\n- RSI: 35.05 (quase oversold, mas n",
+  "signal": "SELL",
+  "entry_price": 123.0,
+  "stop_loss": 126.6,
+  "take_profit_1": 120.0,
+  "take_profit_2": 117.5,
+  "confidence": 7,
+  "source": "AGNO"
+}

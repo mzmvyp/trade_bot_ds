@@ -1,0 +1,13 @@
+{
+  "symbol": "BTCUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-25T12:46:42.017559",
+  "signal": "BUY",
+  "entry_price": 88363.9,
+  "stop_loss": 87280.0,
+  "take_profit_1": 90131.0,
+  "take_profit_2": 91450.0,
+  "confidence": 7,
+  "reasoning": "Concordo com a classificação de DAY_TRADE devido à tendência bullish primária e alinhamento multi-timeframe strong_bullish_alignment, apesar do ADX indicar 'no_trend'. O momentum é bullish com MACD acelerando para cima e forte pressão de compra no orderbook. O RSI em 67.8 está próximo de sobrecompra, mas não extremo. A posição no range em 87% e o preço próximo à resistência imediata (-0.15%) sugerem um movimento de rompimento. A volatilidade extrema justifica um stop maior (1.23%) e TPs ajustados (2.0% e 3.5%). A confiança é 7/10 porque, embora existam múltiplos fatores bullish (5 vs 1 bearish) e nenhum sinal conflitante, a força da tendência (ADX 20) e as EMAs mistas limitam a convicção. O sinal atende ao mínimo para execução (>=7).",
+  "raw_response": "```json\n{\n    \"signal\": \"BUY\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 88363.90,\n    \"stop_loss\": 87280.00,\n    \"take_profit_1\": 90131.00,\n    \"take_profit_2\": 91450.00,\n    \"confidence\": 7,\n    \"reasoning\": \"Concordo com a classificação de DAY_TRADE devido à tendência bullish primária e alinhamento multi-timeframe strong_bullish_alignment, apesar do ADX indicar 'no_trend'. O momentum é bullish com MACD acelerando para cima e forte pressão de compra no orderbook. O RSI em 67.8 está próximo de sobrecompra, mas não extremo. A posição no range em 87% e o preço próximo à resistência imediata (-0.15%) sugerem um movimento de rompimento. A volatilidade extrema justifica um stop maior (1.23%) e TPs ajustados (2.0% e 3.5%). A confiança é 7/10 porque, embora existam múltiplos fatores bullish (5 vs 1 bearish) e nenhum sinal conflitante, a força da tendência (ADX 20) e as EMAs mistas limitam a convicção. O sinal atende ao mínimo para execução (>=7).\"\n}\n```"
+}

@@ -1,0 +1,13 @@
+{
+  "symbol": "LINKUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T15:21:34.404718",
+  "signal": "SELL",
+  "entry_price": 12.33,
+  "stop_loss": 12.48,
+  "take_profit_1": 12.08,
+  "take_profit_2": 11.9,
+  "confidence": 7,
+  "reasoning": "Apesar do MACD bullish, a análise geral apresenta forte viés de venda: tendência primária bearish, alinhamento multi-timeframe strong_bearish, stack de EMAs bearish, e score de confluência -3/5. A posição no range (39%) e o momentum bearish sugerem continuação da queda. A volatilidade extrema e a falta de tendência clara (ADX 20) tornam o swing trade arriscado, enquanto o day trade permite capturar o movimento intraday com parâmetros ajustados à volatilidade. O stop loss de 1.2% e TPs de 2.0%/3.5% são apropriados para o perfil de risco.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 12.33,\n    \"stop_loss\": 12.48,\n    \"take_profit_1\": 12.08,\n    \"take_profit_2\": 11.90,\n    \"confidence\": 7,\n    \"reasoning\": \"Apesar do MACD bullish, a análise geral apresenta forte viés de venda: tendência primária bearish, alinhamento multi-timeframe strong_bearish, stack de EMAs bearish, e score de confluência -3/5. A posição no range (39%) e o momentum bearish sugerem continuação da queda. A volatilidade extrema e a falta de tendência clara (ADX 20) tornam o swing trade arriscado, enquanto o day trade permite capturar o movimento intraday com parâmetros ajustados à volatilidade. O stop loss de 1.2% e TPs de 2.0%/3.5% são apropriados para o perfil de risco.\"\n}\n```"
+}

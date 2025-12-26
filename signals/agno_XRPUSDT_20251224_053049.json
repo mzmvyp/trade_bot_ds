@@ -1,0 +1,12 @@
+{
+  "symbol": "XRPUSDT",
+  "timestamp": "2025-12-24T05:30:49.617797",
+  "agent_response": "Vou analisar o XRPUSDT independentemente seguindo o processo completo. Vou começar coletando os dados de mercado.Agora vou analisar os indicadores técnicos:Agora vou analisar o sentimento de mercado:Vou fazer uma análise multi-timeframe para maior precisão:Agora vou analisar o fluxo de ordens:Com base na análise completa dos dados coletados, vou fazer minha análise independente:\n\n**ANÁLISE AGNO PARA XRPUSDT:**\n\n**Dados de Mercado:**\n- Preço atual: $1.8587 (-1.12% nas últimas 24h)\n- Volume: $426M",
+  "signal": "BUY",
+  "entry_price": 1.8587,
+  "stop_loss": 1.83,
+  "take_profit_1": 1.88,
+  "take_profit_2": 1.8943,
+  "confidence": 7,
+  "source": "AGNO"
+}

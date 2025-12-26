@@ -1,0 +1,12 @@
+{
+  "symbol": "AVAXUSDT",
+  "timestamp": "2025-12-23T14:12:01.209832",
+  "agent_response": "Vou analisar os dados de mercado para AVAXUSDT e gerar um sinal AGNO independente. Vou seguir o processo completo de análise.Agora vou analisar todos os dados coletados para tomar uma decisão independente:\n\n## ANÁLISE AGNO PARA AVAXUSDT\n\n**Dados de Mercado:**\n- Preço atual: $12.055 (-2.21% nas últimas 24h)\n- Volume: 19.48M (alto)\n- Funding rate: -0.0003395 (negativo, pressão de venda)\n- Open Interest: 7.19M\n\n**Análise Técnica:**\n- Tendência: Bearish (tanto no momentum quanto na estrutura)\n- RSI:",
+  "signal": "SELL",
+  "entry_price": 12.05,
+  "stop_loss": 12.6,
+  "take_profit_1": 11.6,
+  "take_profit_2": 11.3,
+  "confidence": 7,
+  "source": "AGNO"
+}

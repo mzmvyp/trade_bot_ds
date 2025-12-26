@@ -1,0 +1,20 @@
+{
+  "trade_id": "20251223_202537",
+  "symbol": "ETHUSDT",
+  "source": "AGNO",
+  "signal": "SELL",
+  "operation_type": "SWING_TRADE",
+  "entry_price": 2955.0,
+  "position_size": 2.0,
+  "original_position_size": 2.0,
+  "position_value": 5910.0,
+  "stop_loss": 3005.0,
+  "take_profit_1": 2915.0,
+  "take_profit_2": 2890.0,
+  "confidence": 7,
+  "timestamp": "2025-12-23T20:25:37.624044",
+  "status": "OPEN",
+  "max_profit_reached": 0.0,
+  "max_loss_reached": 0.0,
+  "tp1_partial_closed": false
+}

@@ -1,0 +1,13 @@
+{
+  "symbol": "XRPUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T13:56:03.577398",
+  "signal": "NO_SIGNAL",
+  "entry_price": 1.89,
+  "stop_loss": 1.91,
+  "take_profit_1": 1.86,
+  "take_profit_2": 1.83,
+  "confidence": 5,
+  "reasoning": "A análise apresenta múltiplos sinais conflitantes e fracos que não justificam uma entrada. A tendência primária é bearish com alinhamento de timeframes bearish, ADX moderado (20) e OBV bearish. No entanto, o MACD mostra sinal bullish acelerando para cima, o RSI está neutro (46.4) e as EMAs estão mistas. A confluência geral é negativa (-1/5) com mais fatores bearish (3) que bullish (2), resultando em um bias neutro (-1/10). A ação recomendada pelo sistema é 'WAIT'. A volatilidade extrema aumenta o risco para day trade. Embora o tipo recomendado seja DAY_TRADE, a confiança agregada é de apenas 5/10, abaixo do mínimo de 7/10 necessário para execução, devido à falta de confluência clara e sinais contraditórios.",
+  "raw_response": "```json\n{\n    \"signal\": \"NO_SIGNAL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 1.89,\n    \"stop_loss\": 1.91,\n    \"take_profit_1\": 1.86,\n    \"take_profit_2\": 1.83,\n    \"confidence\": 5,\n    \"reasoning\": \"A análise apresenta múltiplos sinais conflitantes e fracos que não justificam uma entrada. A tendência primária é bearish com alinhamento de timeframes bearish, ADX moderado (20) e OBV bearish. No entanto, o MACD mostra sinal bullish acelerando para cima, o RSI está neutro (46.4) e as EMAs estão mistas. A confluência geral é negativa (-1/5) com mais fatores bearish (3) que bullish (2), resultando em um bias neutro (-1/10). A ação recomendada pelo sistema é 'WAIT'. A volatilidade extrema aumenta o risco para day trade. Embora o tipo recomendado seja DAY_TRADE, a confiança agregada é de apenas 5/10, abaixo do mínimo de 7/10 necessário para execução, devido à falta de confluência clara e sinais contraditórios.\"\n}\n```"
+}

@@ -1,0 +1,13 @@
+{
+  "symbol": "XRPUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T23:43:31.151705",
+  "signal": "SELL",
+  "entry_price": 1.85,
+  "stop_loss": 1.8722,
+  "take_profit_1": 1.813,
+  "take_profit_2": 1.7853,
+  "confidence": 8,
+  "reasoning": "A análise apresenta múltiplas confluências para uma operação de venda (SELL) no modo DAY_TRADE: 1) Tendência primária classificada como 'strong_bearish' com alinhamento multi-timeframe confirmado; 2) Indicadores técnicos convergem para baixa (MACD acelerando para baixo, RSI se aproximando de sobrevenda mas ainda com espaço, EMAs em empilhamento de baixa, preço na banda inferior de Bollinger); 3) Score de confluência bearish de -5/5 e bias geral de -4/10; 4) Apesar da volatilidade extrema, o stop sugerido de 1.2% é adequado para DAY_TRADE e está alinhado com o nível de resistência imediato em $1.92. O sentimento geral positivo e o funding neutro são os únicos fatores contrários, mas não são fortes o suficiente para invalidar o sinal. A confiança é 8 devido à clara confluência bearish, mas é moderada pela volatilidade extrema que pode causar whipsaws.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 1.85,\n    \"stop_loss\": 1.8722,\n    \"take_profit_1\": 1.813,\n    \"take_profit_2\": 1.7853,\n    \"confidence\": 8,\n    \"reasoning\": \"A análise apresenta múltiplas confluências para uma operação de venda (SELL) no modo DAY_TRADE: 1) Tendência primária classificada como 'strong_bearish' com alinhamento multi-timeframe confirmado; 2) Indicadores técnicos convergem para baixa (MACD acelerando para baixo, RSI se aproximando de sobrevenda mas ainda com espaço, EMAs em empilhamento de baixa, preço na banda inferior de Bollinger); 3) Score de confluência bearish de -5/5 e bias geral de -4/10; 4) Apesar da volatilidade extrema, o stop sugerido de 1.2% é adequado para DAY_TRADE e está alinhado com o nível de resistência imediato em $1.92. O sentimento geral positivo e o funding neutro são os únicos fatores contrários, mas não são fortes o suficiente para invalidar o sinal. A confiança é 8 devido à clara confluência bearish, mas é moderada pela volatilidade extrema que pode causar whipsaws.\"\n}\n```"
+}

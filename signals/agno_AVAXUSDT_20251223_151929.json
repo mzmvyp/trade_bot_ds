@@ -1,0 +1,13 @@
+{
+  "symbol": "AVAXUSDT",
+  "source": "DEEPSEEK",
+  "timestamp": "2025-12-23T15:19:29.674694",
+  "signal": "SELL",
+  "entry_price": 12.05,
+  "stop_loss": 12.2,
+  "take_profit_1": 11.81,
+  "take_profit_2": 11.64,
+  "confidence": 7,
+  "reasoning": "Concordo com a recomendação de DAY_TRADE devido à volatilidade extrema e à tendência bearish primária, apesar do ADX indicar 'no_trend'. O sinal é executável (confiança 7) com base na confluência de múltiplos fatores bearish: bias geral -4/10, momentum bearish, MACD acelerando para baixo, preço abaixo da média das Bollinger Bands e alinhamento bearish nos timeframes. O DAY_TRADE é apropriado para capturar o movimento intraday dentro da faixa de volatilidade atual, com parâmetros ajustados para refletir os níveis-chave: stop acima da resistência imediata ($12.20 ≈ 1.24%), TP1 próximo ao suporte ($11.81 ≈ 2.0%), e TP2 estendido ($11.64 ≈ 3.4%). A confiança é moderada-forte (7) porque, embora o ADX seja baixo e o RSI neutro, o peso dos indicadores bearish e o alinhamento da tendência suportam uma operação de venda de curto prazo.",
+  "raw_response": "```json\n{\n    \"signal\": \"SELL\",\n    \"operation_type\": \"DAY_TRADE\",\n    \"entry_price\": 12.05,\n    \"stop_loss\": 12.20,\n    \"take_profit_1\": 11.81,\n    \"take_profit_2\": 11.64,\n    \"confidence\": 7,\n    \"reasoning\": \"Concordo com a recomendação de DAY_TRADE devido à volatilidade extrema e à tendência bearish primária, apesar do ADX indicar 'no_trend'. O sinal é executável (confiança 7) com base na confluência de múltiplos fatores bearish: bias geral -4/10, momentum bearish, MACD acelerando para baixo, preço abaixo da média das Bollinger Bands e alinhamento bearish nos timeframes. O DAY_TRADE é apropriado para capturar o movimento intraday dentro da faixa de volatilidade atual, com parâmetros ajustados para refletir os níveis-chave: stop acima da resistência imediata ($12.20 ≈ 1.24%), TP1 próximo ao suporte ($11.81 ≈ 2.0%), e TP2 estendido ($11.64 ≈ 3.4%). A confiança é moderada-forte (7) porque, embora o ADX seja baixo e o RSI neutro, o peso dos indicadores bearish e o alinhamento da tendência suportam uma operação de venda de curto prazo.\"\n}\n```"
+}
