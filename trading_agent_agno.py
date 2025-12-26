@@ -279,19 +279,11 @@ IMPORTANTE:
                     # Salvar sinal DeepSeek
                     self._save_signal(deepseek_signal)
                     
-                    # Validar e executar sinal DeepSeek se apropriado
+                    # MODIFICADO: Sinais DeepSeek são apenas para análise/comparação
+                    # NÃO executamos trades baseados em sinais DeepSeek - apenas AGNO
                     if deepseek_signal.get("signal") in ["BUY", "SELL"]:
-                        validation = validate_risk_and_position(deepseek_signal, symbol)
-                        if validation.get("can_execute"):
-                            logger.info(f"[DEEPSEEK] Validando e executando sinal {deepseek_signal.get('signal')} para {symbol}")
-                            position_size = validation.get("recommended_position_size", validation.get("position_size"))
-                            execution_result = execute_paper_trade(deepseek_signal, position_size)
-                            if execution_result.get("success"):
-                                logger.info(f"[DEEPSEEK] Trade executado com sucesso: {execution_result.get('message', '')}")
-                            else:
-                                logger.warning(f"[DEEPSEEK] Falha ao executar trade: {execution_result.get('error', '')}")
-                        else:
-                            logger.info(f"[DEEPSEEK] Sinal não executado: {validation.get('reason', '')}")
+                        logger.info(f"[DEEPSEEK] Sinal {deepseek_signal.get('signal')} gerado para {symbol} (apenas para análise, não será executado)")
+                        logger.info(f"[DEEPSEEK] Entry: ${deepseek_signal.get('entry_price', 0):.2f}, SL: ${deepseek_signal.get('stop_loss', 0):.2f}, Conf: {deepseek_signal.get('confidence', 0)}/10")
                 
                 # 2. SINAL AGNO PROCESSADO
                 # CORREÇÃO CRÍTICA: Usar os dados JÁ COLETADOS pelo DeepSeek ao invés de chamar APIs novamente
@@ -333,13 +325,41 @@ IMPORTANTE:
                 if agno_signal.get("signal") in ["BUY", "SELL"]:
                     validation = validate_risk_and_position(agno_signal, symbol)
                     if validation.get("can_execute"):
-                        logger.info(f"[AGNO] Validando e executando sinal {agno_signal.get('signal')} para {symbol}")
+                        logger.info(f"[AGNO] Validando sinal {agno_signal.get('signal')} para {symbol}")
                         position_size = validation.get("recommended_position_size", validation.get("position_size"))
-                        execution_result = execute_paper_trade(agno_signal, position_size)
-                        if execution_result.get("success"):
-                            logger.info(f"[AGNO] Trade executado com sucesso: {execution_result.get('message', '')}")
+
+                        # NOVO: Verificar modo de trading (paper vs live)
+                        from config import settings
+                        if settings.is_paper_trading:
+                            # Modo Paper Trading
+                            logger.info(f"[AGNO] Modo PAPER TRADING - Executando simulação")
+                            execution_result = execute_paper_trade(agno_signal, position_size)
+                            if execution_result.get("success"):
+                                logger.info(f"[AGNO] Paper trade executado: {execution_result.get('message', '')}")
+                            else:
+                                logger.warning(f"[AGNO] Falha no paper trade: {execution_result.get('error', '')}")
+                        elif settings.is_live_trading:
+                            # Modo Trading Real na Binance Futures
+                            logger.info(f"[AGNO] Modo LIVE TRADING - Executando na Binance Futures")
+                            try:
+                                from binance_futures_trading import execute_real_trade
+                                execution_result = await execute_real_trade(agno_signal, position_size)
+                                if execution_result.get("success"):
+                                    logger.info(f"[AGNO] Trade REAL executado: {execution_result.get('message', '')}")
+                                    logger.info(f"[AGNO] Order ID: {execution_result.get('order_id', 'N/A')}")
+                                else:
+                                    logger.error(f"[AGNO] Falha no trade real: {execution_result.get('error', '')}")
+                            except ImportError:
+                                logger.error("[AGNO] Módulo binance_futures_trading não encontrado!")
+                                logger.info("[AGNO] Executando paper trade como fallback")
+                                execution_result = execute_paper_trade(agno_signal, position_size)
+                            except Exception as e:
+                                logger.error(f"[AGNO] Erro ao executar trade real: {e}")
+                                logger.info("[AGNO] Executando paper trade como fallback")
+                                execution_result = execute_paper_trade(agno_signal, position_size)
                         else:
-                            logger.warning(f"[AGNO] Falha ao executar trade: {execution_result.get('error', '')}")
+                            logger.warning(f"[AGNO] Modo de trading desconhecido: {settings.trading_mode}")
+                            execution_result = {"success": False, "error": "Modo de trading inválido"}
                     else:
                         logger.info(f"[AGNO] Sinal não executado: {validation.get('reason', '')}")
                 

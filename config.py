@@ -7,14 +7,43 @@ from pydantic_settings import BaseSettings
 from pydantic import Field, validator
 
 class Settings(BaseSettings):
+    # ========================================
+    # MODO DE TRADING: paper | live
+    # ========================================
+    # paper = Paper trading (simulação)
+    # live = Trading real na Binance Futures
+    trading_mode: str = Field(default="paper", description="Modo de trading: paper ou live")
+
     # Configurações da API Binance (pública - não precisa de chaves)
     binance_api_key: Optional[str] = None
     binance_secret_key: Optional[str] = None
-    
+
+    # Configurações da API Binance para Trading REAL
+    binance_real_api_key: Optional[str] = Field(default=None, description="API Key para trading real")
+    binance_real_api_secret: Optional[str] = Field(default=None, description="API Secret para trading real")
+    binance_testnet: bool = Field(default=True, description="Usar Testnet (true) ou Produção (false)")
+
     # Twitter removido - análise de sentimento baseada apenas em dados de mercado
-    
+
     # Configurações do DeepSeek
     deepseek_base_url: str = "https://api.deepseek.com/v1"
+
+    @property
+    def is_live_trading(self) -> bool:
+        """Verifica se está em modo de trading real"""
+        return self.trading_mode.lower() == "live"
+
+    @property
+    def is_paper_trading(self) -> bool:
+        """Verifica se está em modo paper trading"""
+        return self.trading_mode.lower() == "paper"
+
+    @property
+    def binance_futures_base_url(self) -> str:
+        """URL base da Binance Futures (Testnet ou Produção)"""
+        if self.binance_testnet:
+            return "https://testnet.binancefuture.com"
+        return "https://fapi.binance.com"
     
     # Configurações do sistema
     log_level: str = "INFO"
