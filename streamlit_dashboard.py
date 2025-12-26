@@ -368,20 +368,30 @@ if portfolio_data:
                 take_profit_2 = trade.get('take_profit_2', 0)
                 position_size = trade.get('position_size', 0)
                 position_value = trade.get('position_value', 0)
+                symbol = trade.get("symbol", "N/A")
+                signal_type = trade.get("signal", "BUY")
                 
                 # Calcular diferenças percentuais
                 sl_diff = ((stop_loss - entry_price) / entry_price * 100) if entry_price > 0 else 0
                 tp1_diff = ((take_profit_1 - entry_price) / entry_price * 100) if entry_price > 0 else 0
                 tp2_diff = ((take_profit_2 - entry_price) / entry_price * 100) if entry_price > 0 else 0
                 
+                # Calcular P&L atual
+                current_price = market_prices.get(symbol, entry_price)
+                if signal_type == "BUY":
+                    pnl_atual = ((current_price - entry_price) / entry_price * 100) if entry_price > 0 else 0
+                else:  # SELL
+                    pnl_atual = ((entry_price - current_price) / entry_price * 100) if entry_price > 0 else 0
+                
                 open_list.append({
                     "Data": trade.get("timestamp", "N/A")[:16],
-                    "Símbolo": trade.get("symbol", "N/A"),
+                    "Símbolo": symbol,
                     "Fonte": trade.get("source", "UNKNOWN"),  # DEEPSEEK ou AGNO
-                    "Tipo": trade.get("signal", "N/A"),
+                    "Tipo": signal_type,
                     "Entrada": f"${entry_price:,.2f}",
                     "Tamanho": f"{position_size:.6f}",
                     "Valor": f"${position_value:,.2f}",
+                    "P&L Atual": f"{pnl_atual:+.2f}%",
                     "Stop Loss": f"${stop_loss:,.2f} ({sl_diff:+.1f}%)",
                     "Take Profit 1": f"${take_profit_1:,.2f} ({tp1_diff:+.1f}%)",
                     "Take Profit 2": f"${take_profit_2:,.2f} ({tp2_diff:+.1f}%)",
